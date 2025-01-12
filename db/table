@@ -39,17 +39,17 @@ CREATE TABLE `user_tbl` (
 
 
 
--- bloomingshop.product definition
+-- bloomingshop.product_tbl definition
 
-CREATE TABLE `product` (
+CREATE TABLE `product_tbl` (
   `product_id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `size` enum('기본','특대') COLLATE utf8mb4_general_ci NOT NULL,
+  `size` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `image_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `description` text COLLATE utf8mb4_general_ci,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -81,7 +81,7 @@ CREATE TABLE `product_category` (
   `category_id` bigint NOT NULL,
   PRIMARY KEY (`product_id`,`category_id`),
   KEY `category_id` (`category_id`),
-  CONSTRAINT `product_category_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON DELETE CASCADE,
+  CONSTRAINT `product_category_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product_tbl` (`product_id`) ON DELETE CASCADE,
   CONSTRAINT `product_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -104,23 +104,81 @@ CREATE TABLE `product_theme` (
   `theme_id` bigint NOT NULL,
   PRIMARY KEY (`product_id`,`theme_id`),
   KEY `theme_id` (`theme_id`),
-  CONSTRAINT `product_theme_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON DELETE CASCADE,
+  CONSTRAINT `product_theme_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product_tbl` (`product_id`) ON DELETE CASCADE,
   CONSTRAINT `product_theme_ibfk_2` FOREIGN KEY (`theme_id`) REFERENCES `theme` (`theme_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 
--- bloomingshop.cart definition
+-- bloomingshop.cart_tbl definition
 
-CREATE TABLE `cart` (
+CREATE TABLE `cart_tbl` (
   `cart_id` bigint NOT NULL AUTO_INCREMENT,
   `user_id` bigint DEFAULT NULL,
   `product_id` bigint DEFAULT NULL,
   `quantity` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`cart_id`),
   KEY `user_id` (`user_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_tbl` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON DELETE CASCADE
+  CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product_tbl` (`product_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- bloomingshop.order_tbl definition
+
+CREATE TABLE `order_tbl` (
+  `order_id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `order_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `delivery_status` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `payment_status` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `shipping_address` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `payment_method` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `delivery_status_updated` timestamp NULL DEFAULT NULL,
+  `payment_status_updated` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`order_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `order_tbl_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_tbl` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- bloomingshop.order_item definition
+
+CREATE TABLE `order_item` (
+  `order_item_id` bigint NOT NULL AUTO_INCREMENT,
+  `order_id` bigint NOT NULL,
+  `product_id` bigint NOT NULL,
+  `quantity` int NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `discount` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`order_item_id`),
+  KEY `order_id` (`order_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `order_item_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `order_tbl` (`order_id`) ON DELETE CASCADE,
+  CONSTRAINT `order_item_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product_tbl` (`product_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- bloomingshop.review_tbl definition
+
+CREATE TABLE `review_tbl` (
+  `review_id` bigint NOT NULL AUTO_INCREMENT,
+  `product_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  `rating` int DEFAULT NULL,
+  `comment` text COLLATE utf8mb4_general_ci,
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`review_id`),
+  KEY `product_id` (`product_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `review_tbl_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product_tbl` (`product_id`) ON DELETE CASCADE,
+  CONSTRAINT `review_tbl_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user_tbl` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `review_tbl_chk_1` CHECK ((`rating` between 1 and 5))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
