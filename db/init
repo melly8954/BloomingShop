@@ -1,0 +1,8 @@
+### Mysql Create Database & User 명령어
+```
+create database BloomingShop character set utf8mb4 collate utf8mb4_general_ci;
+create user 'psw'@'%' identified by 'psw123123!';
+grant all privileges on BloomingShop.* to 'psw'@'%' with grant option;
+flush privileges;
+
+```
