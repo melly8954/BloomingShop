@@ -6,8 +6,8 @@ CREATE TABLE `role_tbl` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO role_tbl (role) VALUES ('ROLE_ADMIN');
-INSERT INTO role_tbl (role) VALUES ('ROLE_USER');
+INSERT INTO role_tbl (role) VALUES ('ADMIN');
+INSERT INTO role_tbl (role) VALUES ('USER');
 
 
 
