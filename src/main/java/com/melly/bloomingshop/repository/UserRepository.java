@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
     // 로그인 ID로 계정 중복 검사
     boolean existsByLoginId(String loginId);
+    boolean existsByEmail(String email);
+    boolean existsByPhoneNumber(String phoneNumber);
+
 }

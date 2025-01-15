@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @NoArgsConstructor
@@ -30,7 +31,7 @@ public class User {
     @ManyToOne
     @JoinColumn(name="role_id")
     private Role roleId;
-    private String status;
+    private StatusType status;
     @Column(name="created_date")
     private LocalDateTime createdDate;
     @Column(name="last_login")
@@ -40,4 +41,11 @@ public class User {
     @Column(name="deleted_date")
     private LocalDateTime deletedDate;
 
+    // 엔티티가 영속화되기 전에 현재 시간을 자동으로 설정하는 메서드
+    @PrePersist
+    public void prePersist() {
+        if (this.createdDate == null) {
+            this.createdDate = LocalDateTime.now();
+        }
+    }
 }
