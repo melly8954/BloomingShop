@@ -1,15 +1,16 @@
 package com.melly.bloomingshop.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name="user_tbl")
 public class User {
@@ -26,16 +27,17 @@ public class User {
     @Column(name="phone_number")
     private String phoneNumber;
     private String address;
-    @Column(name="role_id")
-    private int roleId;
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private Role roleId;
     private String status;
-    @Column(name="create_date")
-    private LocalDate createdDate;
+    @Column(name="created_date")
+    private LocalDateTime createdDate;
     @Column(name="last_login")
-    private LocalDate lastLogin;
+    private LocalDateTime lastLogin;
     @Column(name="disabled_date")
-    private LocalDate disabledDate;
+    private LocalDateTime disabledDate;
     @Column(name="deleted_date")
-    private LocalDate deletedDate;
+    private LocalDateTime deletedDate;
 
 }
