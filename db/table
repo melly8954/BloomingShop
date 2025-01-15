@@ -28,7 +28,7 @@ CREATE TABLE `user_tbl` (
   `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_login` timestamp NULL DEFAULT NULL,
   `disabled_date` timestamp NULL DEFAULT NULL,
-  `delete_date` timestamp NULL DEFAULT NULL,
+  `deleted_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `login_id` (`login_id`),
   UNIQUE KEY `email` (`email`),
