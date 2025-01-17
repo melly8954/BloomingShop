@@ -36,7 +36,7 @@ public class AdminInitializer implements CommandLineRunner {
                     .loginId("testidsuper")
                     .password(passwordEncoder.encode("1q2w3e4r!"))
                     .name("administrator")
-                    .gender("male")
+                    .gender("남성")
                     .birthdate(LocalDate.of(1998, 10, 8))  // 관리자 생일 설정
                     .email("admin@example.com")          // 관리자 이메일 설정
                     .phoneNumber("010-1234-5678")        // 관리자 전화번호 설정
