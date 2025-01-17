@@ -6,10 +6,9 @@
     <title>회원 가입</title>
 </head>
 <script src="/js/jquery-3.7.1.min.js"></script>
-<script src="/js/account/register.js"></script>
+<script src="/js/user/register.js"></script>
 <body>
 <h2>회원 가입</h2>
-<form action="/register" method="POST">
     <label for="login-id">아이디:</label><br>
     <input type="text" id="login-id" name="login-id" required><br><br>
 
@@ -24,8 +23,8 @@
 
     <label for="gender">성별:</label><br>
     <select id="gender" name="gender">
-        <option value="M">남성</option>
-        <option value="F">여성</option>
+        <option value="남성">남성</option>
+        <option value="여성">여성</option>
     </select><br><br>
 
     <label for="birthdate">생일:</label><br>
@@ -40,7 +39,7 @@
     <label for="address">주소:</label><br>
     <input type="text" id="address" name="address" required><br><br>
 
-    <button type="submit">회원 가입</button>
-</form>
+    <button onclick="register()">회원 가입</button>
+
 </body>
 </html>
