@@ -31,6 +31,7 @@ public class User {
     @ManyToOne
     @JoinColumn(name="role_id")
     private Role roleId;
+    @Enumerated(EnumType.STRING)    // JPA는 enum 타입을 기본적으로 정수(ordinal)로 매핑하므로 해당 어노테이션 사용하지 않으면 0,1,2 등으로 db에 저장됨
     private StatusType status;
     @Column(name="created_date")
     private LocalDateTime createdDate;
