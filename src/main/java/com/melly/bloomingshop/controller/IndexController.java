@@ -12,8 +12,8 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/register")
+    @GetMapping("/user/register")
     public String registerPage() {
-        return "account/register";
+        return "user/register";
     }
 }
