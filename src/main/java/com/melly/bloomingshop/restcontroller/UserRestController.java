@@ -3,6 +3,7 @@ package com.melly.bloomingshop.restcontroller;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.User;
+import com.melly.bloomingshop.dto.MailRequest;
 import com.melly.bloomingshop.dto.RegisterRequest;
 import com.melly.bloomingshop.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +45,18 @@ public class UserRestController implements ResponseController {
         }
     }
 
+
+    // 로그인아이디 중복 체크 API
     @PostMapping("/check-loginId")
     public ResponseEntity<Boolean> checkLoginId(@RequestBody RegisterRequest registerRequest) {
         boolean isLoginIdExist = userService.isLoginIdExist(registerRequest);
         return ResponseEntity.ok(isLoginIdExist);
+    }
+
+    // 이메일 중복 체크 API
+    @PostMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestBody MailRequest emailRequest) {
+        boolean isEmailExist = userService.isEmailExist(emailRequest.getMail());
+        return ResponseEntity.ok(isEmailExist);
     }
 }
