@@ -35,7 +35,7 @@ public class UserRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.BAD_REQUEST,errorMessages.toString(), null);
         }
         try { // 비즈니스 로직 시작
-            User user = this.userService.registerUser(registerRequest);
+            User user = this.userService.registerUserWithAddress(registerRequest);
             return makeResponseEntity(HttpStatus.OK,"회원 가입 성공", user);
         }catch (IllegalArgumentException e) {
                 // 닉네임 중복과 같은 비즈니스 로직 오류 처리
