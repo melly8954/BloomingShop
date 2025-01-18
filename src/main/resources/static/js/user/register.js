@@ -4,14 +4,14 @@ $(document).ready(function () {
     });
 });
 
-function register(){
-    let loginId =  $("#login-id").val()
+function register() {
+    let loginId = $("#login-id").val()
     let password = $("#password").val()
     let confirmPassword = $("#confirm-password").val()
     let name = $("#name").val()
     let gender = $("#gender").val()
     let birthdate = $("#birthdate").val()
-    let email =  $("#email").val()
+    let email = $("#email").val()
     let phoneNumber = $("#phone-number").val()
     let address = $("#address").val()
 
@@ -21,12 +21,12 @@ function register(){
     }
 
     // 각 유효성 검사 함수 호출
-    if( !validateLoginId() ||
+    if (!validateLoginId() ||
         !validatePassword() ||
         !validateName() ||
         !validateBirthdate() ||
         !validateEmailDuplicate() ||
-        !validateEmailVerification()){
+        !validateEmailVerification()) {
         return; // 유효하지 않으면 함수 종료
     }
 
@@ -37,18 +37,18 @@ function register(){
         dataType: "json",
         contentType: "application/json; charset=UTF-8",
         data: JSON.stringify({
-            loginId : loginId,
-            password : password,
-            confirmPassword : confirmPassword,
-            name : name,
-            gender : gender,
-            birthdate : birthdate,
-            email : email,
-            phoneNumber : phoneNumber,
-            address : address
+            loginId: loginId,
+            password: password,
+            confirmPassword: confirmPassword,
+            name: name,
+            gender: gender,
+            birthdate: birthdate,
+            email: email,
+            phoneNumber: phoneNumber,
+            address: address
         })
-    }).done(function (data,status) {
-        if (status === "success"){
+    }).done(function (data, status) {
+        if (status === "success") {
             console.log(data.responseData);
             alert("회원가입이 성공적으로 완료되었습니다!");
             window.location.href = "/";
@@ -97,21 +97,19 @@ function validateLoginId() {
         type: 'POST',
         url: '/api/user/check-loginId',
         contentType: 'application/json',
-        data: JSON.stringify({ loginId: loginId }),
-        async: false, // 동기 처리
-        success: function (response) {
-            if (response) {
-                displayValidationMessage('#login-id', '로그인 ID가 이미 존재합니다.', 'error');
-                isValid = false;
-            } else {
-                displayValidationMessage('#login-id', '사용 가능한 로그인 ID입니다.', 'success');
-                isValid = true;
-            }
-        },
-        error: function () {
-            displayValidationMessage('#login-id', '로그인 ID 확인 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+        data: JSON.stringify({loginId: loginId}),
+        async: false
+    }).done(function (data) {
+        if (data) {
+            displayValidationMessage('#login-id', '로그인 ID가 이미 존재합니다.', 'error');
             isValid = false;
+        } else {
+            displayValidationMessage('#login-id', '사용 가능한 로그인 ID입니다.', 'success');
+            isValid = true;
         }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        displayValidationMessage('#login-id', '로그인 ID 확인 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+        isValid = false;
     });
     return isValid;
 }
@@ -145,7 +143,7 @@ function validatePassword() {
 }
 
 // 이름 유효성 검사
-function validateName(){
+function validateName() {
     const name = $('#name').val();
     if (name.length < 2 || name.length > 100) {
         displayValidationMessage('#name', '이름은 2~100자 사이여야 합니다.', 'error');
@@ -157,7 +155,7 @@ function validateName(){
 }
 
 // 생년월일 유효성 검사
-function validateBirthdate(){
+function validateBirthdate() {
     const birthdate = $('#birthdate').val(); // 날짜 값 가져오기
     const today = new Date(); // 현재 날짜
     const birthDateObj = new Date(birthdate); // 입력된 날짜를 Date 객체로 변환
@@ -179,7 +177,7 @@ function validateBirthdate(){
 }
 
 // 이메일 중복 유효성 검사
-function validateEmailDuplicate(){
+function validateEmailDuplicate() {
     let email = $('#email').val();
 
     const emailRegex = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -202,29 +200,27 @@ function validateEmailDuplicate(){
             type: 'POST',
             url: '/api/user/check-email',
             contentType: 'application/json',
-            data: JSON.stringify({ mail: email }),
-            success: function(response) {
-                if (response) {
-                    $('#emailCheckMessage').removeClass('success').addClass('error');
-                    displayValidationMessage('#email', '이메일 중복이 확인되었습니다.', 'error');
-                    resolve(false); // 중복 이메일이면 false 반환
-                } else {
-                    $('#emailCheckMessage').removeClass('error').addClass('success');
-                    displayValidationMessage('#email', '사용 가능한 이메일입니다.', 'success');
-                    resolve(true); // 사용 가능한 이메일이면 true 반환
-                }
-            },
-            error: function(error) {
+            data: JSON.stringify({mail: email})
+        }).done(function (data) {
+            if (data) {
                 $('#emailCheckMessage').removeClass('success').addClass('error');
-                displayValidationMessage('#email', '이메일 확인 중 오류가 발생했습니다.', 'error');
-                resolve(false); // 오류 발생 시 false 반환
+                displayValidationMessage('#email', '이메일 중복이 확인되었습니다.', 'error');
+                resolve(false); // 중복 이메일이면 false 반환
+            } else {
+                $('#emailCheckMessage').removeClass('error').addClass('success');
+                displayValidationMessage('#email', '사용 가능한 이메일입니다.', 'success');
+                resolve(true); // 사용 가능한 이메일이면 true 반환
             }
+        }).fail(function (error) {
+            $('#emailCheckMessage').removeClass('success').addClass('error');
+            displayValidationMessage('#email', '이메일 확인 중 오류가 발생했습니다.', 'error');
+            resolve(false); // 오류 발생 시 false 반환
         });
     });
 }
 
 // 인증 메일 발송
-function sendCodeButton(){
+function sendCodeButton() {
     // 이메일 중복 확인을 했는지 확인
     if (!$('#emailCheckMessage').hasClass('success')) {
         alert('email 중복 확인을 진행하지 않으면 코드가 정상적으로 발송되지 않습니다.');
@@ -240,16 +236,14 @@ function sendCodeButton(){
         type: 'POST',
         url: '/api/user/mail',
         contentType: 'application/json',
-        data: JSON.stringify({ mail: email }),
-        success: function(response) {
-            $('#verifyCodeSection').show();
-            alert('인증 email 이 발송되었습니다. 인증 번호를 확인해주세요.');
-            $('#loading-spinner').hide(); // 로딩 스피너 숨기기
-        },
-        error: function(error) {
-            alert('email 발송에 실패했습니다. 다시 시도해주세요.');
-            $('#loading-spinner').hide(); // 로딩 스피너 숨기기
-        }
+        data: JSON.stringify({mail: email})
+    }).done(function (data) {
+        $('#verifyCodeSection').show();
+        alert('인증 email 이 발송되었습니다. 인증 번호를 확인해주세요.');
+        $('#loading-spinner').hide(); // 로딩 스피너 숨기기
+    }).fail(function (error) {
+        alert('email 발송에 실패했습니다. 다시 시도해주세요.');
+        $('#loading-spinner').hide(); // 로딩 스피너 숨기기
     });
 }
 
@@ -274,22 +268,20 @@ function verifyCodeButton() {
         type: 'POST',
         url: '/api/user/verify-code',
         contentType: 'application/json',
-        data: JSON.stringify({ mail: email, code: code }),
-        success: function(response) {
-            if (response === 'Verified') {
-                alert('인증이 성공적으로 완료되었습니다.');
-                $('#verificationMessage').removeClass('error').addClass('success'); // 성공 클래스를 추가
-                displayValidationMessage('#verificationCode', '인증 성공', 'success');
-            } else {
-                alert('인증 실패. 올바른 코드를 입력하세요.');
-                $('#verificationMessage').removeClass('success').addClass('error'); // 실패 클래스를 추가
-                displayValidationMessage('#verificationCode', '인증 코드가 올바르지 않습니다.', 'error');
-            }
-        },
-        error: function(error) {
-            alert('인증 실패. 다시 시도해주세요.');
+        data: JSON.stringify({mail: email, code: code})
+    }).done(function (data) {
+        if (data === 'Verified') {
+            alert('인증이 성공적으로 완료되었습니다.');
+            $('#verificationMessage').removeClass('error').addClass('success'); // 성공 클래스를 추가
+            displayValidationMessage('#verificationCode', '인증 성공', 'success');
+        } else {
+            alert('인증 실패. 올바른 코드를 입력하세요.');
             $('#verificationMessage').removeClass('success').addClass('error'); // 실패 클래스를 추가
-            displayValidationMessage('#verificationCode', '인증 실패. 다시 시도해주세요.', 'error');
+            displayValidationMessage('#verificationCode', '인증 코드가 올바르지 않습니다.', 'error');
         }
+    }).fail(function (error) {
+        alert('인증 실패. 다시 시도해주세요.');
+        $('#verificationMessage').removeClass('success').addClass('error'); // 실패 클래스를 추가
+        displayValidationMessage('#verificationCode', '인증 실패. 다시 시도해주세요.', 'error');
     });
 }
