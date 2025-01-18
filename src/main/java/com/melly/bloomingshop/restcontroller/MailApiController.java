@@ -26,7 +26,7 @@ public class MailApiController {
     /**
      * 인증번호 발송 메소드
      */
-    @PostMapping("/api/users/mail")
+    @PostMapping("/api/user/mail")
     public CompletableFuture<String> mailSend(@RequestBody MailRequest mailRequest) {
         return mailService.sendMail(mailRequest.getMail())
                 .thenApply(number -> String.valueOf(number));
@@ -35,7 +35,7 @@ public class MailApiController {
     /**
      * 인증번호 검증 메소드
      */
-    @PostMapping("/api/users/verify-code")
+    @PostMapping("/api/user/verify-code")
     public String verifyCode(@RequestBody MailVerificationRequest verificationRequest) {
         boolean isVerified = mailService.verifyCode(verificationRequest.getMail(), verificationRequest.getCode());
         return isVerified ? "Verified" : "Verification failed";
@@ -44,7 +44,7 @@ public class MailApiController {
     /**
      * 임시 비밀번호 재발급 발송 메서드
      */
-    @PostMapping("/api/users/reset-password")
+    @PostMapping("/api/user/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody MailRequest mailRequest) {
         String email = mailRequest.getMail();
 
