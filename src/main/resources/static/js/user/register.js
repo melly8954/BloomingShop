@@ -13,7 +13,9 @@ function register() {
     let birthdate = $("#birthdate").val()
     let email = $("#email").val()
     let phoneNumber = $("#phone-number").val()
-    let address = $("#address").val()
+    let postcode = $("#postcode").val(); // 우편번호
+    let address = $("#address").val(); // 기본 주소
+    let detailAddress = $("#detail-address").val(); // 상세 주소
 
     // 이메일 인증이 완료되었는지 체크
     if (!validateEmailVerification()) {
@@ -46,7 +48,9 @@ function register() {
             birthdate: birthdate,
             email: email,
             phoneNumber: phoneNumber,
-            address: address
+            postcode: postcode,
+            address: address,
+            detailAddress: detailAddress
         })
     }).done(function (data, status) {
         if (status === "success") {
@@ -328,4 +332,26 @@ function validatePhoneNumber() {
             resolve(false); // 오류 발생 시 false 반환
         });
     });
+}
+
+// 주소 검색
+function execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            var addr = ''; // 주소 변수
+
+            if (data.userSelectedType === 'R') { // 도로명 주소 선택시
+                addr = data.roadAddress;
+            } else { // 지번 주소 선택시
+                addr = data.jibunAddress;
+            }
+
+            // 우편번호와 주소 입력
+            document.getElementById('postcode').value = data.zonecode;
+            document.getElementById("address").value = addr;
+
+            // 상세주소 필드로 포커스 이동
+            document.getElementById("detail-address").focus();
+        }
+    }).open();
 }
