@@ -62,8 +62,14 @@ public class UserService {
         User save = this.userRepository.save(user);
         return save;
     }
-
+    
+    // 로그인 아이디 중복 여부 확인
     public boolean isLoginIdExist(RegisterRequest registerRequest){
         return this.userRepository.existsByLoginId(registerRequest.getLoginId());
     }
+    // 이메일 중복 여부 확인
+    public boolean isEmailExist(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
 }
