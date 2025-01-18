@@ -62,4 +62,8 @@ public class UserService {
         User save = this.userRepository.save(user);
         return save;
     }
+
+    public boolean isLoginIdExist(RegisterDto registerDto){
+        return this.userRepository.existsByLoginId(registerDto.getLoginId());
+    }
 }

@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -47,5 +44,11 @@ public class UserRestController implements ResponseController {
             log.error(ex.getMessage());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(),null);
         }
+    }
+
+    @PostMapping("/check-loginId")
+    public ResponseEntity<Boolean> checkLoginId(@RequestBody RegisterDto registerDto) {
+        boolean isLoginIdExist = userService.isLoginIdExist(registerDto);
+        return ResponseEntity.ok(isLoginIdExist);
     }
 }
