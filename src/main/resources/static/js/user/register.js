@@ -26,7 +26,8 @@ function register() {
         !validateName() ||
         !validateBirthdate() ||
         !validateEmailDuplicate() ||
-        !validateEmailVerification()) {
+        !validateEmailVerification() ||
+        !validatePhoneNumber()) {
         return; // 유효하지 않으면 함수 종료
     }
 
@@ -102,6 +103,7 @@ function validateLoginId() {
     }).done(function (data) {
         if (data) {
             displayValidationMessage('#login-id', '로그인 ID가 이미 존재합니다.', 'error');
+            $('#login-id').focus();
             isValid = false;
         } else {
             displayValidationMessage('#login-id', '사용 가능한 로그인 ID입니다.', 'success');
@@ -109,6 +111,7 @@ function validateLoginId() {
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         displayValidationMessage('#login-id', '로그인 ID 확인 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+        $('#login-id').focus();
         isValid = false;
     });
     return isValid;
@@ -293,5 +296,36 @@ function verifyCodeButton() {
         alert('인증 실패. 다시 시도해주세요.');
         $('#verificationMessage').removeClass('success').addClass('error'); // 실패 클래스를 추가
         displayValidationMessage('#verificationCode', '인증 실패. 다시 시도해주세요.', 'error');
+    });
+}
+
+function validatePhoneNumber() {
+    const phoneNumber = $('#phone-number').val();
+    const phoneRegex = /^(010-\d{4}-\d{4})$/; // 010-xxxx-xxxx 형식
+
+    if (!phoneRegex.test(phoneNumber)) {
+        displayValidationMessage('#phone-number', '유효한 전화번호 형식을 입력해주세요.', 'error');
+        return false;
+    }
+
+    // 이메일 중복 확인을 위한 비동기 요청
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'POST',
+            url: '/api/user/check-phoneNumber',
+            contentType: 'application/json',
+            data: JSON.stringify({phoneNumber:phoneNumber})
+        }).done(function (data) {
+            if (data) {
+                displayValidationMessage('#phone-number', '이미 등록된 전화번호입니다.', 'error');
+                resolve(false); // 전화번호 중복이면 false 반환
+            } else {
+                displayValidationMessage('#phone-number', '사용 가능한 전화번호입니다.', 'success');
+                resolve(true); // 사용 가능한 전화번호이면 true 반환
+            }
+        }).fail(function (error) {
+            displayValidationMessage('#phone-number', '전화번호 확인 중 오류가 발생했습니다.', 'error');
+            resolve(false); // 오류 발생 시 false 반환
+        });
     });
 }
