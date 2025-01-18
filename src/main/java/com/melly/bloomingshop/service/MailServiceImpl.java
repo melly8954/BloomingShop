@@ -2,8 +2,8 @@ package com.melly.bloomingshop.service;
 
 import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.repository.UserRepository;
-import com.melly.myjpa.domain.UserEntity;
-import com.melly.myjpa.repository.UserRepository;
+import com.melly.bloomingshop.domain.User;
+import com.melly.bloomingshop.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -55,8 +55,8 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(senderEmail);
             helper.setTo(mail);
-            helper.setSubject("myjpa project : 이메일 인증번호 발송");
-            String body = "<h2>myjpa project 입니다.<br>환영합니다!</h2><h3>아래의 인증번호를 입력하세요.</h3><h1>" + verificationCodes.get(mail) + "</h1><h3>감사합니다.</h3>";
+            helper.setSubject("Blooming Shop 회원가입 : 이메일 인증번호 발송");
+            String body = "<h2>Blooming Shop 입니다.<br>환영합니다!</h2><h3>아래의 인증번호를 입력하세요.</h3><h1>" + verificationCodes.get(mail) + "</h1><h3>감사합니다.</h3>";
             helper.setText(body, true);
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -111,8 +111,8 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(senderEmail);
             helper.setTo(mail);
-            helper.setSubject("myjpa projcet : 임시 비밀번호 발송");
-            String body = "<h2>myjpa project 입니다.<br>환영합니다!</h2><p>아래의 임시 비밀번호를 사용하세요.</p><h1>" + tempPassword + "</h1><h3>반드시 비밀번호를 재설정하세요.</h3>";
+            helper.setSubject("Blooming Shop : 임시 비밀번호 발송");
+            String body = "<h2>Blooming Shop 입니다.<br>환영합니다!</h2><p>아래의 임시 비밀번호를 사용하세요.</p><h1>" + tempPassword + "</h1><h3>반드시 비밀번호를 재설정하세요.</h3>";
             helper.setText(body, true);
             javaMailSender.send(message);
         } catch (MessagingException e) {
