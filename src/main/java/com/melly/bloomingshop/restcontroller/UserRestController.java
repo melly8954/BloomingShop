@@ -3,14 +3,12 @@ package com.melly.bloomingshop.restcontroller;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.User;
-import com.melly.bloomingshop.dto.RegisterDto;
-import com.melly.bloomingshop.repository.UserRepository;
+import com.melly.bloomingshop.dto.RegisterRequest;
 import com.melly.bloomingshop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +21,7 @@ public class UserRestController implements ResponseController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto> register(@Validated @RequestBody RegisterDto registerDto, BindingResult bindingResult ) {
+    public ResponseEntity<ResponseDto> register(@Validated @RequestBody RegisterRequest registerRequest, BindingResult bindingResult ) {
         //  유효성 검사는 데이터가 비즈니스 로직에 들어가기 전에 검증하는 것
         if(bindingResult.hasErrors()){
             // 유효성 검사를 실패(@Size , @NotBlank 조건 실패 시) 하면 BindingResult 객체에 오류가 담긴다.
@@ -34,7 +32,7 @@ public class UserRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.BAD_REQUEST,errorMessages.toString(), null);
         }
         try { // 비즈니스 로직 시작
-            User user = this.userService.registerUser(registerDto);
+            User user = this.userService.registerUser(registerRequest);
             return makeResponseEntity(HttpStatus.OK,"회원 가입 성공", user);
         }catch (IllegalArgumentException e) {
                 // 닉네임 중복과 같은 비즈니스 로직 오류 처리
@@ -47,8 +45,8 @@ public class UserRestController implements ResponseController {
     }
 
     @PostMapping("/check-loginId")
-    public ResponseEntity<Boolean> checkLoginId(@RequestBody RegisterDto registerDto) {
-        boolean isLoginIdExist = userService.isLoginIdExist(registerDto);
+    public ResponseEntity<Boolean> checkLoginId(@RequestBody RegisterRequest registerRequest) {
+        boolean isLoginIdExist = userService.isLoginIdExist(registerRequest);
         return ResponseEntity.ok(isLoginIdExist);
     }
 }
