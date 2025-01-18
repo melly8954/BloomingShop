@@ -122,18 +122,21 @@ function validatePassword() {
     // 비밀번호 입력 여부 확인
     if (password === '') {
         displayValidationMessage('#password', '비밀번호를 입력해주세요.', 'error');
+        $('#password').focus();
         return false;
     }
 
     // 비밀번호 길이 확인
     if (password.length < 8 || password.length > 20) {
         displayValidationMessage('#password', '비밀번호는 8~20자 사이여야 합니다.', 'error');
+        $('#password').focus();
         return false;
     }
 
     // 비밀번호와 확인 비밀번호가 일치하는지 확인
     if (password !== confirmPassword) {
         displayValidationMessage('#password', '비밀번호가 일치하지 않습니다.', 'error');
+        $('#password').focus();
         return false;
     }
 
@@ -147,6 +150,7 @@ function validateName() {
     const name = $('#name').val();
     if (name.length < 2 || name.length > 100) {
         displayValidationMessage('#name', '이름은 2~100자 사이여야 합니다.', 'error');
+        $('#name').focus();
         return false;
     } else {
         displayValidationMessage('#name', '이름이 유효합니다.', 'success');
@@ -163,12 +167,14 @@ function validateBirthdate() {
     if (!birthdate) {
         // 값이 비어 있는 경우
         displayValidationMessage('#birthdate', '생년월일을 입력해주세요.', 'error');
+        $('#birthdate').focus();
         return false;
     }
 
     if (birthDateObj > today) {
         // 미래 날짜인 경우
         displayValidationMessage('#birthdate', '생년월일은 미래 날짜일 수 없습니다.', 'error');
+        $('#birthdate').focus();
         return false;
     }
 
@@ -185,12 +191,14 @@ function validateEmailDuplicate() {
     // 이메일 형식 검사
     if (!emailRegex.test(email)) {
         displayValidationMessage('#email', '올바른 이메일 형식을 입력해주세요.', 'error');
+        $('#email').focus();
         return false;
     }
 
     // 클라이언트에서 최소 길이 체크
     if (email.length < 10 || email.length > 255) {
         displayValidationMessage('#email', 'email 의 길이는 10~255자 사이여야 합니다.', 'error');
+        $('#email').focus();
         return false;
     }
 
@@ -224,6 +232,7 @@ function sendCodeButton() {
     // 이메일 중복 확인을 했는지 확인
     if (!$('#emailCheckMessage').hasClass('success')) {
         alert('email 중복 확인을 진행하지 않으면 코드가 정상적으로 발송되지 않습니다.');
+        $('#email').focus();
         return; // 이메일 중복 확인을 하지 않았으면 코드 발송을 중단
     }
 
@@ -254,6 +263,7 @@ function validateEmailVerification() {
     // 인증 코드가 입력되지 않았으면 이메일 인증이 완료되지 않았다고 판단
     if (!verificationCode || !$('#verificationMessage').hasClass('success')) {
         alert('이메일 인증을 완료해주세요.');
+        $('#verificationCode').focus();
         return false;
     }
     return true;
