@@ -1,23 +1,28 @@
 package com.melly.bloomingshop.service;
 
+import com.melly.bloomingshop.domain.Address;
 import com.melly.bloomingshop.domain.Role;
 import com.melly.bloomingshop.domain.StatusType;
 import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.RegisterRequest;
+import com.melly.bloomingshop.repository.AddressRepository;
 import com.melly.bloomingshop.repository.RoleRepository;
 import com.melly.bloomingshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User registerUser(RegisterRequest registerRequest) {
+    @Transactional
+    public User registerUserWithAddress(RegisterRequest registerRequest) {
         // 해당 필드 중복체크
         if(userRepository.existsByLoginId(registerRequest.getLoginId())){
             // 서비스에서 예외를 던지는 방식은 비즈니스 로직에 문제가 생겼을 때 이를 명확하게 클라이언트에 전달하는 좋은 방법
@@ -46,7 +51,8 @@ public class UserService {
         // 기본 'USER' 역할 할당 (관리자 등 역할은 추후 확장 가능)
         Role userRole = roleRepository.findByRole("USER")
                 .orElseThrow(() -> new IllegalArgumentException("기본 역할이 존재하지 않습니다."));
-
+        
+        // 유저 생성
         User user = User.builder()
                 .loginId(registerRequest.getLoginId())
                 .password(encodedPassword)
@@ -55,11 +61,19 @@ public class UserService {
                 .birthdate(registerRequest.getBirthdate())
                 .email(registerRequest.getEmail())
                 .phoneNumber(registerRequest.getPhoneNumber())
-                .address(registerRequest.getAddress())
                 .roleId(userRole)
                 .status(StatusType.ACTIVE)
                 .build();
         User save = this.userRepository.save(user);
+        
+        // 해당 유저의 주소 저장
+        Address address = new Address();
+        address.setUser(user); // `user_id` 참조
+        address.setPostcode(registerRequest.getPostcode());
+        address.setAddress(registerRequest.getAddress());
+        address.setDetailAddress(registerRequest.getDetailAddress());
+        addressRepository.save(address);
+
         return save;
     }
     
