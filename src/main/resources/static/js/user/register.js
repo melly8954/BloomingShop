@@ -335,7 +335,7 @@ function validatePhoneNumber() {
 }
 
 // 주소 검색
-function execDaumPostcode() {
+function searchPostcode() {
     new daum.Postcode({
         oncomplete: function(data) {
             var addr = ''; // 주소 변수
