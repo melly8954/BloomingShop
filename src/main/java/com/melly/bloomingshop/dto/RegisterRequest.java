@@ -42,5 +42,12 @@ public class RegisterRequest {
 
     private String phoneNumber;
 
+    // 주소 정보
+    @NotBlank(message = "우편번호는 필수 입력 값입니다.")
+    private String postcode;
+
+    @NotBlank(message = "주소는 필수 입력 값입니다.")
     private String address;
+
+    private String detailAddress;
 }
