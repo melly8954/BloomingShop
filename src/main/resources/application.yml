@@ -32,4 +32,14 @@ spring:
           time-zone: Asia/Seoul
         format_sql: true  # SQL 포맷팅 여부, Hibernate가 출력하는 SQL을 사람이 읽기 쉬운 형태로 포맷팅.
         # 기본적으로 한 줄로 출력되는 SQL 쿼리가 포맷팅되어 출력되므로, 로그에서 SQL을 더 쉽게 이해할 수 있음
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: rkwhr8963@gmail.com
+    password: ifqi gtmx xppi ldto
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
