@@ -29,7 +29,8 @@ function register() {
         !validateBirthdate() ||
         !validateEmailDuplicate() ||
         !validateEmailVerification() ||
-        !validatePhoneNumber()) {
+        !validatePhoneNumber() ||
+        !validateAddress()) {
         return; // 유효하지 않으면 함수 종료
     }
 
@@ -334,8 +335,12 @@ function validatePhoneNumber() {
     });
 }
 
-// 주소 검색
+// 주소 검색 버튼 클릭 시 주소 입력 필드 활성화
 function searchPostcode() {
+    // 주소 입력 필드 활성화
+    $("#postcode").attr("disabled", false);
+    $("#address").attr("disabled", false);
+
     new daum.Postcode({
         oncomplete: function(data) {
             var addr = ''; // 주소 변수
@@ -354,4 +359,27 @@ function searchPostcode() {
             document.getElementById("detail-address").focus();
         }
     }).open();
+}
+
+// 주소 유효성 검사
+function validateAddress() {
+    let postcode = $('#postcode').val();
+    let address = $('#address').val();
+
+    // 우편번호 확인
+    if (!postcode) {
+        displayValidationMessage('#postcode', '우편번호를 입력해주세요.', 'error');
+        $('#postcode').focus();
+        return false;
+    }
+
+    // 기본 주소 확인
+    if (!address) {
+        displayValidationMessage('#address', '기본 주소를 입력해주세요.', 'error');
+        $('#address').focus();
+        return false;
+    }
+
+    // 모든 주소 입력이 유효한 경우
+    return true;
 }
