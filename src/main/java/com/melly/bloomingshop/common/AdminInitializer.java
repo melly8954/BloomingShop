@@ -40,7 +40,6 @@ public class AdminInitializer implements CommandLineRunner {
                     .birthdate(LocalDate.of(1998, 10, 8))  // 관리자 생일 설정
                     .email("admin@example.com")          // 관리자 이메일 설정
                     .phoneNumber("010-1234-5678")        // 관리자 전화번호 설정
-                    .address("Seoul, South Korea")       // 관리자 주소 설정
                     .roleId(adminRole) // 역할 ID 설정
                     .status(StatusType.ACTIVE)                   // 상태 설정
                     .createdDate(LocalDateTime.now())        // 생성일 설정
