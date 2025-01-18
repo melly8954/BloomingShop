@@ -64,12 +64,16 @@ public class UserService {
     }
     
     // 로그인 아이디 중복 여부 확인
-    public boolean isLoginIdExist(RegisterRequest registerRequest){
-        return this.userRepository.existsByLoginId(registerRequest.getLoginId());
+    public boolean isLoginIdExist(String loginId){
+        return this.userRepository.existsByLoginId(loginId);
     }
     // 이메일 중복 여부 확인
     public boolean isEmailExist(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    // 휴대전환 중복 여부 확인
+    public boolean isPhoneNumberExist(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
 }
