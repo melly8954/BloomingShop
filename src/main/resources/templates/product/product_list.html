@@ -69,9 +69,16 @@
                 <option value="views">조회순</option>
                 <option value="name">이름순</option>
             </select>
+            <div class="btn-group" role="group">
+                <!-- 오름차순 버튼 -->
+                <button id="ascBtn" class="btn btn-outline-primary" data-order="asc">오름차순</button>
+                <!-- 내림차순 버튼 -->
+                <button id="descBtn" class="btn btn-outline-secondary" data-order="desc">내림차순</button>
+            </div>
         </div>
-    </div>
 
+    </div>
+    
     <!-- 상품 이미지 그리드 -->
     <div id="product-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         <!-- 상품 항목들 -->
