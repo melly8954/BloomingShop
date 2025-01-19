@@ -1,5 +1,5 @@
 $.sign_up = function () {
-    window.location.href="/user/register"
+    window.location.href = "/user/register"
 }
 
 function validateForm() {
@@ -26,4 +26,22 @@ function validateForm() {
         alert("비밀번호는 8~20자 사이여야 합니다.");
         return false;  // 폼 제출을 막음
     }
+
+    // 폼 제출을 AJAX로 처리
+    $.ajax({
+        type: "POST",
+        url: "/api/user/login",  // 로그인 API URL
+        data: $("#loginForm").serialize(), // 로그인 폼 데이터 직렬화
+        success: function(response) {
+            // 서버에서 반환된 리디렉션 URL을 가져와서 처리
+            window.location.href = response.redirectUrl;  // 서버의 리디렉션 URL로 이동
+        },
+        error: function(xhr) {
+            // 로그인 실패 처리
+            const errorMessage = xhr.responseJSON.message; // 서버로부터 받은 오류 메시지
+            alert(errorMessage);  // 예: alert로 오류 메시지 출력
+        }
+    });
+
+    return false; // 폼의 기본 제출을 막음
 }
