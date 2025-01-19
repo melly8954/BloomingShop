@@ -43,6 +43,8 @@ function changePW() {
     }).fail(function (jqXHR, textStatus, errorThrown) {
         // 요청 실패 시 실행
         console.error("Request failed: " + textStatus + ", " + errorThrown);
-        alert('비밀번호 변경에 실패했습니다.\n다시 시도해주세요.');
+        // 서버에서 반환된 에러 메시지 가져오기
+        const errorMessage = jqXHR.responseJSON?.message || '비밀번호 변경에 실패했습니다.\n다시 시도해주세요.';
+        alert(errorMessage); // 에러 메시지를 사용자에게 알림
     });
 }
