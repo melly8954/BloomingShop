@@ -97,4 +97,25 @@ public class UserService {
         User user = this.userRepository.findByEmail(email);
         return user.getLoginId();
     }
+
+
+    // 현재 비밀번호가 맞는지 검증
+    public boolean checkCurrentPassword(String email, String currentPassword) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return false; // 이메일에 해당하는 사용자가 없으면 false 반환
+        }
+        // BCryptPasswordEncoder로 암호화된 비밀번호 비교
+        return passwordEncoder.matches(currentPassword, user.getPassword());
+    }
+
+    // 새 비밀번호로 업데이트
+    public void updatePassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            // 새 비밀번호 암호화
+            user.changePassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user); // 비밀번호 업데이트
+        }
+    }
 }
