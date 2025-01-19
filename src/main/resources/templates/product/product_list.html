@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 보기</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+    <div class="col-md-3 mb-2 mb-md-0">
+        <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
+        </a>
+    </div>
+
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="/" class="nav-link px-2 link-secondary">Home</a></li>
+        <li><a href="/product" class="nav-link px-2">상품 보기</a></li>
+        <li><a href="#" class="nav-link px-2">2</a></li>
+        <li><a href="#" class="nav-link px-2">3</a></li>
+        <li><a href="#" class="nav-link px-2">4</a></li>
+    </ul>
+
+    <div class="d-flex align-items-center flex-wrap">
+        {{#login_user}}
+        <span class="me-3">{{login_user.name}}님, 환영합니다!</span>
+        <button type="button" class="btn btn-outline-primary me-2" onclick="window.location.href='/logout';">로그아웃</button>
+        <button type="button" class="btn btn-outline-primary" onclick="window.location.href='/user/change-password';">비밀번호 변경</button>
+        {{/login_user}}
+
+        {{^login_user}}
+        <button type="button" class="btn btn-outline-primary me-2" onclick="window.location.href='/user/login';">로그인</button>
+        <button type="button" class="btn btn-outline-primary me-2" onclick="window.location.href='/user/register';">회원가입</button>
+        {{/login_user}}
+    </div>
+</header>
+
+<div class="container my-5">
+
+    <!-- 검색창 -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <label for="search" class="form-label">상품 검색</label>
+            <input type="text" id="search" class="form-control" placeholder="상품명으로 검색">
+        </div>
+    </div>
+
+    <!-- 카테고리 드롭다운 -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="category" class="form-label">카테고리 선택</label>
+            <select id="category" class="form-select">
+                <option value="꽃다발">꽃다발</option>
+                <option value="꽃바구니">꽃바구니</option>
+                <option value="동양란">동양란</option>
+                <option value="서양란">서양란</option>
+                <option value="근조화환">근조화환</option>
+                <option value="축화화환">축화화환</option>
+                <option value="관엽화분">관엽화분</option>
+            </select>
+        </div>
+
+        <!-- 정렬 버튼들 -->
+        <div class="col-md-6 d-flex justify-content-end">
+            <label for="sort" class="form-label me-2">정렬 기준</label>
+            <select id="sort" class="form-select w-auto">
+                <option value="price">가격순</option>
+                <option value="views">조회순</option>
+                <option value="name">이름순</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 상품 이미지 그리드 -->
+    <div id="product-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        <!-- 상품 항목들 -->
+        <div class="col">
+            <div class="card">
+                <img src="image1.jpg" class="card-img-top" alt="상품1">
+                <div class="card-body">
+                    <h5 class="card-title">꽃다발 1</h5>
+                    <p class="card-text">가격: 30,000원</p>
+                    <p class="card-text">조회수: 150</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <img src="image2.jpg" class="card-img-top" alt="상품2">
+                <div class="card-body">
+                    <h5 class="card-title">꽃바구니 2</h5>
+                    <p class="card-text">가격: 40,000원</p>
+                    <p class="card-text">조회수: 200</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <img src="image3.jpg" class="card-img-top" alt="상품3">
+                <div class="card-body">
+                    <h5 class="card-title">동양란 3</h5>
+                    <p class="card-text">가격: 20,000원</p>
+                    <p class="card-text">조회수: 180</p>
+                </div>
+            </div>
+        </div>
+        <!-- 추가 상품 항목들... -->
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
