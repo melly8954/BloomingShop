@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Locale;
+import java.util.Set;
 
 @Entity
 @Table(name = "product_tbl")
@@ -42,5 +44,14 @@ public class Product {
             this.createdDate = LocalDateTime.now();
         }
     }
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_category", // 연결 테이블 이름
+            joinColumns = @JoinColumn(name = "product_id"), // product_id 외래키
+            inverseJoinColumns = @JoinColumn(name = "category_id") // category_id 외래키
+    )
+    private Set<Category> categories;
 }
 
