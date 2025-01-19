@@ -68,4 +68,25 @@ public class UserRestController implements ResponseController {
         boolean isPhoneNumberExist = userService.isPhoneNumberExist(phoneNumberCheckDto.getPhoneNumber());
         return ResponseEntity.ok(isPhoneNumberExist);
     }
+
+
+    // 이메일로 로그인 아이디 찾기
+    @GetMapping("/login-id/{email}")
+    public ResponseEntity<ResponseDto> findLoginIdByEmail(@PathVariable("email") String email) {
+        // 이메일이 null 이거나 비어 있는 경우 처리
+        if(email == null || email.isEmpty()){
+            return makeResponseEntity(HttpStatus.BAD_REQUEST,"email 은 필수 입력 항목입니다.",null);
+        }
+        // 이메일 형식의 정규표현식을 검사해주는 부분
+        if(!email.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")){
+            return makeResponseEntity(HttpStatus.BAD_REQUEST,"email 형식을 맞추셔야 합니다.",null);
+        }
+        try{
+            String loginIdByEmail = this.userService.getLoginIdByEmail(email);
+            return makeResponseEntity(HttpStatus.OK,"아이디 찾기 성공",loginIdByEmail);
+        }catch (Exception ex){
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(),null);
+        }
+    }
 }
