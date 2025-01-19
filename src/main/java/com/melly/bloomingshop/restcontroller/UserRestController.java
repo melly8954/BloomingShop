@@ -6,8 +6,6 @@ import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.*;
 import com.melly.bloomingshop.security.auth.PrincipalDetails;
 import com.melly.bloomingshop.service.UserService;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,6 +32,7 @@ public class UserRestController implements ResponseController {
             bindingResult.getAllErrors().forEach(error -> {
                 errorMessages.append(error.getDefaultMessage()).append(" / ");
             });
+            log.error("유효성 검사 실패" + errorMessages);
             return makeResponseEntity(HttpStatus.BAD_REQUEST,errorMessages.toString(), null);
         }
         try { // 비즈니스 로직 시작
@@ -77,10 +76,12 @@ public class UserRestController implements ResponseController {
     public ResponseEntity<ResponseDto> findLoginIdByEmail(@PathVariable("email") String email) {
         // 이메일이 null 이거나 비어 있는 경우 처리
         if(email == null || email.isEmpty()){
+            log.error("email -> null 이거나 비어있음");
             return makeResponseEntity(HttpStatus.BAD_REQUEST,"email 은 필수 입력 항목입니다.",null);
         }
         // 이메일 형식의 정규표현식을 검사해주는 부분
         if(!email.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")){
+            log.error("email 형식 오류");
             return makeResponseEntity(HttpStatus.BAD_REQUEST,"email 형식을 맞추셔야 합니다.",null);
         }
         try{
@@ -102,11 +103,13 @@ public class UserRestController implements ResponseController {
                 bindingResult.getAllErrors().forEach(error -> {
                     errorMessages.append(error.getDefaultMessage()).append(" / ");
                 });
+                log.error("유효성 검사 실패" + errorMessages);
                 return makeResponseEntity(HttpStatus.BAD_REQUEST,errorMessages.toString(), null);
             }
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
+                log.error("사용자 인증이 처리되지 않음 -> 다시 로그인 필요");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않은 경우
             }
             // 로그인한 사용자의 이메일 가져오기
@@ -120,6 +123,7 @@ public class UserRestController implements ResponseController {
             // 비밀번호 검증 (예: 현재 비밀번호 확인 및 새 비밀번호 저장)
             boolean passwordValid = userService.checkCurrentPassword(email, currentPassword);
             if (!passwordValid) {
+                log.error("현재 비밀번호가 일치하지 않습니다.");
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다.", null);
             }
 
