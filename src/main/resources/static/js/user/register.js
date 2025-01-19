@@ -251,7 +251,7 @@ function sendCodeButton() {
 
     $.ajax({
         type: 'POST',
-        url: '/api/user/mail',
+        url: '/api/mail',
         contentType: 'application/json',
         data: JSON.stringify({mail: email})
     }).done(function (data) {
@@ -284,7 +284,7 @@ function verifyCodeButton() {
 
     $.ajax({
         type: 'POST',
-        url: '/api/user/verify-code',
+        url: '/api/mail/verify-code',
         contentType: 'application/json',
         data: JSON.stringify({mail: email, code: code})
     }).done(function (data) {
