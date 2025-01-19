@@ -24,7 +24,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         String errorMessage = getErrorMessage(exception);
 
         if (exception instanceof OAuth2AccountDeletedException || exception instanceof OAuth2DisabledException) {
-            response.sendRedirect("/login-fail?error=" + URLEncoder.encode(errorMessage, "UTF-8"));
+            response.sendRedirect("/user/login-fail?error=" + URLEncoder.encode(errorMessage, "UTF-8"));
         } else {
             // JSON 응답을 위한 처리
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

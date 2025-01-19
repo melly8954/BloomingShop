@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .clearAuthentication(true)  // 인증 정보 지우기
                         .permitAll())  // 로그아웃 URL은 모두 허용
                 .oauth2Login(oauth  -> oauth
-                        .loginPage("/login")  // 구글 로그인이 완료된 뒤 후처리가 필요함
+                        .loginPage("/user/login")  // 구글 로그인이 완료된 뒤 후처리가 필요함
                         .failureHandler(customAuthenticationFailureHandler)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(principalOauth2UserService)

@@ -18,9 +18,10 @@ public class UserController {
     }
 
     // OAuth2 로그인 실패 시 redirect 되는 view , CustomAuthenticationFailureHandler 가 관리
-    @GetMapping("/login-fail")
+    @GetMapping("/user/login-fail")
     public String loginFail(@RequestParam("error") String errorMessage, Model model) {
         model.addAttribute("error", errorMessage);
         return "user/login_fail";  // Mustache template file
     }
+
 }
