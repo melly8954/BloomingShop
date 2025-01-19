@@ -1,6 +1,8 @@
 package com.melly.bloomingshop.security.config;
 
+import com.melly.bloomingshop.security.auth.CustomAuthenticationFailureHandler;
 import com.melly.bloomingshop.security.auth.CustomAuthenticationSuccessHandler;
+import com.melly.bloomingshop.security.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,8 @@ public class SecurityConfig {
     public static final String LOGINUSER = "login_user";
 
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,13 +36,20 @@ public class SecurityConfig {
                         .usernameParameter("loginId")   // Spring Security 의 formLogin() 설정에서 기본적으로 username 파라미터 이름을 사용하므로 변경
                         .loginProcessingUrl("/api/user/login")
                         .successHandler(customAuthenticationSuccessHandler)  // 로그인 성공 후 핸들러 설정
+                        .failureHandler(customAuthenticationFailureHandler)
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")  // 로그아웃 URL
                         .logoutSuccessUrl("/")  // 로그아웃 후 리다이렉트 URL
                         .invalidateHttpSession(true)  // 세션 무효화
                         .clearAuthentication(true)  // 인증 정보 지우기
-                        .permitAll());  // 로그아웃 URL은 모두 허용
+                        .permitAll())  // 로그아웃 URL은 모두 허용
+                .oauth2Login(oauth  -> oauth
+                        .loginPage("/login")  // 구글 로그인이 완료된 뒤 후처리가 필요함
+                        .failureHandler(customAuthenticationFailureHandler)
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(principalOauth2UserService)
+                        ));
         return http.build();
     }
 }
