@@ -76,7 +76,7 @@ public class UserService {
 
         return save;
     }
-    
+
     // 로그인 아이디 중복 여부 확인
     public boolean isLoginIdExist(String loginId){
         return this.userRepository.existsByLoginId(loginId);
@@ -89,5 +89,12 @@ public class UserService {
     // 휴대전환 중복 여부 확인
     public boolean isPhoneNumberExist(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+
+    // 이메일로 로그인 아이디 찾기
+    public String getLoginIdByEmail(String email) {
+        User user = this.userRepository.findByEmail(email);
+        return user.getLoginId();
     }
 }
