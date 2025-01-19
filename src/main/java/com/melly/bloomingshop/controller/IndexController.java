@@ -12,13 +12,5 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/user/register")
-    public String registerPage() {
-        return "user/register";
-    }
 
-    @GetMapping("/user/login")
-    public String loginPage() {
-        return "user/login";
-    }
 }
