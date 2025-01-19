@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 ID 찾기</title>
+</head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/user/findId.js"></script>
+<body>
+<div>
+    <label for="email">이메일:</label>
+    <input type="email" id="email" name="email" required>
+    <input type="submit" value="이메일 찾기" onclick="$.findId()">
+</div>
+<div id="find_email">
+</div>
+</body>
