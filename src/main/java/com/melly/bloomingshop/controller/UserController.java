@@ -27,8 +27,12 @@ public class UserController {
     }
 
     @GetMapping("/find-id")
-    public String findPage(){
+    public String findIdPage(){
         return "user/find_id";
     }
 
+    @GetMapping("/find-password")
+    public String findPasswordPage(){
+        return "user/find_password";
+    }
 }
