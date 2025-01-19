@@ -3,15 +3,17 @@ package com.melly.bloomingshop.restcontroller;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.User;
-import com.melly.bloomingshop.dto.LoginIdCheckDto;
-import com.melly.bloomingshop.dto.MailRequest;
-import com.melly.bloomingshop.dto.PhoneNumberCheckDto;
-import com.melly.bloomingshop.dto.RegisterRequest;
+import com.melly.bloomingshop.dto.*;
+import com.melly.bloomingshop.security.auth.PrincipalDetails;
 import com.melly.bloomingshop.service.UserService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +89,47 @@ public class UserRestController implements ResponseController {
         }catch (Exception ex){
             log.error(ex.getMessage());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(),null);
+        }
+    }
+
+    // 로그인 상태에서 비밀번호 변경
+    @PatchMapping("/password")
+    public ResponseEntity<ResponseDto> changePassword(@Validated @RequestBody ChangePasswordRequestDto changePasswordRequestDto, BindingResult bindingResult) {
+        try {
+            // 유효성 검사 실패 시
+            if (bindingResult.hasErrors()) {
+                StringBuilder errorMessages = new StringBuilder();
+                bindingResult.getAllErrors().forEach(error -> {
+                    errorMessages.append(error.getDefaultMessage()).append(" / ");
+                });
+                return makeResponseEntity(HttpStatus.BAD_REQUEST,errorMessages.toString(), null);
+            }
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않은 경우
+            }
+            // 로그인한 사용자의 이메일 가져오기
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            String email = principalDetails.getEmail(); // 이메일 가져오기
+
+            // 현재 비밀번호와 신규 비밀번호 처리
+            String currentPassword = changePasswordRequestDto.getCurrentPassword();
+            String newPassword = changePasswordRequestDto.getNewPassword();
+
+            // 비밀번호 검증 (예: 현재 비밀번호 확인 및 새 비밀번호 저장)
+            boolean passwordValid = userService.checkCurrentPassword(email, currentPassword);
+            if (!passwordValid) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다.", null);
+            }
+
+            // 새 비밀번호로 업데이트
+            userService.updatePassword(email, newPassword);
+
+            return makeResponseEntity(HttpStatus.OK,"비밀번호 변경 완료",true);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
         }
     }
 }
