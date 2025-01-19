@@ -41,6 +41,11 @@ public class User {
     @Column(name="deleted_date")
     private LocalDateTime deletedDate;
 
+    // OAuth를 위해 구성한 추가 필드 2개
+    private String provider;
+    @Column(name="provider_id")
+    private String providerId;
+
     // 엔티티가 영속화되기 전에 현재 시간을 자동으로 설정하는 메서드
     @PrePersist
     public void prePersist() {
