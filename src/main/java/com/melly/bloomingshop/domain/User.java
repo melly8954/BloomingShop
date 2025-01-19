@@ -53,4 +53,8 @@ public class User {
             this.createdDate = LocalDateTime.now();
         }
     }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

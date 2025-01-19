@@ -125,15 +125,14 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public String createTemporaryPassword(String mail) {
-//        String tempPassword = generateRandomPassword();
-//        User user = userRepository.findByEmail(mail);
-//        if (user == null) {
-//            throw new IllegalArgumentException("User not found for mail: " + mail);
-//        }
-//        user.changePassword(passwordEncoder.encode(tempPassword));
-//        userRepository.save(user);
-//        return tempPassword;
-        return null;
+        String tempPassword = generateRandomPassword();
+        User user = userRepository.findByEmail(mail);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found for mail: " + mail);
+        }
+        user.changePassword(passwordEncoder.encode(tempPassword));
+        userRepository.save(user);
+        return tempPassword;
     }
 
     /**
