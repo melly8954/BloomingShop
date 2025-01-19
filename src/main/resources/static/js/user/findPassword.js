@@ -4,7 +4,7 @@ $(document).ready(function () {
         let email = $('#email').val();
         // 이메일이 데이터베이스에 있는지 확인
         $.ajax({
-            url: '/api/users/check-email',
+            url: '/api/user/check-email',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ mail: email })
@@ -14,7 +14,7 @@ $(document).ready(function () {
                 $('#loading-spinner').show();
                 // 이메일이 존재하면 임시 비밀번호 발송
                 $.ajax({
-                    url: '/api/users/reset-password',
+                    url: '/api/mail/temp-password',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ mail: email })
@@ -39,14 +39,14 @@ $(document).ready(function () {
         const tempPassword = $('#temporaryPassword').val();
         // 임시 비밀번호 확인
         $.ajax({
-            url: '/api/users/verify-temporary-password',
+            url: '/api/mail/verify-temporary-password',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ mail: email, tempPassword: tempPassword })
         }).done(function (response) {
             if (response === "Verified") {
                 alert("임시 비밀번호가 확인되었습니다. 로그인하세요.");
-                window.location.href = "/login";
+                window.location.href = "/user/login";
             } else {
                 $('#verificationMessage').text("임시 비밀번호가 일치하지 않습니다. 다시 시도하세요.").show();
             }
