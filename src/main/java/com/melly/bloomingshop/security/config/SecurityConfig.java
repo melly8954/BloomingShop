@@ -1,5 +1,6 @@
 package com.melly.bloomingshop.security.config;
 
+import com.melly.bloomingshop.security.auth.CustomAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,8 @@ public class SecurityConfig {
     // 이 값을 변경하면 화면 템플릿의 {{#loginUser}} 도 변경해야 함
     public static final String LOGINUSER = "login_user";
 
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -25,8 +28,10 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()) // 모든 사용자가 접근할 수 있도록 허용
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/user/login")
                         .usernameParameter("loginId")   // Spring Security 의 formLogin() 설정에서 기본적으로 username 파라미터 이름을 사용하므로 변경
+                        .loginProcessingUrl("/api/user/login")
+                        .successHandler(customAuthenticationSuccessHandler)  // 로그인 성공 후 핸들러 설정
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")  // 로그아웃 URL
