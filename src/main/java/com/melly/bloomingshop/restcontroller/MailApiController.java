@@ -1,5 +1,6 @@
 package com.melly.bloomingshop.restcontroller;
 
+import com.melly.bloomingshop.dto.PasswordVerificationRequest;
 import com.melly.bloomingshop.service.MailService;
 import com.melly.bloomingshop.service.UserService;
 import com.melly.bloomingshop.dto.MailRequest;
@@ -26,7 +27,7 @@ public class MailApiController {
     /**
      * 인증번호 발송 메소드
      */
-    @PostMapping("/api/user/mail")
+    @PostMapping("/api/mail")
     public CompletableFuture<String> mailSend(@RequestBody MailRequest mailRequest) {
         return mailService.sendMail(mailRequest.getMail())
                 .thenApply(number -> String.valueOf(number));
@@ -35,7 +36,7 @@ public class MailApiController {
     /**
      * 인증번호 검증 메소드
      */
-    @PostMapping("/api/user/verify-code")
+    @PostMapping("/api/mail/verify-code")
     public String verifyCode(@RequestBody MailVerificationRequest verificationRequest) {
         boolean isVerified = mailService.verifyCode(verificationRequest.getMail(), verificationRequest.getCode());
         return isVerified ? "Verified" : "Verification failed";
@@ -44,8 +45,8 @@ public class MailApiController {
     /**
      * 임시 비밀번호 재발급 발송 메서드
      */
-    @PostMapping("/api/user/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody MailRequest mailRequest) {
+    @PostMapping("/api/mail/temp-password")
+    public ResponseEntity<String> tempPassword(@RequestBody MailRequest mailRequest) {
         String email = mailRequest.getMail();
 
         if (userService.isEmailExist(mailRequest.getMail())) {
@@ -57,13 +58,13 @@ public class MailApiController {
         }
     }
 
-//    /**
-//     * 임시 비밀번호 검증 메소드
-//     */
-//    @PostMapping("/api/users/verify-temporary-password")
-//    public ResponseEntity<String> verifyTemporaryPassword(@RequestBody PasswordVerificationRequest request) {
-//        boolean isVerified = mailService.verifyTemporaryPassword(request.getMail(), request.getTempPassword());
-//        return isVerified ? ResponseEntity.ok("Verified") : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Verification failed");
-//    }
+    /**
+     * 임시 비밀번호 검증 메소드
+     */
+    @PostMapping("/api/mail/verify-temporary-password")
+    public ResponseEntity<String> verifyTemporaryPassword(@RequestBody PasswordVerificationRequest request) {
+        boolean isVerified = mailService.verifyTemporaryPassword(request.getMail(), request.getTempPassword());
+        return isVerified ? ResponseEntity.ok("Verified") : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Verification failed");
+    }
 }
 
