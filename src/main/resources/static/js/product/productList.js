@@ -63,6 +63,7 @@ function loadProduct(page, name, category, sortBy, sortOrder) {
         method: 'GET',
     }).done(function (data) {
         renderProductList(data); // 상품 렌더링
+        updateProductCount(data.responseData.totalElements); // 상품 총 갯수 업데이트
         makePageUI(data.responseData.totalElements, page, "#pagination", sortOrder); // 페이지네이션 UI 생성
     }).fail(function (jqXHR, status, errorThrown) {
         console.error(`Failed to load products: ${errorThrown}`);
@@ -129,4 +130,9 @@ function getStartPage(page) {
 // 끝 페이지 계산
 function getEndPage(startPage, totalPages) {
     return Math.min(startPage + 4, totalPages);
+}
+
+// 상품 총 갯수 업데이트
+function updateProductCount(totalElements) {
+    $('#product-count').text(`상품 갯수: ${totalElements}`);
 }
