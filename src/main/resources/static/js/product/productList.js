@@ -55,17 +55,17 @@ $(document).ready(function () {
 // 상품 로드 함수
 function loadProduct(page, name, category, sortBy, sortOrder) {
     if (category === '0') {
-        category = '';  // 카테고리 필터를 비워서 모든 카테고리를 포함
+        category = ''; // 카테고리 필터를 비워서 모든 카테고리를 포함
     }
 
     $.ajax({
         url: `/api/product?page=${page}&name=${name}&category=${category}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,
         method: 'GET',
-    }).done(function(data, status) {
-        renderProductList(data);  // 상품 렌더링
-        makePageUI(data.responseData.totalElements, page, "#pagination");   // 페이지네이션 UI 생성
-    }).fail(function(jqXHR, status, errorThrown) {
-        console.log(`Failed to load products: ${errorThrown}`);
+    }).done(function (data) {
+        renderProductList(data); // 상품 렌더링
+        makePageUI(data.responseData.totalElements, page, "#pagination", sortOrder); // 페이지네이션 UI 생성
+    }).fail(function (jqXHR, status, errorThrown) {
+        console.error(`Failed to load products: ${errorThrown}`);
         alert('상품을 불러오는 데 실패했습니다.');
     });
 }
@@ -89,9 +89,9 @@ function renderProductList(data) {
 }
 
 // 페이지네이션 UI 생성
-function makePageUI(totalElements, currentPage, pageDivId) {
-    const rowsPerPage = 6;  // 페이지 당 항목 수
-    const totalPages = Math.ceil(totalElements / rowsPerPage);  // 전체 페이지 수
+function makePageUI(totalElements, currentPage, pageDivId, sortOrder) {
+    const rowsPerPage = 6; // 페이지 당 항목 수
+    const totalPages = Math.ceil(totalElements / rowsPerPage); // 전체 페이지 수
     const startPage = getStartPage(currentPage);
     const endPage = getEndPage(startPage, totalPages);
 
@@ -99,18 +99,22 @@ function makePageUI(totalElements, currentPage, pageDivId) {
 
     // Previous 버튼
     let prevPage = currentPage > 1 ? currentPage - 1 : 1;
-    paginationHTML += `<li class="page-item"><a class="page-link" href="javascript:loadProduct(${prevPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${$('#ascBtn').data('order')}')">Prev</a></li>`;
+    paginationHTML += `<li class="page-item">
+        <a class="page-link" href="javascript:loadProduct(${prevPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">Prev</a>
+    </li>`;
 
     // 페이지 버튼들
     for (let i = startPage; i <= endPage; i++) {
         paginationHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-            <a class="page-link" href="javascript:loadProduct(${i}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${$('#ascBtn').data('order')}')">${i}</a>
+            <a class="page-link" href="javascript:loadProduct(${i}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">${i}</a>
         </li>`;
     }
 
     // Next 버튼
     let nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
-    paginationHTML += `<li class="page-item"><a class="page-link" href="javascript:loadProduct(${nextPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${$('#ascBtn').data('order')}')">Next</a></li>`;
+    paginationHTML += `<li class="page-item">
+        <a class="page-link" href="javascript:loadProduct(${nextPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">Next</a>
+    </li>`;
 
     paginationHTML += `</ul></nav>`;
 
