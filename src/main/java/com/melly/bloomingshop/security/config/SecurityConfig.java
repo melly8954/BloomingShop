@@ -2,6 +2,7 @@ package com.melly.bloomingshop.security.config;
 
 import com.melly.bloomingshop.security.auth.CustomAuthenticationFailureHandler;
 import com.melly.bloomingshop.security.auth.CustomAuthenticationSuccessHandler;
+import com.melly.bloomingshop.security.auth.PrincipalDetailsService;
 import com.melly.bloomingshop.security.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class SecurityConfig {
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final PrincipalOauth2UserService principalOauth2UserService;
+    private final PrincipalDetailsService principalDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,6 +42,11 @@ public class SecurityConfig {
                         .successHandler(customAuthenticationSuccessHandler)  // 로그인 성공 후 핸들러 설정
                         .failureHandler(customAuthenticationFailureHandler)
                         .permitAll())
+                .rememberMe(rememberMe -> rememberMe
+                        .key(UUID.randomUUID().toString())  // remember-me 토큰을 식별하는 키
+                        .tokenValiditySeconds(86400)  // remember-me 토큰의 유효 기간 (초 단위, 예: 1일)
+                        .userDetailsService(principalDetailsService)
+                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")  // 로그아웃 URL
                         .logoutSuccessUrl("/")  // 로그아웃 후 리다이렉트 URL
