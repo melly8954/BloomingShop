@@ -1,12 +1,14 @@
 package com.melly.bloomingshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Set;
 
+@Getter
 @Entity
 @Table(name = "product_tbl")
 public class Product {
@@ -45,7 +47,7 @@ public class Product {
         }
     }
 
-
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "product_category", // 연결 테이블 이름
