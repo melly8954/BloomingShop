@@ -6,6 +6,8 @@
     <title>상품 보기</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/product/productList.js"></script>
 <body>
 <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
     <div class="col-md-3 mb-2 mb-md-0">
@@ -40,9 +42,11 @@
 
     <!-- 검색창 -->
     <div class="row mb-4">
-        <div class="col-md-12">
+        <div class="col-md-9">
             <label for="search" class="form-label">상품 검색</label>
             <input type="text" id="search" class="form-control" placeholder="상품명으로 검색">
+            <button id="searchBtn" class="btn btn-primary" onclick="searchProducts()">검색</button>
+            <button id="resetBtn" class="btn btn-secondary ms-2">초기화</button>
         </div>
     </div>
 
@@ -51,6 +55,7 @@
         <div class="col-md-6">
             <label for="category" class="form-label">카테고리 선택</label>
             <select id="category" class="form-select">
+                <option value="0">전체</option>
                 <option value="꽃다발">꽃다발</option>
                 <option value="꽃바구니">꽃바구니</option>
                 <option value="동양란">동양란</option>
@@ -75,43 +80,15 @@
                 <button id="descBtn" class="btn btn-outline-secondary" data-order="desc">내림차순</button>
             </div>
         </div>
-
     </div>
 
     <!-- 상품 이미지 그리드 -->
     <div id="product-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        <!-- 상품 항목들 -->
-        <div class="col">
-            <div class="card">
-                <img src="image1.jpg" class="card-img-top" alt="상품1">
-                <div class="card-body">
-                    <h5 class="card-title">꽃다발 1</h5>
-                    <p class="card-text">가격: 30,000원</p>
-                    <p class="card-text">조회수: 150</p>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="image2.jpg" class="card-img-top" alt="상품2">
-                <div class="card-body">
-                    <h5 class="card-title">꽃바구니 2</h5>
-                    <p class="card-text">가격: 40,000원</p>
-                    <p class="card-text">조회수: 200</p>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="image3.jpg" class="card-img-top" alt="상품3">
-                <div class="card-body">
-                    <h5 class="card-title">동양란 3</h5>
-                    <p class="card-text">가격: 20,000원</p>
-                    <p class="card-text">조회수: 180</p>
-                </div>
-            </div>
-        </div>
-        <!-- 추가 상품 항목들... -->
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div id="pagination" class="d-flex justify-content-center my-4">
+        <!-- 페이지네이션 버튼은 jQuery에서 동적으로 추가됩니다 -->
     </div>
 </div>
 
