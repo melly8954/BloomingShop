@@ -6,8 +6,6 @@ $(document).ready(function () {
     const sortSelect = $('#sort');  // 정렬 기준 select
     const ascBtn = $('#ascBtn');    // 오름차순 버튼
     const descBtn = $('#descBtn');  // 내림차순 버튼
-    const productGrid = $('#product-grid');
-    const paginationContainer = $('#pagination');  // 페이지네이션을 위한 DOM 요소
 
     let currentPage = 1;
     let sortBy = sortSelect.val();  // 초기 정렬 기준
@@ -40,15 +38,17 @@ $(document).ready(function () {
     });
 
     // 오름차순 버튼 클릭 시 호출
-    ascBtn.on('click', function() {
-        sortOrder = 'asc';  // 오름차순
-        loadProduct(1, searchInput.val(), categorySelect.val(), sortBy, sortOrder);  // 첫 번째 페이지로 로드
+    ascBtn.on('click', function () {
+        sortOrder = 'asc'; // 오름차순
+        toggleActiveButton(ascBtn, descBtn); // 버튼 활성화 효과
+        loadProduct(1, searchInput.val(), categorySelect.val(), sortBy, sortOrder); // 첫 번째 페이지로 로드
     });
 
     // 내림차순 버튼 클릭 시 호출
-    descBtn.on('click', function() {
-        sortOrder = 'desc';  // 내림차순
-        loadProduct(1, searchInput.val(), categorySelect.val(), sortBy, sortOrder);  // 첫 번째 페이지로 로드
+    descBtn.on('click', function () {
+        sortOrder = 'desc'; // 내림차순
+        toggleActiveButton(descBtn, ascBtn); // 버튼 활성화 효과
+        loadProduct(1, searchInput.val(), categorySelect.val(), sortBy, sortOrder); // 첫 번째 페이지로 로드
     });
 });
 
@@ -135,4 +135,10 @@ function getEndPage(startPage, totalPages) {
 // 상품 총 갯수 업데이트
 function updateProductCount(totalElements) {
     $('#product-count').text(`상품 갯수: ${totalElements}`);
+}
+
+// 활성화 버튼 토글 함수
+function toggleActiveButton(activeBtn, inactiveBtn) {
+    activeBtn.addClass('btn-primary').removeClass('btn-outline-secondary'); // 활성화된 버튼 스타일
+    inactiveBtn.addClass('btn-outline-secondary').removeClass('btn-primary'); // 비활성화된 버튼 스타일
 }
