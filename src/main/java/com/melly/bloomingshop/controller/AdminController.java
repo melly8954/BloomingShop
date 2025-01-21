@@ -12,9 +12,9 @@ public class AdminController {
         return "admin/admin_home";
     }
 
-    @GetMapping("/product")
+    @GetMapping("/product-list")
     public String productPage() {
-        return "/admin/product/product_admin";
+        return "/admin/product/product_list_admin";
     }
 
 
