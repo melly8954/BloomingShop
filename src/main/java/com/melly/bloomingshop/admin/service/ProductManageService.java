@@ -8,6 +8,7 @@ import com.melly.bloomingshop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ public class ProductManageService {
 
 
     @Transactional
-    public Product registerProduct(ProductManageRequest productManageRequest) throws IOException {
+    public Product registerProduct(ProductManageRequest productManageRequest, MultipartFile image) throws IOException {
         // 1. 단일 카테고리 이름을 가져옵니다.
         String categoryName = productManageRequest.getCategory();
 
@@ -34,12 +35,11 @@ public class ProductManageService {
         Set<Category> categories = new HashSet<>();
         categories.add(category);  // 카테고리를 Set에 추가
 
-
         Product product = Product.builder()
                 .name(productManageRequest.getName())
                 .price(productManageRequest.getPrice())
                 .size(productManageRequest.getSize())
-                .imageUrl(fileUploadService.uploadImage(productManageRequest.getImageUrl())) // 이미지 저장 로직
+                .imageUrl(fileUploadService.saveImage(image)) // 이미지 저장 로직
                 .description(productManageRequest.getDescription())
                 .categories(categories)
                 .build();

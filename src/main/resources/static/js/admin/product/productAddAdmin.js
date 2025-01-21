@@ -3,34 +3,38 @@ function registerProduct() {
     let name = $('#name').val();
     let price = $('#price').val();
     let size = $('#size').val();
-    let imageUrl = $('#imageUrl')[0].files[0];
+    let imageUrl = $('#imageUrl')[0].files[0]; // 파일 선택
     let description = $('#description').val();
+
+    // FormData 객체 생성
+    let formData = new FormData();
+    formData.append("category", category);
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("size", size);
+    formData.append("description", description);
+    if (imageUrl) {
+        formData.append("image", imageUrl); // 파일 추가
+    }
 
     // AJAX 요청
     $.ajax({
-        url: '/api/admin/product/add',  // 서버 API 경로
+        url: '/api/admin/product/add', // 서버 API 경로
         type: 'POST',
-        data: JSON.stringify({
-            category: category,
-            name: name,
-            price: price,
-            size: size,
-            imageUrl: imageUrl,
-            description: description,
-        }),
-        dataType: "json",
-        contentType: "application/json; charset=UTF-8"
+        data: formData,
+        processData: false, // FormData를 사용할 때 false로 설정
+        contentType: false, // FormData를 사용할 때 false로 설정
     }).done(function (data, status, xhr) {
-        if (status === 'OK') {
+        if (xhr.status === 200) {
             // 상품 등록 성공
             alert('상품 등록 성공');
             window.location.href = '/admin/product/list'; // 상품 목록 페이지로 이동
         } else {
             // 오류 메시지 출력
-            alert('에러: ' + response.message);
+            alert('에러: ' + data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         // 서버 오류 시
-        alert('서버 오류: ' + error);
+        alert('서버 오류: ' + errorThrown);
     });
 }
