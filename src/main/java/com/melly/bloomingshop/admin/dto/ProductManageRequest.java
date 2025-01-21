@@ -31,9 +31,6 @@ public class ProductManageRequest {
     @NotBlank(message = "사이즈는 반드시 입력해야 합니다.")
     private String size;
 
-    @NotNull(message = "이미지는 반드시 첨부해야 합니다.")
-    private MultipartFile imageUrl;
-
     private String description;
 
 }
