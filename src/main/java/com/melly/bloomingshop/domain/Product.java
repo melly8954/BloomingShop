@@ -2,6 +2,8 @@ package com.melly.bloomingshop.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -10,8 +12,13 @@ import java.util.Set;
 
 @Getter
 @Entity
+@AllArgsConstructor
+@Builder
 @Table(name = "product_tbl")
 public class Product {
+
+    public Product() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
