@@ -1,7 +1,5 @@
 html, body {
     height: 100%; /* 화면 전체 높이 설정 */
     margin: 0;
-}
-main {
-    height: 100%; /* 메인 컨테이너도 화면 전체 높이 */
+    display: flex;
 }
