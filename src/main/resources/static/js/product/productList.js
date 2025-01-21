@@ -89,32 +89,33 @@ function renderProductList(data) {
     $("#product-grid").html(html);
 }
 
-// 페이지네이션 UI 생성
 function makePageUI(totalElements, currentPage, pageDivId, sortOrder) {
     const rowsPerPage = 6; // 페이지 당 항목 수
     const totalPages = Math.ceil(totalElements / rowsPerPage); // 전체 페이지 수
     const startPage = getStartPage(currentPage);
     const endPage = getEndPage(startPage, totalPages);
 
+    // 페이지네이션 HTML 초기화
     let paginationHTML = `<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">`;
 
     // Previous 버튼
     let prevPage = currentPage > 1 ? currentPage - 1 : 1;
     paginationHTML += `<li class="page-item">
-        <a class="page-link" href="javascript:loadProduct(${prevPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">Prev</a>
+        <a class="page-link btn btn-outline-primary" onclick="loadProduct(${prevPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">Prev</a>
     </li>`;
 
     // 페이지 버튼들
     for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-            <a class="page-link" href="javascript:loadProduct(${i}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">${i}</a>
+        let sClass = i === currentPage ? 'page-item active' : 'page-item';
+        paginationHTML += `<li class="${sClass}">
+            <a class="page-link btn btn-outline-primary" onclick="loadProduct(${i}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">${i}</a>
         </li>`;
     }
 
     // Next 버튼
     let nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
     paginationHTML += `<li class="page-item">
-        <a class="page-link" href="javascript:loadProduct(${nextPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">Next</a>
+        <a class="page-link btn btn-outline-primary" onclick="loadProduct(${nextPage}, '${$('#search').val()}', '${$('#category').val()}', '${$('#sort').val()}', '${sortOrder}')">Next</a>
     </li>`;
 
     paginationHTML += `</ul></nav>`;
