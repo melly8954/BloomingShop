@@ -23,7 +23,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // 사용자 권한 확인 후 필요한 정보를 클라이언트에게 전달
         if (authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
-            response.getWriter().write("{\"redirectUrl\": \"/admin/\"}");
+            response.getWriter().write("{\"redirectUrl\": \"/admin/home\"}");
         } else {
             response.getWriter().write("{\"redirectUrl\": \"/\"}");
         }
