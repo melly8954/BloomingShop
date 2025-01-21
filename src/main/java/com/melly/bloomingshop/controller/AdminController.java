@@ -14,7 +14,7 @@ public class AdminController {
 
     @GetMapping("/product")
     public String productPage() {
-        return "/admin/product_admin";
+        return "/admin/product/product_admin";
     }
 
 

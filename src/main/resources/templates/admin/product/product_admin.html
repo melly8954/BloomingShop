@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품관리 페이지</title>
+    <style>
+        html, body {
+            width: 100%; /* 페이지 전체 폭 차지 */
+            height: 100%; /* 페이지 전체 높이 차지 */
+            margin: 0; /* 기본 margin 제거 */
+            padding: 0; /* 기본 padding 제거 */
+        }
+        .main-content {
+            margin-left: 50px;
+            flex-grow: 1;
+            overflow-y: auto; /* 내용이 넘치면 스크롤 */
+        }
+    </style>
+</head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/product/productList.js"></script>
+<body>
+{{> admin/sidebar }}
+<div class="main-content">
+    <!-- 본문 영역 -->
+    <div class="container my-5">
+
+        <!-- 검색창 -->
+        <div class="row mb-4">
+            <div class="col-md-9">
+                <label for="search" class="form-label">상품 검색</label>
+                <input type="text" id="search" class="form-control" placeholder="상품명으로 검색">
+                <button id="searchBtn" class="btn btn-primary" onclick="searchProducts()">검색</button>
+                <button id="resetBtn" class="btn btn-secondary ms-2">초기화</button>
+            </div>
+        </div>
+
+        <!-- 카테고리 드롭다운 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="category" class="form-label">카테고리 선택</label>
+                <select id="category" class="form-select">
+                    <option value="0">전체</option>
+                    <option value="꽃다발">꽃다발</option>
+                    <option value="꽃바구니">꽃바구니</option>
+                    <option value="동양란">동양란</option>
+                    <option value="서양란">서양란</option>
+                    <option value="근조화환">근조화환</option>
+                    <option value="축화화환">축화화환</option>
+                    <option value="관엽화분">관엽화분</option>
+                </select>
+            </div>
+
+            <!-- 정렬 버튼들 -->
+            <div class="col-md-6 d-flex justify-content-end">
+                <label for="sort" class="form-label me-2">정렬 기준</label>
+                <select id="sort" class="form-select w-auto">
+                    <option value="price">가격순</option>
+                    <option value="name">이름순</option>
+                </select>
+                <div class="btn-group" role="group">
+                    <button id="ascBtn" class="btn btn-outline-secondary" data-order="asc">오름차순</button>
+                    <button id="descBtn" class="btn btn-outline-secondary" data-order="desc">내림차순</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 상품 갯수 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <p id="product-count" class="text-center fw-bold">상품 갯수: 0</p>
+            </div>
+        </div>
+
+        <!-- 상품 이미지 그리드 -->
+        <div id="product-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div id="pagination" class="d-flex justify-content-center my-4">
+        </div>
+    </div>
+</div>
+</body>
+</html>
