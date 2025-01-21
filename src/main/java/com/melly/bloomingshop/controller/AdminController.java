@@ -7,9 +7,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    @GetMapping("/")
+    @GetMapping("/home")
     public String adminPage() {
         return "admin/admin_home";
     }
+
+    @GetMapping("/product")
+    public String productPage() {
+        return "admin/product";
+    }
+
 
 }
