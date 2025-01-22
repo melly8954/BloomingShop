@@ -50,6 +50,10 @@ $(document).ready(function () {
         toggleActiveButton(descBtn, ascBtn); // 버튼 활성화 효과
         loadProduct(1, searchInput.val(), categorySelect.val(), sortBy, sortOrder); // 첫 번째 페이지로 로드
     });
+
+    $('#navigateToProductModify').on('click', function () {
+        confirm("")
+    })
 });
 
 // 상품 로드 함수
@@ -77,12 +81,13 @@ function renderProductList(data) {
     data.responseData.products.forEach(function (product) {
         html += `
             <div class="col-md-4 mb-4">
-                <div class="card">
+                <div class="card navigateToProductModify" data-id="${product.id}" style="cursor: pointer;">
                     <img src="${product.imageUrl}" alt="${product.name}" class="card-img-top">
                     <div class="card-body">
                         <h5 class="card-title">${product.name}</h5>
-                        <p class="card-text">가격: ${product.price}</p>
-                        <p class="card-text">상품 ID: ${product.id}</p>
+                        <p class="card-text">가격 : ${product.price}<br>
+                                            사이즈 : ${product.size}<br>
+                                            상품 ID : ${product.id}</p>
                     </div>
                 </div>
             </div>`;
@@ -143,4 +148,18 @@ function updateProductCount(totalElements) {
 function toggleActiveButton(activeBtn, inactiveBtn) {
     activeBtn.addClass('btn-primary').removeClass('btn-outline-secondary'); // 활성화된 버튼 스타일
     inactiveBtn.addClass('btn-outline-secondary').removeClass('btn-primary'); // 비활성화된 버튼 스타일
+}
+
+
+// 이미지 카드 누르는 경우
+$(document).on('click', '.navigateToProductModify', function () {
+    const productId = $(this).data('id'); // 클릭된 카드의 data-id 값 가져오기
+    if (confirm(`상품 ID : ${productId}번 수정할까요?`)) {
+        navigateToProductModify(productId);
+    }
+});
+
+function navigateToProductModify(productId) {
+    // productId를 기반으로 원하는 URL로 이동
+    location.href = `/admin/product/modify/${productId}`;
 }

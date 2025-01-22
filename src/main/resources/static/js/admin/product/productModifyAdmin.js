@@ -1,5 +1,82 @@
-function registerProduct(){
-    let productId = $("#product-id").val();
+$(document).ready(function () {
+    const productId = getProductIdFromUrl(); // URL에서 productId를 추출
+    $('#product-id').text(`상품 ID: ${productId}`); // <h2>에 상품 ID 표시
+
+    loadProduct();
+    loadCategories();
+
+
+    // 파일 선택 시 경고 메시지 처리
+    $('#imageUrl').change(function() {
+        var fileInput = $('#imageUrl');
+        var warningMessage = $('#imageUrl-warning');
+
+        // 파일이 선택되지 않으면 경고 메시지 표시
+        if (fileInput[0].files.length === 0) {
+            warningMessage.css('display', 'inline');  // 경고 메시지 표시
+        } else {
+            warningMessage.css('display', 'none');   // 경고 메시지 숨기기
+        }
+    });
+});
+
+// URL에서 productId 추출
+function getProductIdFromUrl() {
+    const urlParts = window.location.pathname.split('/');
+    return urlParts[urlParts.length - 1]; // 마지막 경로가 productId
+}
+
+
+function loadProduct() {
+    const productId = getProductIdFromUrl(); // URL에서 productId를 추출
+    $.ajax({
+        url: `/api/admin/product/${productId}`,
+        method: 'GET',
+    }).done(function (data) {
+        let product = data.responseData;
+        // 각 필드에 값 채우기
+        $("#name").val(product.name);
+        $("#price").val(product.price);
+        $("#size").val(product.size);
+        $("#description").val(product.description);
+
+        // 이미지 URL이 있으면 이미지 미리보기 추가 (파일 입력 대신 URL로 처리)
+        if (product.imageUrl) {
+            $("#imageUrl").val(product.imageUrl); // 이미지 URL
+        }
+    }).fail(function (jqXHR, status, errorThrown) {
+        console.error(`Failed to load products: ${errorThrown}`);
+        alert('상품을 불러오는 데 실패했습니다.');
+    });
+}
+
+// 카테고리 목록을 불러오는 함수
+function loadCategories() {
+    const productId = getProductIdFromUrl();
+    $.ajax({
+        url: `/api/admin/product/${productId}/categories`, // 카테고리 목록을 불러오는 API
+        method: 'GET',
+    }).done(function (data) {
+        let categories = data.responseData;
+
+        // 카테고리 목록을 드롭다운에 추가
+        categories.forEach(function (category) {
+            // 카테고리가 이미 드롭다운에 있는지 확인
+            let option = $(`#category option[value='${category.name}']`);
+            if (option.length > 0) {
+                // 이미 존재하는 카테고리인 경우 selected로 설정
+                option.prop('selected', true);
+            }
+        })
+    }).fail(function (jqXHR, status, errorThrown) {
+        console.error(`Failed to load categories: ${errorThrown}`);
+        alert('카테고리 목록을 불러오는 데 실패했습니다.');
+    });
+}
+
+function modifyProduct() {
+    const productId = getProductIdFromUrl();
+
     let category = $('#category').val();
     let name = $('#name').val();
     let price = $('#price').val();
@@ -28,8 +105,12 @@ function registerProduct(){
     }).done(function (data, status, xhr) {
         if (xhr.status === 200) {
             // 상품 등록 성공
-            alert('상품 수정 성공');
-            window.location.href = '/admin/product/list'; // 상품 목록 페이지로 이동
+            if (confirm('해당 상품을 수정 하시겠습니까?')) {
+                alert('상품 수정 성공')
+                window.location.href = '/admin/product/list';
+            } else {
+                alert('수정이 취소되었습니다.');
+            }
         } else {
             // 오류 메시지 출력
             alert('에러: ' + data.message);

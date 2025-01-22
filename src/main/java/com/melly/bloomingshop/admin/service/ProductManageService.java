@@ -77,4 +77,9 @@ public class ProductManageService {
         // 수정된 상품 저장
         return productRepository.save(existingProduct);
     }
+
+    public Product findById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+    }
 }

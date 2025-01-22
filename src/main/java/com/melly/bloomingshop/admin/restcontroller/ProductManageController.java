@@ -5,6 +5,7 @@ import com.melly.bloomingshop.admin.dto.ProductModifyRequest;
 import com.melly.bloomingshop.admin.service.ProductManageService;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
+import com.melly.bloomingshop.domain.Category;
 import com.melly.bloomingshop.domain.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -38,6 +41,44 @@ public class ProductManageController implements ResponseController {
         try{
             Product product = productManageService.registerProduct(productManageRequest,image);
             return makeResponseEntity(HttpStatus.OK,"상품 등록 성공",product);
+        }catch (Exception ex){
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러 :" + ex.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseDto> getProduct(@PathVariable Long id){
+        try{
+            if(id == null || id <= 0){
+                return makeResponseEntity(HttpStatus.BAD_REQUEST,"상품 ID 에러",null);
+            }
+            Product product = this.productManageService.findById(id);
+            return makeResponseEntity(HttpStatus.OK,"상품 찾기 성공",product);
+        }catch (Exception ex){
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러 :" + ex.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/{id}/categories")
+    public ResponseEntity<ResponseDto> getCategories(@PathVariable Long id){
+        try{
+            if(id == null || id <= 0){
+                return makeResponseEntity(HttpStatus.BAD_REQUEST,"상품 ID 에러",null);
+            }
+            // 상품을 조회
+            Product product = productManageService.findById(id);
+
+            if (product == null) {
+                return makeResponseEntity(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.", null);
+            }
+
+            // 카테고리 목록을 포함하여 응답 생성
+            Set<Category> categories = product.getCategories();
+
+            // 카테고리 정보만 반환
+            return makeResponseEntity(HttpStatus.OK, "상품 카테고리 조회 성공", categories);
         }catch (Exception ex){
             log.error(ex.getMessage());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러 :" + ex.getMessage(), null);
