@@ -7,8 +7,13 @@ import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.Category;
 import com.melly.bloomingshop.domain.Product;
+import com.melly.bloomingshop.dto.ProductPageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -24,6 +29,45 @@ import java.util.Set;
 @RequestMapping("/api/admin/product")
 public class ProductManageController implements ResponseController {
     private final ProductManageService productManageService;
+
+    @GetMapping
+    public ResponseEntity<ResponseDto> getProducts(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "") String category,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "price") String sort,  // 정렬 기준 (기본값: price)
+            @RequestParam(defaultValue = "asc") String order) {  // 정렬 방향 (기본값: asc)
+        try {
+            // 페이지 번호와 크기 설정
+            if (page <= 0) page = 1;
+            if (size <= 0) size = 6;
+
+            // 정렬 설정
+            Sort sortBy = Sort.by(Sort.Order.by(sort));
+            sortBy = order.equalsIgnoreCase("desc") ? sortBy.descending() : sortBy.ascending();
+            Pageable pageable = PageRequest.of(page - 1, size, sortBy);
+
+            // 상품 데이터 가져오기
+            Page<Product> products = productManageService.getProducts(name, category, pageable);
+
+            // 응답 객체 생성
+            ProductPageResponse<Product> productPageResponse = new ProductPageResponse<>(
+                    products.getContent(),
+                    products.getTotalElements(),
+                    products.getTotalPages(),
+                    products.getNumber(),
+                    products.getSize()
+            );
+            return makeResponseEntity(HttpStatus.OK, "상품 목록을 성공적으로 조회했습니다.", productPageResponse);
+        } catch (IllegalArgumentException e) {
+            log.error("잘못된 요청 파라미터: {}", e.getMessage(), e);
+            return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 요청 파라미터입니다.", e.getMessage());
+        } catch (Exception e) {
+            log.error("상품 조회 중 오류 발생: {}", e.getMessage(), e);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "상품 조회 중 알 수 없는 오류가 발생했습니다.", e.getMessage());
+        }
+    }
 
     @PostMapping("/add")
     public ResponseEntity<ResponseDto> addProduct(@Validated @ModelAttribute ProductManageRequest productManageRequest, BindingResult bindingResult,

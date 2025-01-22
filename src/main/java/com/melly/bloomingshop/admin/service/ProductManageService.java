@@ -7,6 +7,8 @@ import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.repository.CategoryRepository;
 import com.melly.bloomingshop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,28 @@ public class ProductManageService {
     private final CategoryRepository categoryRepository;
     private final FileUploadService fileUploadService; // 이미지 업로드 처리 서비스
 
+    // 검색, 필터링, 정렬 통합 메서드
+    public Page<Product> getProducts(String name, String category, Pageable pageable) {
+        // 검색 조건과 필터 조건이 모두 없는 경우 모든 상품 반환
+        if ((name == null || name.isEmpty()) && (category == null || category.isEmpty())) {
+            // deleted_flag가 false인 상품만 가져오기
+            Page<Product> products = productRepository.findAll(pageable);
+            return products;
+        }
+
+        // 상품명 검색과 카테고리 필터를 모두 포함
+        if (name != null && !name.isEmpty() && category != null && !category.isEmpty()) {
+            return productRepository.findByNameContainingAndCategories_Name(name, category, pageable);
+        }
+
+        // 상품명 검색만 있는 경우
+        if (name != null && !name.isEmpty()) {
+            return productRepository.findByNameContaining(name, pageable);
+        }
+
+        // 카테고리 필터만 있는 경우
+        return productRepository.findByCategories_Name(category, pageable);
+    }
 
     @Transactional
     public Product registerProduct(ProductManageRequest productManageRequest, MultipartFile image) throws IOException {

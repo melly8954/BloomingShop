@@ -63,7 +63,7 @@ function loadProduct(page, name, category, sortBy, sortOrder) {
     }
 
     $.ajax({
-        url: `/api/product?page=${page}&name=${name}&category=${category}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,
+        url: `/api/admin/product?page=${page}&name=${name}&category=${category}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,
         method: 'GET',
     }).done(function (data) {
         renderProductList(data); // 상품 렌더링
