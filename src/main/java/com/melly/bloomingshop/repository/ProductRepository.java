@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+    // deleted_flag가 false인 상품만 조회 (기본 전체 조회)
+    Page<Product> findByDeletedFlagFalse(Pageable pageable);
+
     // 상품명으로 검색
     Page<Product> findByNameContaining(String name, Pageable pageable);
 

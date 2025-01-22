@@ -74,10 +74,12 @@ function loadProduct(page, name, category, sortBy, sortOrder) {
 // 상품 리스트 렌더링
 function renderProductList(data) {
     let html = "";
-    data.responseData.products.forEach(function (product) {
+    // deleted_flag가 false인 상품만 필터링
+    const filteredProducts = data.responseData.products.filter(product => !product.deletedFlag);
+
+    filteredProducts.forEach(function (product) {
         // 가격을 한화 포맷팅
         const formattedPrice = formatPrice(product.price);
-
         html += `
             <div class="col-md-4 mb-4">
                 <div class="card" style="cursor: pointer;">
@@ -85,7 +87,7 @@ function renderProductList(data) {
                     <div class="card-body">
                         <h5 class="card-title">${product.name}</h5>
                         <p class="card-text">가격 : ${formattedPrice}<br>
-                                            사이즈 : ${product.size}</>
+                                            사이즈 : ${product.size}</p>
                     </div>
                 </div>
             </div>`;

@@ -14,14 +14,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
 
     // 검색, 필터링, 정렬 통합 메서드
     public Page<Product> getProducts(String name, String category, Pageable pageable) {
         // 검색 조건과 필터 조건이 모두 없는 경우 모든 상품 반환
         if ((name == null || name.isEmpty()) && (category == null || category.isEmpty())) {
-
-            Page<Product> products = productRepository.findAll(pageable);
+            // deleted_flag가 false인 상품만 가져오기
+            Page<Product> products = productRepository.findByDeletedFlagFalse(pageable);
             log.info("Products fetched: {}", products.getContent());
             return products;
         }
