@@ -1,11 +1,7 @@
 $(document).ready(function () {
     const productId = getProductIdFromUrl(); // URL에서 productId를 추출
-    $('#product-id').html(`
-        상품 ID : ${productId} 
-        <button onclick="deleteProduct('${productId}');">삭제</button>`);
-
-    loadProduct();
-    loadCategories();
+    loadProduct(productId);
+    loadCategories(productId);
 
     // 파일 선택 시 경고 메시지 처리
     $('#imageUrl').change(function () {
@@ -28,8 +24,7 @@ function getProductIdFromUrl() {
 }
 
 
-function loadProduct() {
-    const productId = getProductIdFromUrl(); // URL에서 productId를 추출
+function loadProduct(productId) {
     $.ajax({
         url: `/api/admin/product/${productId}`,
         method: 'GET',
@@ -41,10 +36,13 @@ function loadProduct() {
         $("#size").val(product.size);
         $("#description").val(product.description);
 
-        // 이미지 URL이 있으면 이미지 미리보기 추가 (파일 입력 대신 URL로 처리)
-        if (product.imageUrl) {
-            $("#imageUrl").val(product.imageUrl); // 이미지 URL
-        }
+        // 삭제 여부에 따라 버튼 텍스트 변경
+        const deleteButtonHtml = product.deletedFlag
+            ? `<button onclick="cancelDeleteProduct('${productId}');">삭제취소</button>`
+            : `<button onclick="deleteProduct('${productId}');">삭제</button>`;
+        $('#product-id').html(`
+                상품 ID : ${productId}
+                ${deleteButtonHtml}`);
     }).fail(function (jqXHR, status, errorThrown) {
         console.error(`Failed to load products: ${errorThrown}`);
         alert('상품을 불러오는 데 실패했습니다.');
@@ -52,8 +50,7 @@ function loadProduct() {
 }
 
 // 카테고리 목록을 불러오는 함수
-function loadCategories() {
-    const productId = getProductIdFromUrl();
+function loadCategories(productId) {
     $.ajax({
         url: `/api/admin/product/${productId}/categories`, // 카테고리 목록을 불러오는 API
         method: 'GET',
@@ -137,4 +134,9 @@ function deleteProduct(productId) {
             alert('상품 삭제에 실패했습니다.');
         });
     }
+}
+
+// 삭제 취소 함수
+function cancelDeleteProduct(productId){
+
 }

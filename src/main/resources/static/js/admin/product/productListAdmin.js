@@ -81,16 +81,21 @@ function renderProductList(data) {
     data.responseData.products.forEach(function (product) {
         // 가격을 한화 포맷팅
         const formattedPrice = formatPrice(product.price);
-
+        // 삭제 여부 확인
+        const isDeleted = product.deletedFlag;
+        const productContent = isDeleted
+            ? `<p class="text-danger">해당 상품은 삭제된 상태입니다.</p>`
+            : `<p class="card-text">가격 : ${formattedPrice}<br>
+                                     사이즈 : ${product.size}<br>
+                                     상품 ID : ${product.id}</p>`;
         html += `
             <div class="col-md-4 mb-4">
-                <div class="card navigateToProductModify" data-id="${product.id}" style="cursor: pointer;">
+                <div class="card navigateToProductModify" data-id="${product.id}" 
+                     style="${isDeleted ? 'opacity: 0.5;' : ''}">
                     <img src="${product.imageUrl}" alt="${product.name}" class="card-img-top">
                     <div class="card-body">
                         <h5 class="card-title">${product.name}</h5>
-                        <p class="card-text">가격 : ${formattedPrice}<br>
-                                            사이즈 : ${product.size}<br>
-                                            상품 ID : ${product.id}</p>
+                        ${productContent}
                     </div>
                 </div>
             </div>`;
