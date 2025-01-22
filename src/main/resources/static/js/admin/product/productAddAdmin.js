@@ -42,11 +42,12 @@ function registerProduct() {
     }).done(function (data, status, xhr) {
         if (xhr.status === 200) {
             // 상품 등록 성공
-            alert('상품 등록 성공');
-            window.location.href = '/admin/product/list'; // 상품 목록 페이지로 이동
-        } else {
-            // 오류 메시지 출력
-            alert('에러: ' + data.message);
+            if (confirm('해당 상품을 등록 하시겠습니까?')) {
+                alert('상품 등록 성공')
+                window.location.href = '/admin/product/list';
+            } else {
+                alert('수정이 취소되었습니다.');
+            }
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         // 서버 오류 시
