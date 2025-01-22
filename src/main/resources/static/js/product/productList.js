@@ -75,13 +75,16 @@ function loadProduct(page, name, category, sortBy, sortOrder) {
 function renderProductList(data) {
     let html = "";
     data.responseData.products.forEach(function (product) {
+        // 가격을 한화 포맷팅
+        const formattedPrice = formatPrice(product.price);
+
         html += `
             <div class="col-md-4 mb-4">
                 <div class="card" style="cursor: pointer;">
                     <img src="${product.imageUrl}" alt="${product.name}" class="card-img-top">
                     <div class="card-body">
                         <h5 class="card-title">${product.name}</h5>
-                        <p class="card-text">가격 : ${product.price}<br>
+                        <p class="card-text">가격 : ${formattedPrice}<br>
                                             사이즈 : ${product.size}</>
                     </div>
                 </div>
@@ -143,4 +146,9 @@ function updateProductCount(totalElements) {
 function toggleActiveButton(activeBtn, inactiveBtn) {
     activeBtn.addClass('btn-primary').removeClass('btn-outline-secondary'); // 활성화된 버튼 스타일
     inactiveBtn.addClass('btn-outline-secondary').removeClass('btn-primary'); // 비활성화된 버튼 스타일
+}
+
+// 가격 포맷팅 함수
+function formatPrice(price) {
+    return '₩' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
