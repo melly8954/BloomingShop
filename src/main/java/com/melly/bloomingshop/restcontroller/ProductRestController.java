@@ -13,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -61,6 +58,20 @@ public class ProductRestController implements ResponseController {
         } catch (Exception e) {
             log.error("상품 조회 중 오류 발생: {}", e.getMessage(), e);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "상품 조회 중 알 수 없는 오류가 발생했습니다.", e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<ResponseDto> getProductDetail(@PathVariable Long id) {
+        try{
+            if(id == null|| id <= 0 ){
+                return makeResponseEntity(HttpStatus.BAD_REQUEST,"상품 ID 오륲", null);
+            }
+            Product product = this.productService.findById(id);
+            return makeResponseEntity(HttpStatus.OK, "상품 찾기 성공", product);
+        }catch (Exception ex){
+            log.error(ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
         }
     }
 }

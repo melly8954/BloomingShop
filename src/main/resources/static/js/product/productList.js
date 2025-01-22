@@ -82,7 +82,7 @@ function renderProductList(data) {
         const formattedPrice = formatPrice(product.price);
         html += `
             <div class="col-md-4 mb-4">
-                <div class="card" style="cursor: pointer;">
+                <div class="card" style="cursor: pointer;" onclick="loadProductDetail(${product.id});">
                     <img src="${product.imageUrl}" alt="${product.name}" class="card-img-top">
                     <div class="card-body">
                         <h5 class="card-title">${product.name}</h5>
@@ -150,7 +150,39 @@ function toggleActiveButton(activeBtn, inactiveBtn) {
     inactiveBtn.addClass('btn-outline-secondary').removeClass('btn-primary'); // 비활성화된 버튼 스타일
 }
 
-// 가격 포맷팅 함수
 function formatPrice(price) {
+    if (price == null || isNaN(price)) {
+        return '₩0';  // 유효하지 않은 가격일 경우 기본값 '₩0' 반환
+    }
     return '₩' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// 상품 상세 정보 로딩 함수
+function loadProductDetail(productId) {
+    $.ajax({
+        url: `/api/product/${productId}/detail`,
+        method: 'GET',
+    }).done(function(data) {
+        let product = data.responseData;
+        // 모달에 상품 정보 채우기
+        $('#product-image').attr('src', product.imageUrl);
+        $('#product-name').text(product.name);
+        $('#product-description').text(product.description);
+        $('#product-price').text(formatPrice(product.price));
+        $('#product-size').text(product.size);
+
+        // 장바구니 담기 및 주문하기 버튼 처리
+        $('#addToCartBtn').on('click', function() {
+            addToCart(productId); // 장바구니에 추가
+        });
+        $('#orderNowBtn').on('click', function() {
+            orderNow(productId); // 바로 주문 페이지로 이동
+        });
+
+        // 모달 열기
+        $('#productDetailModal').modal('show');
+    }).fail(function(jqXHR, status, errorThrown) {
+        console.error(`상품 상세 정보 로드 실패: ${errorThrown}`);
+        alert('상품 정보를 불러오는 데 실패했습니다.');
+    });
 }

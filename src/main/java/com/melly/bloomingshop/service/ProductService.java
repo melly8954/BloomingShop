@@ -39,4 +39,9 @@ public class ProductService {
         return productRepository.findByCategories_NameAndDeletedFlagFalse(category, pageable);
     }
 
+    // 상품 ID 로 상품 찾기
+    public Product findById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+    }
 }
