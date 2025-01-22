@@ -1,3 +1,18 @@
+$(document).ready(function () {
+    // 파일 선택 시 경고 메시지 처리
+    $('#imageUrl').change(function() {
+        var fileInput = $('#imageUrl');
+        var warningMessage = $('#imageUrl-warning');
+
+        // 파일이 선택되지 않으면 경고 메시지 표시
+        if (fileInput[0].files.length === 0) {
+            warningMessage.css('display', 'inline');  // 경고 메시지 표시
+        } else {
+            warningMessage.css('display', 'none');   // 경고 메시지 숨기기
+        }
+    });
+});
+
 function registerProduct() {
     let category = $('#category').val();
     let name = $('#name').val();
