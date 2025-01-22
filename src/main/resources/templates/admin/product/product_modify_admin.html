@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 수정</title>
+    <style>
+        html, body {
+            width: 100%; /* 페이지 전체 폭 차지 */
+            height: 100%; /* 페이지 전체 높이 차지 */
+            margin: 0; /* 기본 margin 제거 */
+            padding: 0; /* 기본 padding 제거 */
+        }
+    </style>
+</head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/admin/product/productModifyAdmin.js"></script>
+<body>
+{{> admin/sidebar }}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">상품 수정</h1>
+    <!-- 상품 ID -->
+    <div class="mb-3">
+        <label for="product-id" class="form-label">상품 ID</label>
+        <input type="text" class="form-control" id="product-id" name="product-id" placeholder="상품 ID를 입력하세요">
+    </div>
+    <!-- 카테고리 -->
+    <div class="mb-3">
+        <label for="category" class="form-label">카테고리</label>
+        <select class="form-select" id="category" name="category" required>
+            <option value="" selected disabled>카테고리를 선택하세요</option>
+            <option value="꽃다발">꽃다발</option>
+            <option value="꽃바구니">꽃바구니</option>
+            <option value="동양란">동양란</option>
+            <option value="서양란">서양란</option>
+            <option value="근조화환">근조화환</option>
+            <option value="축화화환">축화화환</option>
+            <option value="관엽화분">관엽화분</option>
+        </select>
+    </div>
+
+    <!-- 상품명 -->
+    <div class="mb-3">
+        <label for="name" class="form-label">상품명</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="상품명을 입력하세요">
+    </div>
+
+    <!-- 가격 -->
+    <div class="mb-3">
+        <label for="price" class="form-label">가격</label>
+        <input type="number" class="form-control" id="price" name="price" placeholder="가격을 입력하세요">
+    </div>
+
+    <!-- 사이즈 -->
+    <div class="mb-3">
+        <label for="size" class="form-label">사이즈</label>
+        <input type="text" class="form-control" id="size" name="size" placeholder="상품 크기를 입력하세요">
+    </div>
+
+    <!-- 이미지 URL -->
+    <div class="mb-3">
+        <label for="imageUrl" class="form-label">이미지</label>
+        <input type="file" class="form-control" id="imageUrl" name="imageUrl" accept="image/*">
+    </div>
+
+    <!-- 설명 -->
+    <div class="mb-3">
+        <label for="description" class="form-label">상품 설명</label>
+        <textarea class="form-control" id="description" name="description" rows="4" placeholder="상품 설명을 입력하세요"></textarea>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="d-flex justify-content-between">
+        <button class="btn btn-primary" onclick="registerProduct()">등록하기</button>
+        <a href="/admin/product-list" class="btn btn-secondary">취소</a>
+    </div>
+</div>
+</body>
+</html>

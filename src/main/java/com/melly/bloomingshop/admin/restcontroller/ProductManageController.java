@@ -1,6 +1,7 @@
 package com.melly.bloomingshop.admin.restcontroller;
 
 import com.melly.bloomingshop.admin.dto.ProductManageRequest;
+import com.melly.bloomingshop.admin.dto.ProductModifyRequest;
 import com.melly.bloomingshop.admin.service.ProductManageService;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
@@ -41,6 +42,26 @@ public class ProductManageController implements ResponseController {
             log.error(ex.getMessage());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러 :" + ex.getMessage(), null);
         }
+    }
 
+    @PatchMapping("/modify")
+    public ResponseEntity<ResponseDto> modifyProduct(@Validated @ModelAttribute ProductModifyRequest productModifyRequest, BindingResult bindingResult,
+                                                        @RequestPart(value = "image", required = false) MultipartFile image) {
+        // 유효성 검사
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessages = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> {
+                errorMessages.append(error.getDefaultMessage()).append(" / ");
+            });
+            log.error("유효성 검사 실패: " + errorMessages);
+            return makeResponseEntity(HttpStatus.BAD_REQUEST, errorMessages.toString(), null);
+        }
+        try {
+            Product updatedProduct = productManageService.modifyProduct(productModifyRequest, image);
+            return makeResponseEntity(HttpStatus.OK, "상품 수정 성공", updatedProduct);
+        } catch (Exception ex) {
+            log.error("상품 수정 실패: " + ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + ex.getMessage(), null);
+        }
     }
 }

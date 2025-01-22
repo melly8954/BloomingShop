@@ -1,6 +1,7 @@
 package com.melly.bloomingshop.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.melly.bloomingshop.admin.dto.ProductModifyRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -62,5 +64,27 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "category_id") // category_id 외래키
     )
     private Set<Category> categories;
+    
+    // 다음은 setter 역할의 메서드
+    public void copyFields(ProductModifyRequest dto) {
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.size = dto.getSize();
+        this.description = dto.getDescription();
+        // categories는 여기서 제외
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories.clear(); // 기존 데이터를 클리어
+        if (categories != null) {
+            this.categories.addAll(categories); // 새 데이터 추가
+        }
+    }
+    public void modifyImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+    public void modifyUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
 }
 

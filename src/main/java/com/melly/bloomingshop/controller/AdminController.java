@@ -22,5 +22,9 @@ public class AdminController {
         return "admin/product/product_add_admin";
     }
 
+    @GetMapping("/product/modify")
+    public String productModifyPage() {
+        return "admin/product/product_modify_admin";
+    }
 
 }

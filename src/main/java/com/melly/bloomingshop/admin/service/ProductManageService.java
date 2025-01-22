@@ -1,6 +1,7 @@
 package com.melly.bloomingshop.admin.service;
 
 import com.melly.bloomingshop.admin.dto.ProductManageRequest;
+import com.melly.bloomingshop.admin.dto.ProductModifyRequest;
 import com.melly.bloomingshop.domain.Category;
 import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.repository.CategoryRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,5 +47,34 @@ public class ProductManageService {
                 .build();
 
         return productRepository.save(product);
+    }
+
+    @Transactional
+    public Product modifyProduct(ProductModifyRequest productModifyRequest, MultipartFile image) throws IOException {
+        // 기존 상품 조회
+        Product existingProduct = productRepository.findById(productModifyRequest.getProductId())
+                .orElseThrow(() -> new RuntimeException("해당 ID의 상품이 존재하지 않습니다: " + productModifyRequest.getProductId()));
+
+        // 카테고리 조회 및 설정
+        String categoryName = productModifyRequest.getCategory();
+        Category category = categoryRepository.findByName(categoryName);
+        if (category == null) {
+            throw new RuntimeException("카테고리가 존재하지 않습니다: " + categoryName);
+        }
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+        existingProduct.setCategories(categories); // categories는 별도로 설정
+
+        // DTO의 필드를 기존 상품에 복사
+        existingProduct.copyFields(productModifyRequest);
+
+        // 이미지가 새로 업로드된 경우 처리
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = fileUploadService.saveImage(image);
+            existingProduct.modifyImageUrl(imageUrl);
+        }
+        existingProduct.modifyUpdatedDate(LocalDateTime.now());
+        // 수정된 상품 저장
+        return productRepository.save(existingProduct);
     }
 }
