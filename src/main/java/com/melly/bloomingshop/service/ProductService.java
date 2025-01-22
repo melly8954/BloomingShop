@@ -17,7 +17,7 @@ public class ProductService {
 
     // 검색, 필터링, 정렬 통합 메서드
     public Page<Product> getProducts(String name, String category, Pageable pageable) {
-        // 검색 조건과 필터 조건이 모두 없는 경우 모든 상품 반환
+        // 검색 조건과 필터 조건이 모두 없는 경우 모든 상품 반환 (deleted_flag 체크)
         if ((name == null || name.isEmpty()) && (category == null || category.isEmpty())) {
             // deleted_flag가 false인 상품만 가져오기
             Page<Product> products = productRepository.findByDeletedFlagFalse(pageable);
@@ -25,18 +25,18 @@ public class ProductService {
             return products;
         }
 
-        // 상품명 검색과 카테고리 필터를 모두 포함
+        // 상품명 검색과 카테고리 필터를 모두 포함 (deleted_flag 체크)
         if (name != null && !name.isEmpty() && category != null && !category.isEmpty()) {
-            return productRepository.findByNameContainingAndCategories_Name(name, category, pageable);
+            return productRepository.findByNameContainingAndCategories_NameAndDeletedFlagFalse(name, category, pageable);
         }
 
-        // 상품명 검색만 있는 경우
+        // 상품명 검색만 있는 경우 (deleted_flag 체크)
         if (name != null && !name.isEmpty()) {
-            return productRepository.findByNameContaining(name, pageable);
+            return productRepository.findByNameContainingAndDeletedFlagFalse(name, pageable);
         }
 
-        // 카테고리 필터만 있는 경우
-        return productRepository.findByCategories_Name(category, pageable);
+        // 카테고리 필터만 있는 경우 (deleted_flag 체크)
+        return productRepository.findByCategories_NameAndDeletedFlagFalse(category, pageable);
     }
 
 }
