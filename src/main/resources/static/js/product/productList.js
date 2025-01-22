@@ -77,11 +77,12 @@ function renderProductList(data) {
     data.responseData.products.forEach(function (product) {
         html += `
             <div class="col-md-4 mb-4">
-                <div class="card">
+                <div class="card" style="cursor: pointer;">
                     <img src="${product.imageUrl}" alt="${product.name}" class="card-img-top">
                     <div class="card-body">
                         <h5 class="card-title">${product.name}</h5>
-                        <p class="card-text">가격: ${product.price}</p>
+                        <p class="card-text">가격 : ${product.price}<br>
+                                            사이즈 : ${product.size}</>
                     </div>
                 </div>
             </div>`;
