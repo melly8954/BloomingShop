@@ -105,4 +105,21 @@ public class ProductManageController implements ResponseController {
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + ex.getMessage(), null);
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto> softDeleteProduct(@PathVariable Long id) {
+        try {
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "상품 ID가 유효하지 않습니다.", null);
+            }
+            productManageService.softDeleteProduct(id);
+            return makeResponseEntity(HttpStatus.OK, "상품이 정상적으로 삭제되었습니다.", true);
+        } catch (IllegalArgumentException ex) {
+            log.error("상품 삭제 실패: " + ex.getMessage());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다: " + ex.getMessage(), null);
+        } catch (Exception ex) {
+            log.error("상품 삭제 중 서버 에러 발생: " + ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + ex.getMessage(), null);
+        }
+    }
 }

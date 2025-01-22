@@ -82,4 +82,15 @@ public class ProductManageService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
     }
+
+    public void softDeleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("ID가 " + id + "인 상품을 찾을 수 없습니다."));
+
+        // 소프트 삭제 처리
+        product.changeDeletedFlag(true);
+        product.modifyDeletedDate(LocalDateTime.now());
+
+        productRepository.save(product);
+    }
 }

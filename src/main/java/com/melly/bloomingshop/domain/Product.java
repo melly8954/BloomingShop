@@ -9,7 +9,6 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -18,10 +17,8 @@ import java.util.Set;
 @Builder
 @Table(name = "product_tbl")
 public class Product {
-
     public Product() {
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
@@ -42,11 +39,21 @@ public class Product {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "deleted_flag")
+    private Boolean deletedFlag = false;
+
+    public void changeDeletedFlag(Boolean deletedFlag) {
+        this.deletedFlag = deletedFlag;
+    }
+
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedDate;
+
+    @Column(name = "deleted_Date", nullable = false)
+    private LocalDateTime deletedDate;
 
     // 엔티티가 영속화되기 전에 현재 시간을 자동으로 설정하는 메서드
     @PrePersist
@@ -85,6 +92,9 @@ public class Product {
     }
     public void modifyUpdatedDate(LocalDateTime updatedDate) {
         this.updatedDate = updatedDate;
+    }
+    public void modifyDeletedDate(LocalDateTime deletedDate) {
+        this.deletedDate = deletedDate;
     }
 }
 

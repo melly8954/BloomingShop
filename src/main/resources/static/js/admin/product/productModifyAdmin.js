@@ -1,13 +1,14 @@
 $(document).ready(function () {
     const productId = getProductIdFromUrl(); // URL에서 productId를 추출
-    $('#product-id').text(`상품 ID: ${productId}`); // <h2>에 상품 ID 표시
+    $('#product-id').html(`
+        상품 ID : ${productId} 
+        <button onclick="deleteProduct('${productId}');">삭제</button>`);
 
     loadProduct();
     loadCategories();
 
-
     // 파일 선택 시 경고 메시지 처리
-    $('#imageUrl').change(function() {
+    $('#imageUrl').change(function () {
         var fileInput = $('#imageUrl');
         var warningMessage = $('#imageUrl-warning');
 
@@ -119,4 +120,21 @@ function modifyProduct() {
         // 서버 오류 시
         alert('서버 오류: ' + errorThrown);
     });
+}
+
+// 삭제 함수 정의
+function deleteProduct(productId) {
+    if (confirm(`${productId}번 상품을 정말로 삭제하시겠습니까?`)) {
+        // AJAX를 통해 서버 API 호출
+        $.ajax({
+            url: `/api/admin/product/${productId}`, // 서버의 삭제 API 경로
+            method: 'DELETE',
+        }).done(function () {
+            alert('상품이 성공적으로 삭제되었습니다.');
+            window.location.href = "/admin/product/list";
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('상품 삭제 실패:', errorThrown);
+            alert('상품 삭제에 실패했습니다.');
+        });
+    }
 }
