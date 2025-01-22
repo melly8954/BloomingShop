@@ -48,13 +48,12 @@ CREATE TABLE `product_tbl` (
   `size` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `delete_flag` tinyint(1) NOT NULL DEFAULT '0',
+  `deleted_flag` tinyint(1) NOT NULL DEFAULT '0',
   `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `delete_date` timestamp NULL DEFAULT NULL,
+  `deleted_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 
 -- bloomingshop.category definition
 
