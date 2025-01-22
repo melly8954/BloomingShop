@@ -82,7 +82,8 @@ public class ProductManageService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
     }
-
+    
+    // softDelete 비즈니스 로직
     public void softDeleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ID가 " + id + "인 상품을 찾을 수 없습니다."));
@@ -92,5 +93,18 @@ public class ProductManageService {
         product.modifyDeletedDate(LocalDateTime.now());
 
         productRepository.save(product);
+    }
+
+    // softDelete Restore 비즈니스 로직
+    @Transactional
+    public void restoreProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        if (!product.getDeletedFlag()) {
+            throw new IllegalStateException("이미 활성화된 상품입니다.");
+        }
+        product.changeDeletedFlag(false); // 삭제 취소
+        product.modifyDeletedDate(null);
     }
 }

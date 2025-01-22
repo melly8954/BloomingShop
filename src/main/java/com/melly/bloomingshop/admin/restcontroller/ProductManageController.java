@@ -106,6 +106,7 @@ public class ProductManageController implements ResponseController {
         }
     }
 
+    // softDelete API
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto> softDeleteProduct(@PathVariable Long id) {
         try {
@@ -119,6 +120,24 @@ public class ProductManageController implements ResponseController {
             return makeResponseEntity(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다: " + ex.getMessage(), null);
         } catch (Exception ex) {
             log.error("상품 삭제 중 서버 에러 발생: " + ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + ex.getMessage(), null);
+        }
+    }
+
+    // // softDelete restore API
+    @PatchMapping("/{productId}/restore")
+    public ResponseEntity<?> restoreProduct(@PathVariable Long productId) {
+        try {
+            if (productId == null || productId <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "상품 ID가 유효하지 않습니다.", null);
+            }
+            productManageService.restoreProduct(productId); // 서비스 호출
+            return makeResponseEntity(HttpStatus.OK, "상품 삭제가 성공적으로 취소되었습니다.", true);
+        } catch (IllegalArgumentException ex) {
+            log.error("상품 삭제 취소 실패: " + ex.getMessage());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다: " + ex.getMessage(), null);
+        } catch (Exception ex) {
+            log.error("상품 삭제 취소 중 서버 에러 발생: " + ex.getMessage());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + ex.getMessage(), null);
         }
     }

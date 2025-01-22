@@ -137,6 +137,17 @@ function deleteProduct(productId) {
 }
 
 // 삭제 취소 함수
-function cancelDeleteProduct(productId){
-
+function cancelDeleteProduct(productId) {
+    if (confirm(`${productId}번 상품의 삭제를 취소하시겠습니까?`)) {
+        $.ajax({
+            url: `/api/admin/product/${productId}/restore`, // 삭제취소 API 경로
+            method: 'PATCH', // PATCH 메서드 사용
+        }).done(function () {
+            alert('상품 삭제가 성공적으로 취소되었습니다.');
+            window.location.href = "/admin/product/list";
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('삭제 취소 실패:', errorThrown);
+            alert('상품 삭제 취소에 실패했습니다.');
+        });
+    }
 }
