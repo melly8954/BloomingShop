@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/cart").authenticated()
                         .anyRequest().permitAll()) // 모든 사용자가 접근할 수 있도록 허용
                 .formLogin(form -> form
                         .loginPage("/user/login")
