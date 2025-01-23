@@ -171,12 +171,18 @@ function loadProductDetail(productId) {
         $('#product-price').text(formatPrice(product.price));
         $('#product-size').text(product.size);
 
+        let quantity = $("#quantityInput").val();
+        // 수량 값 변경 시 처리
+        $('#quantityInput').on('change', function() {
+            quantity = $(this).val(); // 변경된 수량 값 가져오기
+            console.log("Changed Quantity: ", quantity); // 변경된 수량 값 출력
+        });
         // 장바구니 담기 및 주문하기 버튼 처리
         $('#addToCartBtn').on('click', function() {
-            addToCart(productId); // 장바구니에 추가
+            addToCart(productId,quantity); // 장바구니에 추가
         });
         $('#orderNowBtn').on('click', function() {
-            orderNow(productId); // 바로 주문 페이지로 이동
+            orderNow(productId,quantity); // 바로 주문 페이지로 이동
         });
 
         // 모달 열기
@@ -188,6 +194,41 @@ function loadProductDetail(productId) {
 }
 
 // 장바구니 담기
-function addToCart(productId){
+function addToCart(productId, quantity) {
+    // 사용자에게 확인 요청
+    if (!confirm('해당 상품을 장바구니에 추가 하시겠습니까?')) {
+        return; // 사용자가 취소를 클릭하면 함수 종료
+    }
+    $.ajax({
+        url: '/api/user/getUserId',
+        method: 'GET',
+    }).done(function (data) {
+        let userId = data.responseData.id; // 서버에서 받은 userId 저장
 
+        // userId가 없는 경우 처리
+        if (!userId) {
+            alert('로그인 상태가 아닙니다.');
+            return;
+        }
+
+        // 장바구니 추가 요청
+        $.ajax({
+            url: '/api/cart/add',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                userId: userId,
+                productId: productId,
+                quantity: quantity
+            }),
+        }).done(function () {
+            alert('장바구니에 상품이 추가되었습니다.');
+            location.href = "/product"; // 장바구니 추가 후 페이지 이동
+        }).fail(function () {
+            alert('장바구니 추가에 실패했습니다.');
+        });
+    }).fail(function () {
+        console.error('사용자 ID를 가져오는 데 실패했습니다.');
+        alert('로그인이 필요합니다.');
+    });
 }
