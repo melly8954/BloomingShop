@@ -136,4 +136,25 @@ public class UserRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
         }
     }
+
+    // 현재 로그인한 사용자 얻는 API
+    @GetMapping("/getUserId")
+    public ResponseEntity<ResponseDto> getUserId(Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                log.error("로그인 인증을 실패했습니다.");
+                return makeResponseEntity(HttpStatus.UNAUTHORIZED, "인증 실패", null);
+            }
+            // PrincipalDetails로 캐스팅
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+
+            // PrincipalDetails에서 User 객체 추출
+            User user = principalDetails.getUser();
+
+            return makeResponseEntity(HttpStatus.OK, "로그인 회원 정보 획득", user);
+        }catch (Exception ex){
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
+        }
+    }
 }
