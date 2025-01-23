@@ -4,12 +4,16 @@ import com.melly.bloomingshop.domain.Cart;
 import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.AddToCartRequest;
+import com.melly.bloomingshop.dto.CartItemDTO;
 import com.melly.bloomingshop.repository.CartRepository;
 import com.melly.bloomingshop.repository.ProductRepository;
 import com.melly.bloomingshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,5 +49,25 @@ public class CartService {
                     .build();
             return cartRepository.save(newCart); // 새로 추가된 Cart 반환
         }
+    }
+
+    @Transactional
+    public List<CartItemDTO> getCartItemsByUserId(Long userId) {
+        List<Cart> cartItems = cartRepository.findByUserIdWithProducts(userId);
+        List<CartItemDTO> cartItemDTOs = new ArrayList<>();
+
+        // Cart의 Product 정보와 수량을 DTO로 변환 (빌더 패턴 사용)
+        for (Cart cart : cartItems) {
+            CartItemDTO dto = CartItemDTO.builder()
+                    .productId(cart.getProduct().getId())
+                    .productName(cart.getProduct().getName())
+                    .productPrice(cart.getProduct().getPrice())
+                    .productSize(cart.getProduct().getSize())
+                    .productImageUrl(cart.getProduct().getImageUrl())
+                    .quantity(cart.getQuantity())
+                    .build(); // 최종적으로 객체 생성
+            cartItemDTOs.add(dto);
+        }
+        return cartItemDTOs;
     }
 }
