@@ -5,15 +5,14 @@ import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.AddToCartRequest;
 import com.melly.bloomingshop.dto.CartItemDTO;
-import com.melly.bloomingshop.dto.CartItemUpdateDto;
 import com.melly.bloomingshop.repository.CartRepository;
 import com.melly.bloomingshop.repository.ProductRepository;
 import com.melly.bloomingshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,6 +70,28 @@ public class CartService {
             cartItemDTOs.add(dto);
         }
         return cartItemDTOs;
+    }
+    
+    // 장바구니 총 비용 비즈니스 로직
+    @Transactional
+    public BigDecimal updateCart(Long userId, List<CartItemDTO> cartItems) {
+        BigDecimal totalCost = BigDecimal.ZERO;
+
+        for (CartItemDTO item : cartItems) {
+            // 장바구니 아이템 업데이트 (DB에 저장)
+            Cart cartItem = cartRepository.findByUserIdAndProductId(userId, item.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("장바구니 아이템을 찾을 수 없습니다."));
+
+            cartItem.changeQuantity(item.getQuantity());
+            cartRepository.save(cartItem);
+
+            // 총합 계산
+            BigDecimal itemTotal = cartItem.getProduct().getPrice()
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            totalCost = totalCost.add(itemTotal);
+        }
+
+        return totalCost;
     }
 
 }
