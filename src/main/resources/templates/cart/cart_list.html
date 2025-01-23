@@ -6,14 +6,47 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>장바구니</title>
+    <style>
+        .cart-item-img {
+            width: 100%;
+            height: 200px; /* 정사각형 모양으로 설정 */
+            object-fit: cover;
+        }
+
+        .card {
+            height: 350px; /* 카드 높이를 일정하게 설정 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* 카드 내부 요소 간의 공간을 균등하게 배치 */
+        }
+
+        .card-body {
+            flex-grow: 1; /* 카드 본문 영역이 flex-grow로 늘어나도록 설정 */
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .btn-group {
+            width: 100%;
+            justify-content: space-between;
+        }
+    </style>
 </head>
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script src="/js/cart/cartList.js"></script>
 <body>
 {{> common/navbar }}
-<!-- 장바구니 목록 -->
-<div id="cart-items">
-    <!-- 장바구니 아이템 목록이 여기에 동적으로 추가됩니다 -->
+<div class="container mt-4">
+    <!-- 상품 이미지 그리드 -->
+    <div id="cart-items" class="row g-4">
+    </div>
 </div>
 
 <!-- 결제 진행 버튼 -->
