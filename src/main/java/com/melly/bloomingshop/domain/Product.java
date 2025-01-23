@@ -42,10 +42,6 @@ public class Product {
     @Column(name = "deleted_flag")
     private Boolean deletedFlag = false;
 
-    public void changeDeletedFlag(Boolean deletedFlag) {
-        this.deletedFlag = deletedFlag;
-    }
-
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
@@ -55,14 +51,6 @@ public class Product {
     @Column(name = "deleted_Date", nullable = false)
     private LocalDateTime deletedDate;
 
-    // 엔티티가 영속화되기 전에 현재 시간을 자동으로 설정하는 메서드
-    @PrePersist
-    public void prePersist() {
-        if (this.createdDate == null) {
-            this.createdDate = LocalDateTime.now();
-        }
-    }
-
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -71,7 +59,17 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "category_id") // category_id 외래키
     )
     private Set<Category> categories;
-    
+
+
+
+    // 엔티티가 영속화되기 전에 현재 시간을 자동으로 설정하는 메서드
+    @PrePersist
+    public void prePersist() {
+        if (this.createdDate == null) {
+            this.createdDate = LocalDateTime.now();
+        }
+    }
+
     // 다음은 setter 역할의 메서드
     public void copyFields(ProductModifyRequest dto) {
         this.name = dto.getName();
@@ -87,14 +85,22 @@ public class Product {
             this.categories.addAll(categories); // 새 데이터 추가
         }
     }
+
     public void modifyImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
     public void modifyUpdatedDate(LocalDateTime updatedDate) {
         this.updatedDate = updatedDate;
     }
+
     public void modifyDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
     }
+
+    public void changeDeletedFlag(Boolean deletedFlag) {
+        this.deletedFlag = deletedFlag;
+    }
+
 }
 
