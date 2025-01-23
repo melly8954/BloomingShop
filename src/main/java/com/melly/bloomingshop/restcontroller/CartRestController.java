@@ -47,7 +47,5 @@ public class CartRestController implements ResponseController {
             log.error(ex.getMessage(), ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
         }
-
-
     }
 }

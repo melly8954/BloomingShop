@@ -5,10 +5,12 @@ import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.AddToCartRequest;
 import com.melly.bloomingshop.dto.CartItemDTO;
+import com.melly.bloomingshop.dto.CartItemUpdateDto;
 import com.melly.bloomingshop.repository.CartRepository;
 import com.melly.bloomingshop.repository.ProductRepository;
 import com.melly.bloomingshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,4 +72,5 @@ public class CartService {
         }
         return cartItemDTOs;
     }
+
 }
