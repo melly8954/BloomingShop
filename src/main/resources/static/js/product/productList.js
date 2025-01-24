@@ -222,8 +222,8 @@ function addToCart(productId, quantity) {
                 quantity: quantity
             }),
         }).done(function () {
-            alert('장바구니에 상품이 추가되었습니다.');
             $('#productDetailModal').modal('hide')
+            alert('장바구니에 상품이 추가되었습니다.');
         }).fail(function () {
             alert('장바구니 추가에 실패했습니다.');
         });
