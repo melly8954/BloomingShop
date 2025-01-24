@@ -1,27 +1,63 @@
-let userId = null; // 전역 변수로 userId 선언
+let userId = null; // 로그인 유저 ID
+let guestId = null; // 비회원 ID
 
 $(document).ready(function () {
-    // 페이지 로드 시 사용자 ID를 얻어서 장바구니 정보를 가져옴
+    // 비회원 ID 확인 및 초기화
+    guestId = getGuestId();
+
+    // 로그인 여부 확인
+    checkLoginStatus();
+});
+
+function checkLoginStatus() {
     $.ajax({
         url: '/api/user/getUserId',
         method: 'GET',
     }).done(function (data) {
-        userId = data.responseData.id; // 서버에서 받은 userId 저장
-
-        // userId를 사용하여 장바구니 데이터 가져오기
-        $.ajax({
-            url: `/api/cart/${userId}/list`,
-            method: 'GET',
-        }).done(function (cartData) {
-            displayCartItems(cartData.responseData); // 장바구니 아이템 표시 함수 호출
-            calculateCartTotal();   // 첫 페이지 로드 시 장바구니 전체 가격 업데이트
-        }).fail(function () {
-            alert('장바구니 정보를 가져오는 데 실패했습니다.');
-        });
+        // 로그인 상태
+        userId = data.responseData.id;
+        fetchCartItems(userId, true); // 로그인 유저의 장바구니 가져오기
     }).fail(function () {
-        console.error('로그인을 하시지 않은 상태입니다.');
+        // 비로그인 상태
+        console.log('로그인하지 않은 상태입니다.');
+        fetchCartItems(guestId, false); // 비회원의 장바구니 가져오기
     });
-});
+}
+
+// 장바구니 아이템 가져오기 공통 함수
+function fetchCartItems(id, isLoggedIn) {
+    const apiUrl = isLoggedIn
+        ? `/api/cart/user/${id}/list` // 로그인 유저 API
+        : `/api/cart/guest/${id}/list`; // 비회원 API (guestId 사용)
+
+    $.ajax({
+        url: apiUrl,
+        method: 'GET',
+    }).done(function (cartData) {
+        displayCartItems(cartData.responseData); // 장바구니 아이템 표시
+        calculateCartTotal(); // 장바구니 총 가격 계산
+    }).fail(function () {
+        alert(isLoggedIn
+            ? '로그인 유저의 장바구니 정보를 가져오는 데 실패했습니다.'
+            : '비회원 장바구니 정보를 가져오는 데 실패했습니다.');
+    });
+}
+
+// guestId가 없을 경우 새로 생성하는 함수 (예: UUID로 생성)
+function getGuestId() {
+    let guestId = localStorage.getItem('guestId');
+
+    if (!guestId) {
+        guestId = generateGuestId();
+        localStorage.setItem('guestId', guestId);
+    }
+    return guestId;
+}
+
+// guestId 생성 함수 (UUID 스타일로 생성)
+function generateGuestId() {
+    return 'guest-' + Math.random().toString(36).substr(2, 9); // 간단한 랜덤 문자열 생성
+}
 
 // 가격 포맷팅 함수
 function formatPrice(price) {
@@ -112,8 +148,13 @@ function removeItemFromCart(productId) {
     const isConfirmed = confirm("해당 상품을 제거 하시겠습니까?");
 
     if (isConfirmed) {
+        // 로그인 여부에 따른 API URL 설정
+        const apiUrl = userId
+            ? `/api/cart/user/${userId}/${productId}` // 로그인 유저의 장바구니 제거 API
+            : `/api/cart/guest/${guestId}/${productId}`; // 비회원의 장바구니 제거 API
+
         $.ajax({
-            url: `/api/cart/${userId}/${productId}`,
+            url: apiUrl,
             method: 'DELETE',
         }).done(function (data) {
             if (data.responseData === true) {
@@ -131,10 +172,10 @@ function removeItemFromCart(productId) {
                 alert('아이템 제거에 실패했습니다.');
             }
         }).fail(function () {
-            alert('서버와의 연결에 실패했습니다.');
+            alert('서버와의 연결이 실패했습니다.');
         });
     } else {
-        alert('해당 상품제거를 취소했습니다.');
+        alert('해당 상품 제거를 취소했습니다.');
     }
 }
 
@@ -153,7 +194,7 @@ function updateOrderSummary() {
         const price = parseInt(priceText.replace('₩', ''));  // 가격 숫자만 남기기
         const totalPrice = price * quantity;
 
-        cartItems.push({ productId, productName, quantity, totalPrice });
+        cartItems.push({productId, productName, quantity, totalPrice});
 
         // 상품별 요약 정보 추가
         orderSummaryContainer.append(`
@@ -164,10 +205,10 @@ function updateOrderSummary() {
     });
 }
 
-// 장바구니 모든 상품 총가격 계산
 function calculateCartTotal() {
     let cartItems = [];
-    // 장바구니에 있는 모든 아이템 정보를 수집
+
+    // 현재 장바구니의 상품 수집
     $('#cart-items .card').each(function () {
         const productId = $(this).find('.btn-danger').attr('id').split('-')[1];
         const quantity = $(this).find(`#quantity-${productId}`).val();
@@ -177,20 +218,22 @@ function calculateCartTotal() {
         });
     });
 
+    // 로그인 여부에 따른 API URL 결정
+    let url = userId ? `/api/cart/user/${userId}/total` : `/api/cart/guest/${guestId}/total`;
+
+    // AJAX 호출로 총 가격 계산 요청
     $.ajax({
-        url: `/api/cart/${userId}/total`,
+        url: url,
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify(cartItems), // 장바구니 데이터 전송
-    }).done(function (data, status, xhr) {
-        if (xhr.status === 200) {
+        data: JSON.stringify(cartItems),
+    })
+        .done(function (data) {
             $('#total-price').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
-        } else {
+        })
+        .fail(function () {
             alert('장바구니 계산 중 오류가 발생했습니다.');
-        }
-    }).fail(function () {
-        alert('서버와의 연결에 실패했습니다.');
-    });
+        });
 }
 
 
@@ -272,7 +315,7 @@ function paymentProgress() {
 // 주소 검색 버튼 클릭 시 주소 입력 필드 활성화
 function searchPostcode() {
     new daum.Postcode({
-        oncomplete: function(data) {
+        oncomplete: function (data) {
             var addr = ''; // 주소 변수
 
             if (data.userSelectedType === 'R') { // 도로명 주소 선택시

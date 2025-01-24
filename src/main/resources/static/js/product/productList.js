@@ -164,12 +164,16 @@ function loadProductDetail(productId) {
         method: 'GET',
     }).done(function(data) {
         let product = data.responseData;
+
         // 모달에 상품 정보 채우기
         $('#product-image').attr('src', product.imageUrl);
         $('#product-name').text(product.name);
         $('#product-description').text(product.description);
         $('#product-price').text(formatPrice(product.price));
         $('#product-size').text(product.size);
+
+        // 구매 수량 초기화
+        $('#quantityInput').val(1); // 수량을 기본값 1로 설정
 
         let quantity = $("#quantityInput").val();
         // 수량 값 변경 시 처리
@@ -200,17 +204,16 @@ function addToCart(productId, quantity) {
     if (!confirm('해당 상품을 장바구니에 추가 하시겠습니까?')) {
         return; // 사용자가 취소를 클릭하면 함수 종료
     }
+
+    // 로그인된 사용자가 있는지 확인
     $.ajax({
         url: '/api/user/getUserId',
         method: 'GET',
     }).done(function (data) {
-        let userId = data.responseData.id; // 서버에서 받은 userId 저장
+        let userId = data.responseData.id; // 로그인된 userId
 
-        // userId가 없는 경우 처리
-        if (!userId) {
-            alert('로그인 상태가 아닙니다.');
-            return;
-        }
+        // 로그인된 사용자가 있으면 userId 사용, 없으면 guestId 사용
+        let idToUse = userId || getGuestId();
 
         // 장바구니 추가 요청
         $.ajax({
@@ -218,19 +221,52 @@ function addToCart(productId, quantity) {
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                userId: userId,
+                userId: userId ? userId : undefined, // 로그인된 사용자일 경우에만 userId 포함
+                guestId: !userId ? idToUse : undefined, // 비회원일 경우에만 guestId 포함
                 productId: productId,
                 quantity: quantity
             }),
         }).done(function () {
-            $('#productDetailModal').modal('hide')
+            $('#productDetailModal').modal('hide');
             alert('장바구니에 상품이 추가되었습니다.');
         }).fail(function () {
             alert('장바구니 추가에 실패했습니다.');
         });
     }).fail(function () {
-        console.error('사용자 ID를 가져오는 데 실패했습니다.');
-        alert('로그인이 필요합니다.');
-        location.href="/user/login";
+        // 비로그인 상태일 경우 guestId 사용
+        let idToUse = getGuestId();
+
+        $.ajax({
+            url: '/api/cart/add',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                guestId: idToUse,  // 비회원일 경우 guestId 사용
+                productId: productId,
+                quantity: quantity
+            }),
+        }).done(function () {
+            $('#productDetailModal').modal('hide');
+            alert('장바구니에 상품이 추가되었습니다.');
+        }).fail(function () {
+            alert('장바구니 추가에 실패했습니다.');
+        });
     });
+}
+
+// guestId가 없을 경우 새로 생성하는 함수 (예: UUID로 생성)
+function getGuestId() {
+    let guestId = localStorage.getItem('guestId');
+
+    if (!guestId) {
+        guestId = generateGuestId();
+        localStorage.setItem('guestId', guestId);
+    }
+
+    return guestId;
+}
+
+// guestId 생성 함수 (UUID 스타일로 생성)
+function generateGuestId() {
+    return 'guest-' + Math.random().toString(36).substr(2, 9); // 간단한 랜덤 문자열 생성
 }
