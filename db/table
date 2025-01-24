@@ -131,18 +131,21 @@ CREATE TABLE `cart_tbl` (
 
 CREATE TABLE `order_tbl` (
   `order_id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` bigint NOT NULL,
+  `user_id` bigint DEFAULT NULL,  -- 회원의 경우 user_id가 NULL이 될 수 있음
   `total_price` decimal(10,2) NOT NULL,
   `order_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `delivery_status` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `payment_status` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `shipping_address` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `address_id` bigint NOT NULL,  -- 주소 ID 외래키
+  `shipping_address_non_member` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,  -- 비회원 주소
   `payment_method` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `delivery_status_updated` timestamp NULL DEFAULT NULL,
   `payment_status_updated` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `order_tbl_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_tbl` (`id`) ON DELETE CASCADE
+  KEY `address_id` (`address_id`),
+  CONSTRAINT `order_tbl_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_tbl` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `order_tbl_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `address_tbl` (`address_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
