@@ -223,7 +223,7 @@ function addToCart(productId, quantity) {
             }),
         }).done(function () {
             alert('장바구니에 상품이 추가되었습니다.');
-            location.href = "/product"; // 장바구니 추가 후 페이지 이동
+            $('#productDetailModal').modal('hide')
         }).fail(function () {
             alert('장바구니 추가에 실패했습니다.');
         });
