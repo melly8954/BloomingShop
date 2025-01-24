@@ -14,16 +14,15 @@
         }
 
         .cart-section {
-            flex: 4; /* 좌측 영역 (50%) */
+            flex: 4; /* 좌측 영역 (80%) */
             padding: 20px;
             overflow-y: auto; /* 스크롤 활성화 */
             border-right: 1px solid #ddd; /* 좌우 구분선 */
         }
 
         .summary-section {
-            flex: 1; /* 우측 영역 (50%) */
+            flex: 1; /* 우측 영역 (20%) */
             padding: 20px;
-            background-color: #f8f9fa; /* 연한 배경 */
         }
     </style>
 </head>
@@ -35,8 +34,6 @@
     <!-- 장바구니 리스트 영역 -->
     <div class="cart-section" id="cart-section">
         <h2>장바구니</h2>
-        <!-- 결제 요약 아래 저장 버튼 -->
-        <button class="btn btn-primary" onclick="calculateAndSaveCart()">장바구니 계산</button><br>
         <div id="cart-items" class="row g-4">
             <!-- 장바구니 항목이 동적으로 추가됨 -->
         </div>
@@ -46,7 +43,6 @@
     <div class="summary-section">
         <h2>결제 요약</h2>
         <div id="order-summary">
-            <!-- 계산 기록 동적으로 추가 -->
             <p><span id="total-price">장바구니 계산 버튼을 누르세요!</span></p>
         </div>
         <!-- 결제 진행 버튼 -->
