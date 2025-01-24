@@ -230,5 +230,6 @@ function addToCart(productId, quantity) {
     }).fail(function () {
         console.error('사용자 ID를 가져오는 데 실패했습니다.');
         alert('로그인이 필요합니다.');
+        location.href="/user/login";
     });
 }
