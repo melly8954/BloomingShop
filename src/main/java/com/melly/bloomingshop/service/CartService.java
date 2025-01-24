@@ -9,6 +9,7 @@ import com.melly.bloomingshop.repository.CartRepository;
 import com.melly.bloomingshop.repository.ProductRepository;
 import com.melly.bloomingshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -52,7 +54,6 @@ public class CartService {
         }
     }
 
-    @Transactional
     public List<CartItemDTO> getCartItemsByUserId(Long userId) {
         List<Cart> cartItems = cartRepository.findByUserIdWithProducts(userId);
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
@@ -71,9 +72,19 @@ public class CartService {
         }
         return cartItemDTOs;
     }
-    
+
+    // 장바구니 상품 제거 비즈니스 로직
+    public boolean removeProductFromCart(Long userId, Long productId) {
+        Optional<Cart> existingCart = cartRepository.findByUserIdAndProductId(userId, productId);
+        if(existingCart.isPresent()) {
+            cartRepository.delete(existingCart.get());
+            return true;
+        }
+        log.error("찾는 회원의 장바구니가 존재하지 않습니다.");
+        return false;
+    }
+
     // 장바구니 총 비용 비즈니스 로직
-    @Transactional
     public BigDecimal updateCart(Long userId, List<CartItemDTO> cartItems) {
         BigDecimal totalCost = BigDecimal.ZERO;
 

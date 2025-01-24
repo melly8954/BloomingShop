@@ -51,7 +51,19 @@ public class CartRestController implements ResponseController {
         }
     }
 
-    @PostMapping("/{userId}/save")
+    // 장바구니에서 물건 제거 API
+    @DeleteMapping("/{userId}/{productId}")
+    public ResponseEntity<ResponseDto> deleteCart(@PathVariable Long userId, @PathVariable Long productId) {
+        try{
+            boolean isValid = cartService.removeProductFromCart(userId, productId);
+            return makeResponseEntity(HttpStatus.OK, "상품이 장바구니에서 제거되었습니다.", isValid);
+        }catch (Exception ex){
+            log.error("장바구니 저장 중 오류 발생: {}", ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + ex.getMessage(), null);
+        }
+    }
+
+    @PostMapping("/{userId}/total")
     public ResponseEntity<ResponseDto> calculateAndSaveCart(@PathVariable Long userId, @RequestBody List<CartItemDTO> cartItems) {
         try {
             if (userId == null || userId <= 0) {
@@ -60,10 +72,8 @@ public class CartRestController implements ResponseController {
             // 장바구니 데이터 저장 및 총합 계산
             BigDecimal totalCost = cartService.updateCart(userId, cartItems);
 
-            // 성공 응답 생성
             return makeResponseEntity(HttpStatus.OK, "장바구니 계산 완료", Map.of("totalCost", totalCost));
         } catch (Exception ex) {
-            // 예외 발생 시 로그 출력 및 에러 응답 생성
             log.error("장바구니 저장 중 오류 발생: {}", ex.getMessage(), ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + ex.getMessage(), null);
         }
