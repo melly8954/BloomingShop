@@ -155,8 +155,9 @@ function updateOrderSummary() {
         const productId = $(this).find('.btn-danger').attr('id').split('-')[1];
         const productName = $(this).find('.card-title').text().trim();
         const quantity = $(this).find(`#quantity-${productId}`).val();
-        const price = $(this).find(`#price-${productId}`).text().replace('총 가격: ₩', '').replace(',', '');
-        const totalPrice = parseInt(price) * quantity;
+        const priceText = $(this).find('.card-text').text().replace('가격: ', '').replace(',', ''); // 가격 텍스트에서 '가격: ' 제거
+        const price = parseInt(priceText.replace('₩', ''));  // 가격 숫자만 남기기
+        const totalPrice = price * quantity;
 
         cartItems.push({ productId, productName, quantity, totalPrice });
 
@@ -204,13 +205,16 @@ function paymentProgress() {
     let orderSummaryContainer = $("#modal-order-summary");
     let totalAmount = 0;  // 총 결제 금액 초기화
 
+    orderSummaryContainer.empty();  // 내부 콘텐츠 비우기
+
     // 장바구니에 있는 모든 아이템 정보를 수집
     $('#cart-items .card').each(function () {
         const productId = $(this).find('.btn-danger').attr('id').split('-')[1];
         const productName = $(this).find('.card-title').text().trim();
         const quantity = $(this).find(`#quantity-${productId}`).val();
-        const price = $(this).find(`#price-${productId}`).text().replace('총 가격: ₩', '').replace(',', '');
-        const totalPrice = parseInt(price) * quantity;
+        const priceText = $(this).find('.card-text').text().replace('가격: ', '').replace(',', ''); // 가격 텍스트에서 '가격: ' 제거
+        const price = parseInt(priceText.replace('₩', ''));  // 가격 숫자만 남기기
+        const totalPrice = price * quantity;
 
         // 총 결제 금액 합산
         totalAmount += totalPrice;
