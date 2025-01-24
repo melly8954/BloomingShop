@@ -50,9 +50,8 @@ function displayCartItems(cartData) {
                     <div class="card shadow-sm h-100" style="max-width: 350px; margin: 0 auto;">
                         <img src="${item.productImageUrl}" alt="${item.productName}" class="card-img-top" style="height: auto; object-fit: cover;">
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">${item.productName} 
-                                <button class="btn btn-danger btn-sm" id="remove-${item.productId}">장바구니 제거</button>
-                            </h5>
+                            <h5 class="card-title">${item.productName} </h5>
+                            <button class="btn btn-danger btn-sm" id="remove-${item.productId}">장바구니 제거</button>
                             <p class="card-text">가격: ${formatPrice(item.productPrice)}</p>
 
                             <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -81,8 +80,12 @@ function displayCartItems(cartData) {
                 removeItemFromCart(item.productId);
             });
         });
+
+        // 장바구니에 아이템이 있을 때 결제 요약 업데이트
+        updateOrderSummary();
     } else {
-        cartItemsContainer.append('<p>장바구니에 아이템이 없습니다.</p>'); // 장바구니가 비었을 경우
+        cartItemsContainer.append(`<p>장바구니에 아이템이 없습니다.<br>
+                                    <a href="/product">상품 추가하러 가기</a></p>`); // 장바구니가 비었을 경우
     }
 }
 
@@ -101,6 +104,10 @@ function updateprice(productId, productPrice) {
 
     // 해당 상품의 총 가격을 업데이트
     $(`#price-${productId}`).html(`총 가격: ${formatPrice(totalPrice)}`);
+
+    // 결제 요약 업데이트
+    updateOrderSummary();
+
     // 장바구니 전체 총 가격 업데이트
     calculateCartTotal();
 }
@@ -116,9 +123,17 @@ function removeItemFromCart(productId) {
             method: 'DELETE',
         }).done(function (data) {
             if (data.responseData === true) {
+                let cartItemsContainer = $('#cart-items');
+
                 alert('아이템이 장바구니에서 제거되었습니다.');
                 $(`#remove-${productId}`).closest('.col-sm-6').remove(); // UI에서 제거
+                // 결제 요약창 업데이트
+                updateOrderSummary();
                 calculateCartTotal();
+
+                // 상품을 다 제거 했을 경우
+                cartItemsContainer.append(`<p>장바구니에 아이템이 없습니다.<br>
+                                    <a href="/product">상품 추가하러 가기</a></p>`);
             } else {
                 alert('아이템 제거에 실패했습니다.');
             }
@@ -130,7 +145,32 @@ function removeItemFromCart(productId) {
     }
 }
 
-// 계산 버튼 클릭 이벤트 추가
+// 장바구니에 있는 상품 요약을 결제 요약에 추가하는 함수
+function updateOrderSummary() {
+    let orderSummaryContainer = $('#order-summary');
+    orderSummaryContainer.empty(); // 기존 내용을 초기화
+
+    let cartItems = [];
+    // 장바구니에 있는 모든 아이템 정보를 수집
+    $('#cart-items .card').each(function () {
+        const productId = $(this).find('.btn-danger').attr('id').split('-')[1];
+        const productName = $(this).find('.card-title').text().trim();
+        const quantity = $(this).find(`#quantity-${productId}`).val();
+        const price = $(this).find(`#price-${productId}`).text().replace('총 가격: ₩', '').replace(',', '');
+        const totalPrice = parseInt(price) * quantity;
+
+        cartItems.push({ productId, productName, quantity, totalPrice });
+
+        // 상품별 요약 정보 추가
+        orderSummaryContainer.append(`
+            <div class="order-item">
+                <strong>${productName}</strong> x ${quantity} = ${formatPrice(totalPrice)}
+            </div>
+        `);
+    });
+}
+
+// 장바구니 모든 상품 총가격 계산
 function calculateCartTotal() {
     let cartItems = [];
     // 장바구니에 있는 모든 아이템 정보를 수집
@@ -150,7 +190,7 @@ function calculateCartTotal() {
         data: JSON.stringify(cartItems), // 장바구니 데이터 전송
     }).done(function (data, status, xhr) {
         if (xhr.status === 200) {
-            $('#order-summary').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
+            $('#total-price').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
         } else {
             alert('장바구니 계산 중 오류가 발생했습니다.');
         }
@@ -160,30 +200,30 @@ function calculateCartTotal() {
 }
 
 // 결제 처리
-    function checkout() {
-        let cartItems = [];
+function checkout() {
+    let cartItems = [];
 
-        // 장바구니에 있는 모든 아이템을 배열로 수집
-        $('#cart-items .card').each(function () {
-            let productId = $(this).find('.btn-danger').attr('id').split('-')[1];
-            let quantity = $(this).find(`#quantity-${productId}`).val();
-            cartItems.push({productId: productId, quantity: parseInt(quantity)});
-        });
+    // 장바구니에 있는 모든 아이템을 배열로 수집
+    $('#cart-items .card').each(function () {
+        let productId = $(this).find('.btn-danger').attr('id').split('-')[1];
+        let quantity = $(this).find(`#quantity-${productId}`).val();
+        cartItems.push({productId: productId, quantity: parseInt(quantity)});
+    });
 
-        // 서버에 장바구니 정보 전송 (구매)
-        $.ajax({
-            url: '/api/cart/checkout',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({userId: userId, cartItems: cartItems}),
-        }).done(function (response) {
-            if (response.success) {
-                alert('구매가 완료되었습니다!');
-                $('#cart-items').empty(); // UI 비우기
-            } else {
-                alert('구매에 실패했습니다.');
-            }
-        }).fail(function () {
-            alert('서버와의 연결이 실패했습니다.');
-        });
-    }
+    // 서버에 장바구니 정보 전송 (구매)
+    $.ajax({
+        url: '/api/cart/checkout',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({userId: userId, cartItems: cartItems}),
+    }).done(function (response) {
+        if (response.success) {
+            alert('구매가 완료되었습니다!');
+            $('#cart-items').empty(); // UI 비우기
+        } else {
+            alert('구매에 실패했습니다.');
+        }
+    }).fail(function () {
+        alert('서버와의 연결이 실패했습니다.');
+    });
+}
