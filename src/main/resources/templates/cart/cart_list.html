@@ -72,10 +72,17 @@
 
                 <!-- 배송 정보 -->
                 <div id="shipping-info-section">
-                    <h6>배송 정보</h6>
                     <div class="mb-3">
-                        <label for="shippingAddress" class="form-label">배송 주소</label>
-                        <input type="text" class="form-control" id="shippingAddress" placeholder="배송지를 입력하세요" required />
+                        <label for="address">배송 주소</label><br>
+                        <input type="text" id="postcode" placeholder="우편번호" disabled>
+                        <input type="button" onclick="searchPostcode()" value="우편번호 찾기">
+
+                        <label for="address"></label><br>
+                        <input type="text" id="address" name="address" placeholder="주소" disabled><br>
+
+                        <label for="detail-address"></label>
+                        <input type="text" id="detail-address" placeholder="상세주소"><br><br><br>
+
                     </div>
                 </div>
                 <hr />
