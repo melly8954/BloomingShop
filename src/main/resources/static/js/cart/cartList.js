@@ -150,7 +150,7 @@ function calculateCartTotal() {
         data: JSON.stringify(cartItems), // 장바구니 데이터 전송
     }).done(function (data, status, xhr) {
         if (xhr.status === 200) {
-            $('#total-price').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
+            $('#order-summary').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
         } else {
             alert('장바구니 계산 중 오류가 발생했습니다.');
         }
