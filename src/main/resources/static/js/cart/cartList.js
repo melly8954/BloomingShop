@@ -8,11 +8,6 @@ $(document).ready(function () {
     }).done(function (data) {
         userId = data.responseData.id; // 서버에서 받은 userId 저장
 
-        // userId가 없으면 로그인 상태가 아님
-        if (!userId) {
-            alert('로그인이 필요합니다.');
-            return;
-        }
         // userId를 사용하여 장바구니 데이터 가져오기
         $.ajax({
             url: `/api/cart/${userId}/list`,
@@ -24,8 +19,7 @@ $(document).ready(function () {
             alert('장바구니 정보를 가져오는 데 실패했습니다.');
         });
     }).fail(function () {
-        console.error('사용자 ID를 가져오는 데 실패했습니다.');
-        alert('로그인이 필요합니다.');
+        console.error('로그인을 하시지 않은 상태입니다.');
     });
 });
 
