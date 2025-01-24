@@ -198,31 +198,75 @@ function calculateCartTotal() {
     });
 }
 
-// 결제 처리
-function checkout() {
-    let cartItems = [];
 
-    // 장바구니에 있는 모든 아이템을 배열로 수집
+// 결제 진행 버튼 클릭 시 호출되는 함수
+function paymentProgress() {
+    let orderSummaryContainer = $("#modal-order-summary");
+    let totalAmount = 0;  // 총 결제 금액 초기화
+
+    // 장바구니에 있는 모든 아이템 정보를 수집
     $('#cart-items .card').each(function () {
-        let productId = $(this).find('.btn-danger').attr('id').split('-')[1];
-        let quantity = $(this).find(`#quantity-${productId}`).val();
-        cartItems.push({productId: productId, quantity: parseInt(quantity)});
+        const productId = $(this).find('.btn-danger').attr('id').split('-')[1];
+        const productName = $(this).find('.card-title').text().trim();
+        const quantity = $(this).find(`#quantity-${productId}`).val();
+        const price = $(this).find(`#price-${productId}`).text().replace('총 가격: ₩', '').replace(',', '');
+        const totalPrice = parseInt(price) * quantity;
+
+        // 총 결제 금액 합산
+        totalAmount += totalPrice;
+
+        // 상품별 요약 정보 추가
+        orderSummaryContainer.append(`
+            <div class="order-item">
+                <strong>${productName}</strong> x ${quantity} = ${formatPrice(totalPrice)}
+            </div>
+        `);
     });
 
-    // 서버에 장바구니 정보 전송 (구매)
-    $.ajax({
-        url: '/api/cart/checkout',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({userId: userId, cartItems: cartItems}),
-    }).done(function (response) {
-        if (response.success) {
-            alert('구매가 완료되었습니다!');
-            $('#cart-items').empty(); // UI 비우기
-        } else {
-            alert('구매에 실패했습니다.');
+    // 총 결제 금액 표시
+    orderSummaryContainer.append(`
+        <div class="order-total">
+            <hr />
+            <strong>총 결제 금액:</strong> ${formatPrice(totalAmount)}
+        </div>
+    `);
+
+    // 모달 창 띄우기
+    $('#checkoutModal').modal('show');
+
+    // 결제 진행 버튼에 대한 클릭 이벤트 핸들러 추가
+    $('#confirmCheckout').off('click').on('click', function () {
+        let shippingAddress = $('#shippingAddress').val();
+        let paymentMethod = $('input[name="paymentMethod"]:checked').val();
+
+        if (!shippingAddress) {
+            alert('배송 주소를 입력해주세요.');
+            return;
         }
-    }).fail(function () {
-        alert('서버와의 연결이 실패했습니다.');
+
+        // 서버로 결제 요청
+        $.ajax({
+            url: '/api/cart/checkout',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                userId: userId, // 세션이나 전역에서 userId 가져오기
+                cartItems: cartItems,
+                shippingAddress: shippingAddress,
+                paymentMethod: paymentMethod,
+            }),
+            success: function (response) {
+                if (response.success) {
+                    alert('결제 성공!');
+                    $('#checkoutModal').modal('hide');
+                    $('#cart-items').empty(); // 장바구니 UI 초기화
+                } else {
+                    alert('결제에 실패했습니다.');
+                }
+            },
+            error: function () {
+                alert('서버와의 연결이 실패했습니다.');
+            }
+        });
     });
 }

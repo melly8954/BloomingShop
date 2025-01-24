@@ -45,8 +45,63 @@
         </div>
         <div id="total-price"></div>
         <!-- 결제 진행 버튼 -->
-        <button class="btn btn-success" onclick="checkout();">결제 진행</button>
+        <button class="btn btn-success" onclick="paymentProgress();">결제 진행</button>
     </div>
 </div>
+
+<!-- 결제 진행 모달 -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- 모달 헤더 -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkoutModalLabel">결제 진행</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- 모달 바디 -->
+            <div class="modal-body">
+                <!-- 주문 요약 -->
+                <div id="modal-order-summary-section">
+                    <h6>주문 요약</h6>
+                    <div id="modal-order-summary">
+                        <!-- 주문 요약 정보 동적 추가 -->
+                    </div>
+                </div>
+                <hr />
+
+                <!-- 배송 정보 -->
+                <div id="shipping-info-section">
+                    <h6>배송 정보</h6>
+                    <div class="mb-3">
+                        <label for="shippingAddress" class="form-label">배송 주소</label>
+                        <input type="text" class="form-control" id="shippingAddress" placeholder="배송지를 입력하세요" required />
+                    </div>
+                </div>
+                <hr />
+
+                <!-- 결제 방법 -->
+                <div id="payment-method-section">
+                    <h6>결제 방법</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCard" value="CARD" checked />
+                        <label class="form-check-label" for="paymentCard">카드 결제</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentBank" value="BANK_TRANSFER" />
+                        <label class="form-check-label" for="paymentBank">계좌 이체</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 모달 푸터 -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="confirmCheckout">결제 진행</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
