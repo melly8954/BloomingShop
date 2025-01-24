@@ -337,10 +337,6 @@ function validatePhoneNumber() {
 
 // 주소 검색 버튼 클릭 시 주소 입력 필드 활성화
 function searchPostcode() {
-    // 주소 입력 필드 활성화
-    $("#postcode").attr("disabled", false);
-    $("#address").attr("disabled", false);
-
     new daum.Postcode({
         oncomplete: function(data) {
             var addr = ''; // 주소 변수
