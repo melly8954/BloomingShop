@@ -123,17 +123,16 @@ function removeItemFromCart(productId) {
             method: 'DELETE',
         }).done(function (data) {
             if (data.responseData === true) {
-                let cartItemsContainer = $('#cart-items');
-
                 alert('아이템이 장바구니에서 제거되었습니다.');
                 $(`#remove-${productId}`).closest('.col-sm-6').remove(); // UI에서 제거
+                // 장바구니가 비었는지 확인
+                if ($('#cart-items .card').length === 0) {
+                    // 장바구니가 비었을 때 메시지 표시
+                    $('#cart-items').html(`<p>장바구니에 아이템이 없습니다.<br><a href="/product">상품 추가하러 가기</a></p>`);
+                }
                 // 결제 요약창 업데이트
                 updateOrderSummary();
                 calculateCartTotal();
-
-                // 상품을 다 제거 했을 경우
-                cartItemsContainer.append(`<p>장바구니에 아이템이 없습니다.<br>
-                                    <a href="/product">상품 추가하러 가기</a></p>`);
             } else {
                 alert('아이템 제거에 실패했습니다.');
             }
