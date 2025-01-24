@@ -52,7 +52,7 @@ public class CartRestController implements ResponseController {
     }
 
     @PostMapping("/{userId}/save")
-    public ResponseEntity<ResponseDto> saveCart(@PathVariable Long userId, @RequestBody List<CartItemDTO> cartItems) {
+    public ResponseEntity<ResponseDto> calculateAndSaveCart(@PathVariable Long userId, @RequestBody List<CartItemDTO> cartItems) {
         try {
             if (userId == null || userId <= 0) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자 ID입니다.", null);

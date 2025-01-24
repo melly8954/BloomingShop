@@ -124,7 +124,7 @@ function removeItemFromCart(productId) {
 }
 
 // 계산 버튼 클릭 이벤트 추가
-function saveCart() {
+function calculateAndSaveCart() {
     // 사용자에게 장바구니 저장 여부 확인
     const isConfirmed = confirm("장바구니를 계산 하시겠습니까?");
 
@@ -151,8 +151,7 @@ function saveCart() {
         }).done(function (data,status,xhr) {
             if (xhr.status === 200) {
                 // 서버로부터 총 가격 정보 받아서 업데이트
-                $('#total-price').text(formatPrice(data.responseData.totalCost));
-                $('#final-price').text(formatPrice(data.responseData.totalCost + SHIPPING_price));
+                $('#total-price').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
                 alert('장바구니가 계산되었습니다!');
             } else {
                 alert('저장 중 오류가 발생했습니다.');
