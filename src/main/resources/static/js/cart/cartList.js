@@ -222,7 +222,7 @@ function paymentProgress() {
         // 상품별 요약 정보 추가
         orderSummaryContainer.append(`
             <div class="order-item">
-                <strong>${productName}</strong> x ${quantity} = ${formatPrice(totalPrice)}
+                <strong>${productName}(${formatPrice(price)})</strong> x ${quantity} = ${formatPrice(totalPrice)}
             </div>
         `);
     });
@@ -274,3 +274,26 @@ function paymentProgress() {
         });
     });
 }
+
+// 주소 검색 버튼 클릭 시 주소 입력 필드 활성화
+function searchPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            var addr = ''; // 주소 변수
+
+            if (data.userSelectedType === 'R') { // 도로명 주소 선택시
+                addr = data.roadAddress;
+            } else { // 지번 주소 선택시
+                addr = data.jibunAddress;
+            }
+
+            // 우편번호와 주소 입력
+            document.getElementById('postcode').value = data.zonecode;
+            document.getElementById("address").value = addr;
+
+            // 상세주소 필드로 포커스 이동
+            document.getElementById("detail-address").focus();
+        }
+    }).open();
+}
+
