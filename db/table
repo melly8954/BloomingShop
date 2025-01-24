@@ -202,3 +202,16 @@ CREATE TABLE `address_tbl` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `address_tbl_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_tbl` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- bloomingshop.guest_cart definition
+
+CREATE TABLE `guest_cart` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `guest_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `product_id` bigint NOT NULL,
+  `quantity` int NOT NULL,
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
