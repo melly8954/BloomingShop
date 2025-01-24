@@ -177,7 +177,7 @@ function loadProductDetail(productId) {
             quantity = $(this).val(); // 변경된 수량 값 가져오기
             console.log("Changed Quantity: ", quantity); // 변경된 수량 값 출력
         });
-        // 장바구니 담기 버튼 클릭 시
+        // 장바구니 담기 버튼 이벤트 중복 등록 문제 방지
         $('#addToCartBtn').off('click').on('click', function() {
             addToCart(productId, quantity); // 장바구니에 추가
         });
