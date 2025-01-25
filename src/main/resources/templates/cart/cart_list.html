@@ -71,7 +71,24 @@
                 </div>
                 <hr />
 
-                <!-- 배송 정보 -->
+                <!-- 회원 유저 배송 정보 -->
+                {{#login_user}}
+                <div id="user-address-section">
+                    <div class="mb-3">
+                        <label for="address">{{name}}님의 기본 배송 주소</label><br>
+                        <input type="text" id="user-postcode" placeholder="우편번호" disabled>
+
+                        <label for="address"></label><br>
+                        <input type="text" id="user-address" name="address" placeholder="주소" disabled><br>
+
+                        <label for="detail-address"></label>
+                        <input type="text" id="user-detail-address" placeholder="상세주소" disabled><br><br><br>
+                    </div>
+                </div>
+                {{/login_user}}
+
+                <!-- 비회원 배송 정보 -->
+                {{^login_user}}
                 <div id="shipping-info-section">
                     <div class="mb-3">
                         <label for="address">배송 주소</label><br>
@@ -86,7 +103,9 @@
 
                     </div>
                 </div>
+                {{/login_user}}
                 <hr />
+
 
                 <!-- 결제 방법 -->
                 <div id="payment-method-section">

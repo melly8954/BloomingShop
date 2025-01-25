@@ -5,6 +5,7 @@ import com.melly.bloomingshop.domain.Role;
 import com.melly.bloomingshop.domain.StatusType;
 import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.RegisterRequest;
+import com.melly.bloomingshop.dto.UserAddress;
 import com.melly.bloomingshop.repository.AddressRepository;
 import com.melly.bloomingshop.repository.RoleRepository;
 import com.melly.bloomingshop.repository.UserRepository;
@@ -19,7 +20,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final RoleRepository roleRepository;
+    private final AddressRepository addresRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     @Transactional
     public User registerUserWithAddress(RegisterRequest registerRequest) {
@@ -117,5 +120,14 @@ public class UserService {
             user.changePassword(passwordEncoder.encode(newPassword));
             userRepository.save(user); // 비밀번호 업데이트
         }
+    }
+
+    @Transactional
+    // 유저의 주소를 찾는 비즈니스 로직
+    public UserAddress getUserAddress(String loginId) {
+        User user = userRepository.findByLoginId(loginId); // 유저 정보 조회
+        Address address = addressRepository.findByUserId(user.getId()); // 유저의 주소 조회
+
+        return new UserAddress(address); // 주소 정보를 DTO로 반환
     }
 }

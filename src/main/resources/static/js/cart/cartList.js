@@ -7,6 +7,9 @@ $(document).ready(function () {
 
     // 로그인 여부 확인
     checkLoginStatus();
+
+    // 로그인 유저 주소 출력
+    loadUserAddress();
 });
 
 function checkLoginStatus() {
@@ -291,7 +294,7 @@ function paymentProgress() {
         // 최종 배송 주소 합치기
         const shippingAddress = `${postcode} ${address} ${detailAddress}`.trim();
 
-        if (!postcode || !address ) {
+        if (!postcode || !address) {
             alert('모든 배송 정보를 입력해주세요.');
             return;
         }
@@ -349,4 +352,20 @@ function searchPostcode() {
             document.getElementById("detail-address").focus();
         }
     }).open();
+}
+
+// 로그인 유저 주소 출력
+function loadUserAddress() {
+    $.ajax({
+        url: '/api/user/user-address', // API 주소
+        type: 'GET',
+        dataType: 'json'
+    }).done(function (data) {
+        // 응답 성공 시, 주소 정보를 템플릿에 반영
+        $('#user-address').val(data.responseData.address);
+        $('#user-postcode').val(data.responseData.postcode);
+        $('#user-detail-address').val(data.responseData.detailAddress);
+    }).fail(function (xhr, status, error) {// 실패 시, 오류 메시지 출력
+        console.log('주소 정보를 가져오는 데 실패했습니다. 다시 시도해주세요.');
+    });
 }

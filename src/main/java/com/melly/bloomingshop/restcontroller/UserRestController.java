@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -152,6 +153,18 @@ public class UserRestController implements ResponseController {
             User user = principalDetails.getUser();
 
             return makeResponseEntity(HttpStatus.OK, "로그인 회원 정보 획득", user);
+        }catch (Exception ex){
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/user-address")
+    public ResponseEntity<ResponseDto> getUserAddress(Authentication authentication) {
+        try{
+            String username = authentication.getName(); // 로그인된 유저의 사용자명
+            UserAddress address = userService.getUserAddress(username); // 서비스에서 유저의 주소를 가져옴
+            return makeResponseEntity(HttpStatus.OK, "휴저의 주소 검색 성공", address);
         }catch (Exception ex){
             log.error(ex.getMessage());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
