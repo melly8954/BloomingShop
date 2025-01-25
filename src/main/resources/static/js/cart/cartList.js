@@ -287,16 +287,31 @@ function paymentProgress() {
 
     // 결제 진행 버튼에 대한 클릭 이벤트 핸들러 추가
     $('#confirmCheckout').off('click').on('click', function () {
-        const postcode = $('#postcode').val();
-        const address = $('#address').val();
-        const detailAddress = $('#detail-address').val();
+        // 비회원 배송 정보 가져오기
+        const postcode = $('#postcode').val(); // 비회원 우편번호
+        const address = $('#address').val(); // 비회원 주소
+        const detailAddress = $('#detail-address').val(); // 비회원 상세주소
+
+        // 회원 배송 정보 가져오기
+        const userPostcode = $('#user-postcode').val(); // 회원 우편번호
+        const userAddress = $('#user-address').val(); // 회원 주소
 
         // 최종 배송 주소 합치기
         const shippingAddress = `${postcode} ${address} ${detailAddress}`.trim();
 
-        if (!postcode || !address) {
-            alert('모든 배송 정보를 입력해주세요.');
-            return;
+        // 회원인지 여부 확인
+        if ($('#user-address-section').length > 0) {
+            // 회원인 경우 유효성 검사
+            if (!userPostcode || !userAddress) {
+                alert('회원 배송 정보가 누락되었습니다. 관리자에게 문의하세요.');
+                return;
+            }
+        } else {
+            // 비회원인 경우 유효성 검사
+            if (!postcode || !address) {
+                alert('모든 배송 정보를 입력해주세요.');
+                return;
+            }
         }
 
         const paymentMethod = $('input[name="paymentMethod"]:checked').val();
