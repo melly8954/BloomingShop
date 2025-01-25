@@ -34,7 +34,7 @@ public class OrderService {
 
             order.changeUser(user);  // Order에 User 객체 설정
 
-            Address address = addressRepository.findByUser_Id(orderRequest.getId());
+            Address address = addressRepository.findByUserId(orderRequest.getId());
             if (address != null) {
                 order.changeAddress(address);  // 주소를 address_id 컬럼에 설정
             } else {
