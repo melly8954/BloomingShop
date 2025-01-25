@@ -82,7 +82,7 @@ function displayCartItems(cartData) {
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">${item.productName} </h5>
                             <button class="btn btn-danger btn-sm" id="remove-${item.productId}">장바구니 제거</button>
-                            <p class="card-text">가격: ${formatPrice(item.productPrice)}</p>
+                            <p class="card-text">가격: ${formatPrice(item.price)}</p>
 
                             <div class="d-flex justify-content-between align-items-center mt-auto">
                                 <div class="d-flex align-items-center">
@@ -91,13 +91,13 @@ function displayCartItems(cartData) {
                                            id="quantity-${item.productId}" 
                                            value="${item.quantity}" 
                                            min="1" 
-                                           onchange="updateprice(${item.productId}, ${item.productPrice});" 
+                                           onchange="updateprice(${item.productId}, ${item.price});" 
                                            style="width: auto; max-width: 80px; border: 2px solid #e5daff;" />
                                 </div>
                             </div>
                             <!-- price 영역 -->
                             <div id="price-${item.productId}" style="margin-top: 10px;">
-                                총 가격: ${formatPrice(item.productPrice * item.quantity)}
+                                총 가격: ${formatPrice(item.price * item.quantity)}
                             </div>
                         </div>
                     </div>
@@ -120,17 +120,17 @@ function displayCartItems(cartData) {
 }
 
 // 수량 변경 시 총 가격 업데이트
-function updateprice(productId, productPrice) {
+function updateprice(productId, price) {
     // 수량 input에서 현재 값 가져오기
     const quantity = $(`#quantity-${productId}`).val();
 
     // 수량이 1보다 작은 값으로 변경되지 않도록 처리
     if (quantity < 1) {
         $(`#quantity-${productId}`).val(1); // UI에서 1로 강제로 설정
-        return updateprice(productId, productPrice); // 다시 업데이트 호출
+        return updateprice(productId, price); // 다시 업데이트 호출
     }
 
-    const totalPrice = productPrice * quantity;
+    const totalPrice = price * quantity;
 
     // 해당 상품의 총 가격을 업데이트
     $(`#price-${productId}`).html(`총 가격: ${formatPrice(totalPrice)}`);
@@ -227,22 +227,21 @@ function calculateCartTotal() {
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(cartItems),
-    })
-        .done(function (data) {
-            $('#total-price').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
-        })
-        .fail(function () {
-            alert('장바구니 계산 중 오류가 발생했습니다.');
-        });
+    }).done(function (data) {
+        $('#total-price').html(`<strong>총 결제 금액 : ${formatPrice(data.responseData.totalCost)}</strong>`);
+    }).fail(function () {
+        alert('장바구니 계산 중 오류가 발생했습니다.');
+    });
 }
 
 
 // 결제 진행 버튼 클릭 시 호출되는 함수
 function paymentProgress() {
     let orderSummaryContainer = $("#modal-order-summary");
-    let totalAmount = 0;  // 총 결제 금액 초기화
-
-    orderSummaryContainer.empty();  // 내부 콘텐츠 비우기
+    let totalAmount = 0; // 총 결제 금액 초기화
+    let cartItems = [];
+    let guestId = getGuestId();
+    orderSummaryContainer.empty(); // 내부 콘텐츠 비우기
 
     // 장바구니에 있는 모든 아이템 정보를 수집
     $('#cart-items .card').each(function () {
@@ -250,11 +249,19 @@ function paymentProgress() {
         const productName = $(this).find('.card-title').text().trim();
         const quantity = $(this).find(`#quantity-${productId}`).val();
         const priceText = $(this).find('.card-text').text().replace('가격: ', '').replace(',', ''); // 가격 텍스트에서 '가격: ' 제거
-        const price = parseInt(priceText.replace('₩', ''));  // 가격 숫자만 남기기
+        const price = parseInt(priceText.replace('₩', '')); // 가격 숫자만 남기기
         const totalPrice = price * quantity;
 
         // 총 결제 금액 합산
         totalAmount += totalPrice;
+
+        // cartItems에 아이템 추가
+        cartItems.push({
+            productId: productId,
+            quantity: parseInt(quantity),
+            price: price,
+            totalPrice: totalPrice
+        });
 
         // 상품별 요약 정보 추가
         orderSummaryContainer.append(`
@@ -277,39 +284,49 @@ function paymentProgress() {
 
     // 결제 진행 버튼에 대한 클릭 이벤트 핸들러 추가
     $('#confirmCheckout').off('click').on('click', function () {
-        let shippingAddress = $('#shippingAddress').val();
-        let paymentMethod = $('input[name="paymentMethod"]:checked').val();
+        const postcode = $('#postcode').val();
+        const address = $('#address').val();
+        const detailAddress = $('#detail-address').val();
 
-        if (!shippingAddress) {
-            alert('배송 주소를 입력해주세요.');
+        // 최종 배송 주소 합치기
+        const shippingAddress = `${postcode} ${address} ${detailAddress}`.trim();
+
+        if (!postcode || !address ) {
+            alert('모든 배송 정보를 입력해주세요.');
             return;
         }
 
-        // 서버로 결제 요청
+        const paymentMethod = $('input[name="paymentMethod"]:checked').val();
+
+        // 로그인 여부에 따라 userId 또는 guestId 설정
+        const id = userId ? userId : null;  // 로그인 시 userId, 비로그인 시 null
+        guestId = userId ? null : guestId;  // 로그인 시 guestId는 null, 비로그인 시 guestId 사용
+        const idType = userId ? "userId" : "guestId";  // idType을 "userId" 또는 "guestId"로 설정
+
         $.ajax({
-            url: '/api/cart/checkout',
+            url: '/api/order/paymentProgress',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                userId: userId, // 세션이나 전역에서 userId 가져오기
+                id: id,  // 로그인 시 userId, 비로그인 시 null
+                guestId: guestId,  // 비로그인 시 guestId 값을 설정
+                idType: idType,  // "userId" 또는 "guestId"
                 cartItems: cartItems,
                 shippingAddress: shippingAddress,
                 paymentMethod: paymentMethod,
-            }),
-            success: function (response) {
-                if (response.success) {
-                    alert('결제 성공!');
-                    $('#checkoutModal').modal('hide');
-                    $('#cart-items').empty(); // 장바구니 UI 초기화
-                } else {
-                    alert('결제에 실패했습니다.');
-                }
-            },
-            error: function () {
-                alert('서버와의 연결이 실패했습니다.');
+            })
+        }).done(function (data, xhr) {
+            if (data.responseData === true) {
+                alert('주문 성공!');
+                $('#checkoutModal').modal('hide');
+                $('#cart-items').empty(); // 장바구니 UI 초기화
+            } else {
+                alert('주문에 실패했습니다.');
             }
+        }).fail(function () {
+            alert('서버와의 연결이 실패했습니다.');
         });
-    });
+    })
 }
 
 // 주소 검색 버튼 클릭 시 주소 입력 필드 활성화
@@ -333,4 +350,3 @@ function searchPostcode() {
         }
     }).open();
 }
-

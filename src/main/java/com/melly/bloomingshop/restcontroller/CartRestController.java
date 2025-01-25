@@ -2,9 +2,8 @@ package com.melly.bloomingshop.restcontroller;
 
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
-import com.melly.bloomingshop.domain.Cart;
 import com.melly.bloomingshop.dto.AddToCartRequest;
-import com.melly.bloomingshop.dto.CartItemDTO;
+import com.melly.bloomingshop.dto.CartItemDto;
 import com.melly.bloomingshop.dto.GuestCartItemDTO;
 import com.melly.bloomingshop.security.auth.PrincipalDetails;
 import com.melly.bloomingshop.service.CartService;
@@ -79,7 +78,7 @@ public class CartRestController implements ResponseController {
                 log.error("찾으시는 회원 ID가 존재하지 않습니다.");
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 회원 ID 입니다.", null);
             }
-            List<CartItemDTO> cartItems = cartService.getCartItemsByUserId(userId);
+            List<CartItemDto> cartItems = cartService.getCartItemsByUserId(userId);
             return makeResponseEntity(HttpStatus.OK, "장바구니 리스트 검색 완료", cartItems);
         }catch (Exception ex){
             log.error(ex.getMessage(), ex);
@@ -129,7 +128,7 @@ public class CartRestController implements ResponseController {
 
     // 로그인 유저 장바구니 상품들의 총 비용 API
     @PostMapping("/user/{userId}/total")
-    public ResponseEntity<ResponseDto> getUserCartTotal(@PathVariable Long userId, @RequestBody List<CartItemDTO> cartItems) {
+    public ResponseEntity<ResponseDto> getUserCartTotal(@PathVariable Long userId, @RequestBody List<CartItemDto> cartItems) {
         try {
             if (userId == null || userId <= 0) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자 ID입니다.", null);
@@ -146,7 +145,7 @@ public class CartRestController implements ResponseController {
 
     // 비로그인 유저 장바구니 상품들의 총 비용 API
     @PostMapping("/guest/{guestId}/total")
-    public ResponseEntity<ResponseDto> getGuestCartTotal(@PathVariable String guestId, @RequestBody List<CartItemDTO> cartItems) {
+    public ResponseEntity<ResponseDto> getGuestCartTotal(@PathVariable String guestId, @RequestBody List<CartItemDto> cartItems) {
         try {
             // 비회원 장바구니 총 가격 계산
             BigDecimal totalCost = cartService.updateGuestCart(guestId, cartItems);

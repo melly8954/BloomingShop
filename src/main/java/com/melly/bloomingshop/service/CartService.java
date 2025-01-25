@@ -5,7 +5,7 @@ import com.melly.bloomingshop.domain.GuestCart;
 import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.AddToCartRequest;
-import com.melly.bloomingshop.dto.CartItemDTO;
+import com.melly.bloomingshop.dto.CartItemDto;
 import com.melly.bloomingshop.dto.GuestCartItemDTO;
 import com.melly.bloomingshop.repository.CartRepository;
 import com.melly.bloomingshop.repository.GuestCartRepository;
@@ -75,23 +75,23 @@ public class CartService {
         }
     }
 
-    public List<CartItemDTO> getCartItemsByUserId(Long userId) {
+    public List<CartItemDto> getCartItemsByUserId(Long userId) {
         List<Cart> cartItems = cartRepository.findByUserIdWithProducts(userId);
-        List<CartItemDTO> cartItemDTOs = new ArrayList<>();
+        List<CartItemDto> cartItemDtos = new ArrayList<>();
 
         // Cart의 Product 정보와 수량을 DTO로 변환 (빌더 패턴 사용)
         for (Cart cart : cartItems) {
-            CartItemDTO dto = CartItemDTO.builder()
+            CartItemDto dto = CartItemDto.builder()
                     .productId(cart.getProduct().getId())
                     .productName(cart.getProduct().getName())
-                    .productPrice(cart.getProduct().getPrice())
+                    .price(cart.getProduct().getPrice())
                     .productSize(cart.getProduct().getSize())
                     .productImageUrl(cart.getProduct().getImageUrl())
                     .quantity(cart.getQuantity())
                     .build(); // 최종적으로 객체 생성
-            cartItemDTOs.add(dto);
+            cartItemDtos.add(dto);
         }
-        return cartItemDTOs;
+        return cartItemDtos;
     }
 
     // 비회원 장바구니 아이템 가져오기 비즈니스 로직
@@ -104,7 +104,7 @@ public class CartService {
             GuestCartItemDTO dto = GuestCartItemDTO.builder()
                     .productId(cart.getProduct().getId())
                     .productName(cart.getProduct().getName())
-                    .productPrice(cart.getProduct().getPrice())
+                    .price(cart.getProduct().getPrice())
                     .productSize(cart.getProduct().getSize())
                     .productImageUrl(cart.getProduct().getImageUrl())
                     .quantity(cart.getQuantity())
@@ -137,10 +137,10 @@ public class CartService {
     }
 
     // 로그인 유저의 장바구니 총 비용 비즈니스 로직
-    public BigDecimal updateUserCart(Long userId, List<CartItemDTO> cartItems) {
+    public BigDecimal updateUserCart(Long userId, List<CartItemDto> cartItems) {
         BigDecimal totalCost = BigDecimal.ZERO;
 
-        for (CartItemDTO item : cartItems) {
+        for (CartItemDto item : cartItems) {
             // 장바구니 아이템 업데이트 (DB에 저장)
             Cart cartItem = cartRepository.findByUserIdAndProductId(userId, item.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("장바구니 아이템을 찾을 수 없습니다."));
@@ -158,10 +158,10 @@ public class CartService {
     }
 
     // 비고르인 유저의 장바구니 총 비용 비즈니스 로직
-    public BigDecimal updateGuestCart(String guestId, List<CartItemDTO> cartItems) {
+    public BigDecimal updateGuestCart(String guestId, List<CartItemDto> cartItems) {
         BigDecimal totalCost = BigDecimal.ZERO;
 
-        for (CartItemDTO item : cartItems) {
+        for (CartItemDto item : cartItems) {
             // 비회원 장바구니 아이템을 찾고, 수량 업데이트
             GuestCart guestCartItem = guestCartRepository.findByGuestIdAndProductId(guestId, item.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("장바구니 아이템을 찾을 수 없습니다."));

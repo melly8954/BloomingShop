@@ -19,15 +19,19 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")  // 컬럼명 명시
     private Long orderId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
-    private User user;  // 회원 주문을 위한 유저 정보
+    private User userId;  // 회원 주문을 위한 유저 정보
+
+    @Column(name="guest_id")
+    private String guestId;
 
     @ManyToOne
     @JoinColumn(name = "address_id", referencedColumnName = "address_id")
-    private Address address;  // 주소 테이블과의 관계
+    private Address addressId;  // 주소 테이블과의 관계
 
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
@@ -53,4 +57,24 @@ public class Order {
 
     @Column(name = "payment_status_updated")
     private LocalDateTime paymentStatusUpdated;
+
+    public void changeAddress(Address address) {
+        this.addressId = address;
+    }
+
+    public void changeShippingAddressNonMember(String shippingAddressNonMember){
+        this.shippingAddressNonMember = shippingAddressNonMember;
+    }
+
+    public void changeTotalPrice(BigDecimal totalPrice){
+        this.totalPrice = totalPrice;
+    }
+
+    public void changeUser (User user) {
+        this.userId = user;
+    }
+
+    public void changeGuest(String guestId) {
+        this.guestId = guestId;
+    }
 }

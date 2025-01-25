@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class GuestCartItemDTO {
     private Long productId;
     private String productName;
-    private BigDecimal productPrice;
+    private BigDecimal price;
     private String productSize;
     private String productImageUrl;
     private int quantity;
