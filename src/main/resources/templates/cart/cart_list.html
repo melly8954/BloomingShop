@@ -46,11 +46,11 @@
         </div>
         <div id="total-price"></div>
         <!-- 결제 진행 버튼 -->
-        <button class="btn btn-success" onclick="paymentProgress();">결제 진행</button>
+        <button class="btn btn-success" onclick="orderRegister();">주문 신청</button>
     </div>
 </div>
 
-<!-- 결제 진행 모달 -->
+<!-- 주문 등록 모달 -->
 <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -70,7 +70,6 @@
                     </div>
                 </div>
                 <hr />
-
                 <!-- 회원 유저 배송 정보 -->
                 {{#login_user}}
                 <div id="user-address-section">
@@ -105,8 +104,6 @@
                 </div>
                 {{/login_user}}
                 <hr />
-
-
                 <!-- 결제 방법 -->
                 <div id="payment-method-section">
                     <h6>결제 방법</h6>
@@ -120,7 +117,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- 모달 푸터 -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
@@ -129,6 +125,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>

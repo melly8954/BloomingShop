@@ -239,7 +239,7 @@ function calculateCartTotal() {
 
 
 // 결제 진행 버튼 클릭 시 호출되는 함수
-function paymentProgress() {
+function orderRegister() {
     let orderSummaryContainer = $("#modal-order-summary");
     let totalAmount = 0; // 총 결제 금액 초기화
     let cartItems = [];
@@ -322,7 +322,7 @@ function paymentProgress() {
         const idType = userId ? "userId" : "guestId";  // idType을 "userId" 또는 "guestId"로 설정
 
         $.ajax({
-            url: '/api/order/paymentProgress',
+            url: '/api/order/register',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
