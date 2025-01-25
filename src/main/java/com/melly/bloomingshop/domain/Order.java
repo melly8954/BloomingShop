@@ -38,7 +38,15 @@ public class Order {
 
     @Column(name = "order_date")
     private
-    LocalDateTime orderDate = LocalDateTime.now();
+    LocalDateTime orderDate;
+
+    // 엔티티가 영속화되기 전에 현재 시간을 자동으로 설정하는 메서드
+    @PrePersist
+    public void prePersist() {
+        if (this.orderDate == null) {
+            this.orderDate = LocalDateTime.now();
+        }
+    }
 
     @Column(name = "delivery_status")
     private String deliveryStatus;

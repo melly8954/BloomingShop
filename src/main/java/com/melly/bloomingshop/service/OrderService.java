@@ -25,6 +25,8 @@ public class OrderService {
         Order order = Order.builder()
                 .paymentMethod(orderRequest.getPaymentMethod())  // 결제 방법
                 .totalPrice(BigDecimal.ZERO)  // 일단 totalPrice는 0으로 설정
+                .deliveryStatus("배송 준비 중")
+                .paymentStatus("결제 진행 중")
                 .build();
 
         // 로그인한 경우 주소 처리
