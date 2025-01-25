@@ -283,10 +283,10 @@ function orderRegister() {
     `);
 
     // 모달 창 띄우기
-    $('#checkoutModal').modal('show');
+    $('#order-regist-modal').modal('show');
 
-    // 결제 진행 버튼에 대한 클릭 이벤트 핸들러 추가
-    $('#confirmCheckout').off('click').on('click', function () {
+    // 주문 신청 버튼에 대한 클릭 이벤트 핸들러 추가
+    $('#order-regist').off('click').on('click', function () {
         // 비회원 배송 정보 가져오기
         const postcode = $('#postcode').val(); // 비회원 우편번호
         const address = $('#address').val(); // 비회원 주소
@@ -335,11 +335,11 @@ function orderRegister() {
             })
         }).done(function (data, xhr) {
             if (data.responseData === true) {
-                alert('주문 성공!');
-                $('#checkoutModal').modal('hide');
-                $('#cart-items').empty(); // 장바구니 UI 초기화
+                alert('주문 신청 성공!');
+                $('#order-regist-modal').modal('hide');
+                location.href="/order/list";
             } else {
-                alert('주문에 실패했습니다.');
+                alert('주문 신청에 실패했습니다.');
             }
         }).fail(function () {
             alert('서버와의 연결이 실패했습니다.');
