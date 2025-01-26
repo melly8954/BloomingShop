@@ -2,14 +2,18 @@ package com.melly.bloomingshop.service;
 
 import com.melly.bloomingshop.domain.*;
 import com.melly.bloomingshop.dto.CartItemDto;
+import com.melly.bloomingshop.dto.OrderListResponse;
 import com.melly.bloomingshop.dto.OrderRequest;
 import com.melly.bloomingshop.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -17,7 +21,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;  // UserRepository 추가
+    private final UserRepository userRepository;
 
     @Transactional
     public void createOrder(OrderRequest orderRequest) {
@@ -82,4 +86,47 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
+    public List<OrderListResponse> getAllOrders(User userId, String guestId) {
+        try {
+            List<Order> orders;
+
+            if (userId != null) {
+                // 로그인 유저의 주문 내역 조회
+                orders = orderRepository.findByUserId(userId);
+            } else {
+                // 비로그인 유저의 주문 내역 조회 (guestId로 찾기)
+                orders = orderRepository.findByGuestId(guestId);
+            }
+
+            // 각 주문에 대한 OrderItem 정보를 처리하여 OrderListResponse 리스트로 변환
+            List<OrderListResponse> response = orders.stream()
+                    .flatMap(order -> {
+                        List<OrderItem> orderItems = orderItemRepository.findByOrderId(order);
+                        return orderItems.stream()
+                                .map(orderItem -> {
+                                    // 상품 정보를 가져오기
+                                    Product product = orderItem.getProductId();
+
+                                    // OrderListResponse 객체 생성
+                                    return OrderListResponse.builder()
+                                            .productName(product.getName())
+                                            .productPrice(product.getPrice().toString())
+                                            .productSize(product.getSize())
+                                            .productImageUrl(product.getImageUrl())
+                                            .quantity(orderItem.getQuantity())
+                                            .totalPrice(orderItem.getQuantity() * product.getPrice().intValue())
+                                            .paymentStatus(order.getPaymentStatus())
+                                            .deliveryStatus(order.getDeliveryStatus())
+                                            .build();
+                                });
+                    })
+                    .collect(Collectors.toList());
+            // 반환
+            return response;
+        } catch (Exception ex) {
+            log.error("주문 내역 조회 실패: " + ex.getMessage());
+            throw new RuntimeException("주문 내역 조회 중 오류 발생", ex);
+        }
+    }
 }
