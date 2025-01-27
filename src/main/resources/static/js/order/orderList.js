@@ -49,8 +49,7 @@ function orderList() {
         <div>
             <h5>주문 ID: ${orders[0].orderId}</h5>
             <div>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}<br>
-                 결제 상태 : ${orders[0].paymentStatus} <br>
-                 배송 상태 : ${orders[0].deliveryStatus}<br>     
+                 주문 상태 : ${orders[0].paymentStatus} <br>    
             </div>
         </div>
         `;
