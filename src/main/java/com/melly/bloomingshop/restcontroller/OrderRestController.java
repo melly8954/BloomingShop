@@ -25,6 +25,7 @@ import java.util.List;
 public class OrderRestController implements ResponseController {
     private final OrderService orderService;
 
+    // 주문 신청 API
     @PostMapping("/register")
     public ResponseEntity<ResponseDto> processOrder(@RequestBody OrderRequest orderRequest) {
         try {
@@ -37,6 +38,7 @@ public class OrderRestController implements ResponseController {
         }
     }
 
+    // 주문 내역 출력 aPI
     @GetMapping("/list")
     public ResponseEntity<ResponseDto> getOrders(@RequestHeader("Guest-Id") String guestId) {
         try{

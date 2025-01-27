@@ -23,7 +23,8 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
-
+    
+    // 주문 신청 비즈니스 로직
     @Transactional
     public void createOrder(OrderRequest orderRequest) {
         // 1. Order 엔티티 생성 (totalPrice는 일단 0으로 설정)
@@ -86,7 +87,8 @@ public class OrderService {
         // 6. Order 엔티티 저장 (총 결제 금액 업데이트 후)
         orderRepository.save(order);
     }
-
+    
+    // 주문 내역 화면출력 비즈니스 로직
     @Transactional
     public List<OrderListResponse> getAllOrders(User userId, String guestId) {
         try {
