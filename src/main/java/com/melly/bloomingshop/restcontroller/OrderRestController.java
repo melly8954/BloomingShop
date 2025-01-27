@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +38,18 @@ public class OrderRestController implements ResponseController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ResponseDto> getOrders(@RequestHeader("Guest-Id") String guestId, @AuthenticationPrincipal PrincipalDetails userDetails ) {
+    public ResponseEntity<ResponseDto> getOrders(@RequestHeader("Guest-Id") String guestId) {
         try{
             // 인증된 사용자 정보 가져오기
-            User userId = userDetails.getUser();
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User userId = null;
+
+            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                // 로그인한 사용자의 경우
+                PrincipalDetails userDetails = (PrincipalDetails) auth.getPrincipal();
+                userId = userDetails.getUser();
+            }
+
             List<OrderListResponse> allOrders = orderService.getAllOrders(userId, guestId);
             return makeResponseEntity(HttpStatus.OK, "주문 내역 반환 성공", allOrders);
         }catch (Exception ex) {
