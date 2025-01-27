@@ -337,6 +337,7 @@ function orderRegister() {
             if (data.responseData === true) {
                 alert('주문 신청 성공!');
                 $('#order-regist-modal').modal('hide');
+                deleteCartItems();
                 location.href="/order/list";
             } else {
                 alert('주문 신청에 실패했습니다.');
@@ -382,5 +383,22 @@ function loadUserAddress() {
         $('#user-detail-address').val(data.responseData.detailAddress);
     }).fail(function (xhr, status, error) {// 실패 시, 오류 메시지 출력
         console.log('주소 정보를 가져오는 데 실패했습니다. 다시 시도해주세요.');
+    });
+}
+
+// 장바구니 항목 주문 신청 시 항목 삭제
+function deleteCartItems(){
+    const guestId = getGuestId();
+    $.ajax({
+        url: '/api/cart',
+        type: 'DELETE',
+        dataType: 'json',
+        headers: {
+            'Guest-Id': guestId
+        }
+    }).done(function (data) {
+        console.log(data);
+    }).fail(function () {
+        alert('서버와의 연결이 실패했습니다.');
     });
 }

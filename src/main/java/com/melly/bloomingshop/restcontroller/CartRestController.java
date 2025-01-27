@@ -2,9 +2,11 @@ package com.melly.bloomingshop.restcontroller;
 
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
+import com.melly.bloomingshop.domain.User;
 import com.melly.bloomingshop.dto.AddToCartRequest;
 import com.melly.bloomingshop.dto.CartItemDto;
 import com.melly.bloomingshop.dto.GuestCartItemDTO;
+import com.melly.bloomingshop.dto.OrderListResponse;
 import com.melly.bloomingshop.security.auth.PrincipalDetails;
 import com.melly.bloomingshop.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -153,6 +155,26 @@ public class CartRestController implements ResponseController {
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+        }
+    }
+
+    // 장바구니 항목 주문 신청 시 항목 삭제 API
+    @DeleteMapping("")
+    public ResponseEntity<ResponseDto> deleteAllCartItems(@RequestHeader("Guest-Id") String guestId) {
+        try{
+            // 인증된 사용자 정보 가져오기
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Long userId = null;
+            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                // 로그인한 사용자의 경우
+                PrincipalDetails userDetails = (PrincipalDetails) auth.getPrincipal();
+                userId = userDetails.getUser().getId();
+            }
+            cartService.deleteCartItems(userId,guestId);
+            return makeResponseEntity(HttpStatus.OK, "장바구니 항목 삭제", true);
+        }catch (Exception ex) {
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
         }
     }
 }

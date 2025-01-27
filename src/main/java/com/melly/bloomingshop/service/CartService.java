@@ -177,5 +177,17 @@ public class CartService {
 
         return totalCost;
     }
+    
 
+    @Transactional
+    // 장바구니 항목 주문 신청 시 항목 삭제 비즈니스 로직
+    public void deleteCartItems(Long userId, String guestId){
+        if (userId != null) {
+            // 로그인 유저의 장바구니 항목 삭제
+            cartRepository.deleteByUserId(userId);
+        } else {
+            // 비로그인 유저의 장바구니 항목 삭제
+            guestCartRepository.deleteByGuestId(guestId);
+        }
+    }
 }

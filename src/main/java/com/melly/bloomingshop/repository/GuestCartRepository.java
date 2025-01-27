@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface GuestCartRepository extends JpaRepository<GuestCart, Long> {
     Optional<GuestCart> findByGuestIdAndProductId(String guestId, Long productId);
     List<GuestCart> findByGuestId(String guestId);
+
+    // guestId로 장바구니 항목 삭제
+    void deleteByGuestId(String guestId);
 }
