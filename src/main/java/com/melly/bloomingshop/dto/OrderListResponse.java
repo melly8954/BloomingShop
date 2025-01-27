@@ -6,18 +6,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 public class OrderListResponse {
+    private Long orderId;
     private String productName;
-    private String productPrice;
+    private BigDecimal productPrice;
     private String productSize;
     private String productImageUrl;
-    private int quantity;
-    private int totalPrice;
+    private Integer quantity;
+    private BigDecimal singleItemTotalPrice;
+    private BigDecimal totalOrderPrice;
     private String paymentStatus;
     private String deliveryStatus;
 }

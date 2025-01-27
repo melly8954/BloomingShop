@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,15 +108,19 @@ public class OrderService {
                                 .map(orderItem -> {
                                     // 상품 정보를 가져오기
                                     Product product = orderItem.getProductId();
-
+                                    BigDecimal singleItemTotalPrice = product.getPrice()
+                                            .multiply(BigDecimal.valueOf(orderItem.getQuantity()))
+                                            .setScale(2, RoundingMode.HALF_UP); // 소수점 2자리까지 반올림
                                     // OrderListResponse 객체 생성
                                     return OrderListResponse.builder()
+                                            .orderId(order.getOrderId())
                                             .productName(product.getName())
-                                            .productPrice(product.getPrice().toString())
+                                            .productPrice(product.getPrice())
                                             .productSize(product.getSize())
                                             .productImageUrl(product.getImageUrl())
                                             .quantity(orderItem.getQuantity())
-                                            .totalPrice(orderItem.getQuantity() * product.getPrice().intValue())
+                                            .singleItemTotalPrice(singleItemTotalPrice)
+                                            .totalOrderPrice(order.getTotalPrice())
                                             .paymentStatus(order.getPaymentStatus())
                                             .deliveryStatus(order.getDeliveryStatus())
                                             .build();
