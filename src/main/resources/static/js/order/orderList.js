@@ -48,9 +48,10 @@ function orderList() {
             const orderSummary = `
         <div>
             <h5>주문 ID: ${orders[0].orderId}</h5>
-            <div>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}<br>
-                 주문 상태 : ${orders[0].paymentStatus}
-                 ${orders[0].paymentStatus === '결제 진행 중' ? `<button id="pay-btn-${orders[0].orderId}" onclick="payment(${orders[0].orderId});">결제</button>` : ''} <br>    
+            <div><span>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}</span><br>
+                 <span>주문 상태 : ${orders[0].paymentStatus}
+                 ${orders[0].paymentStatus === '결제 진행 중' ? `<button id="payment-btn-${orders[0].orderId}" onclick="payment(${orders[0].orderId});">결제</button>` : ''}</span><br>
+                 <span id="delivery-status-${orders[0].orderId}" ${orders[0].paymentStatus === '결제 완료' ? '' : 'style="display: none;"'}>배송 상태 : ${orders[0].deliveryStatus}</span>        
             </div>
         </div>
         `;
@@ -88,18 +89,17 @@ function orderList() {
     });
 }
 
-// 주문 id 별 결제 상황 업데이트
+// 주문 id 별 결제 상태 업데이트
 function payment(orderId){
     $.ajax({
         url: `/api/order/${orderId}/payment-status`,
         type: 'PATCH',
     }).done(function (data) {
         console.log(data);
-        $(`#pay-btn-${orderId}`).hide();    // 결제 버튼 숨기기
+        $(`#payment-btn-${orderId}`).hide();    // 결제 버튼 숨기기
         orderList();    // 주문 목록 갱신
     }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log(errorThrown);
         alert("결제를 실패하셨습니다.")
     })
-
 }
