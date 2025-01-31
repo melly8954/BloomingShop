@@ -53,8 +53,8 @@ function orderList() {
             const orderGroup = $('<div class="order-group mb-5"></div>'); // 각 주문별 그룹
             const orderSummary = `
         <div>
-            <h5>주문 ID: ${orders[0].orderId}</h5>
-            <div><span>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)} <button id="order-cancel-${orders[0].orderId}" onclick="orderCancel(${orders[0].orderId});">주문 취소</button></span><br>
+            <h5>주문 ID: ${orders[0].orderId} <button id="order-cancel-${orders[0].orderId}" onclick="orderCancel(${orders[0].orderId});">주문 취소</button> </h5>
+            <div><span>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}</span><br>
                  <span>주문 상태 : ${orders[0].paymentStatus}
                  ${orders[0].paymentStatus === '결제 진행 중' ? `<button id="payment-btn-${orders[0].orderId}" onclick="payment(${orders[0].orderId});">결제</button>` : ''}</span><br>
                  <span>배송 주소 : ${orders[0].userAddress ? orders[0].userAddress : orders[0].guestAddress || '주소 정보 없음'}</span><br>             
