@@ -92,6 +92,10 @@ function orderList() {
 
 // 주문 id 별 결제 상태 업데이트
 function payment(orderId){
+    // 사용자에게 확인 요청
+    if (!confirm('결제 하겠습니까?')) {
+        return; // 사용자가 취소를 클릭하면 함수 종료
+    }
     $.ajax({
         url: `/api/order/${orderId}/payment-status`,
         type: 'PATCH',
