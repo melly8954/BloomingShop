@@ -85,4 +85,8 @@ public class Order {
     public void changeGuest(String guestId) {
         this.guestId = guestId;
     }
+
+    public void changePaymentStatus(String newStatus){
+        this.paymentStatus = newStatus;
+    }
 }

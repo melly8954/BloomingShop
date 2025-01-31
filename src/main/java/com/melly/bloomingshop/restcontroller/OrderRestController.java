@@ -59,4 +59,20 @@ public class OrderRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
         }
     }
+
+    // 결제 상황 업데이트 API
+    @PatchMapping("/{orderId}/payment-status")
+    public ResponseEntity<ResponseDto> processPaymentStatus(@PathVariable Long orderId) {
+        try{
+            if(orderId == null || orderId <= 0) {
+                log.error("주문 ID 오류");
+                return makeResponseEntity(HttpStatus.BAD_REQUEST,"주문 ID 오류", null);
+            }
+            this.orderService.updatePaymentStatus(orderId);
+            return makeResponseEntity(HttpStatus.OK,"결제 성공!",true);
+        }catch (Exception ex) {
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
+        }
+    }
 }

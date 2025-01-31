@@ -49,7 +49,8 @@ function orderList() {
         <div>
             <h5>주문 ID: ${orders[0].orderId}</h5>
             <div>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}<br>
-                 주문 상태 : ${orders[0].paymentStatus} <br>    
+                 주문 상태 : ${orders[0].paymentStatus}
+                 ${orders[0].paymentStatus === '결제 진행 중' ? `<button id="pay-btn-${orders[0].orderId}" onclick="payment(${orders[0].orderId});">결제</button>` : ''} <br>    
             </div>
         </div>
         `;
@@ -85,5 +86,20 @@ function orderList() {
     }).fail(function (xhr, status, error) {
         console.error("주문 목록 로드 실패:", error);
     });
+}
+
+// 주문 id 별 결제 상황 업데이트
+function payment(orderId){
+    $.ajax({
+        url: `/api/order/${orderId}/payment-status`,
+        type: 'PATCH',
+    }).done(function (data) {
+        console.log(data);
+        $(`#pay-btn-${orderId}`).hide();    // 결제 버튼 숨기기
+        orderList();    // 주문 목록 갱신
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log(errorThrown);
+        alert("결제를 실패하셨습니다.")
+    })
 
 }

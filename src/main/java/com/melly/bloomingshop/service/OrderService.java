@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -135,5 +136,14 @@ public class OrderService {
             log.error("주문 내역 조회 실패: " + ex.getMessage());
             throw new RuntimeException("주문 내역 조회 중 오류 발생", ex);
         }
+    }
+
+    // 결제 상황 업데이트 비즈니스 로직
+    public void updatePaymentStatus(Long orderId) {
+        Optional<Order> order = this.orderRepository.findById(orderId);
+        order.ifPresent(o ->{
+            o.changePaymentStatus("결제 완료");
+            orderRepository.save(o);
+        });
     }
 }
