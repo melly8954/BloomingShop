@@ -142,12 +142,14 @@ CREATE TABLE `order_tbl` (
   `payment_method` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `delivery_status_updated` timestamp NULL DEFAULT NULL,
   `payment_status_updated` timestamp NULL DEFAULT NULL,
+  `deleted_flag` tinyint(1) DEFAULT '0',
+  `deleted_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   KEY `user_id` (`user_id`),
   KEY `address_id` (`address_id`),
   CONSTRAINT `order_tbl_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_tbl` (`id`) ON DELETE CASCADE,
   CONSTRAINT `order_tbl_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `address_tbl` (`address_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 -- bloomingshop.order_item definition
