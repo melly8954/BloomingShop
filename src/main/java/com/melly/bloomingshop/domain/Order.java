@@ -89,4 +89,12 @@ public class Order {
     public void changePaymentStatus(String newStatus){
         this.paymentStatus = newStatus;
     }
+
+    // 엔티티가 업데이트되기 전에 호출되어 paymentStatusUpdated 시간을 자동으로 설정
+    @PreUpdate
+    public void preUpdate() {
+        if (this.paymentStatus != null) {
+            this.paymentStatusUpdated = LocalDateTime.now();
+        }
+    }
 }
