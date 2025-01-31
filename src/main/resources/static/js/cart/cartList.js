@@ -84,7 +84,7 @@ function displayCartItems(cartData) {
                         <img src="${item.productImageUrl}" alt="${item.productName}" class="card-img-top" style="height: auto; object-fit: cover;">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">${item.productName} </h5>
-                            <button class="btn btn-danger btn-sm" id="remove-${item.productId}">장바구니 제거</button>
+                            <button class="btn btn-danger btn-sm" id="remove-${item.productId}">해당 상품 제거</button>
                             <p class="card-text">가격: ${formatPrice(item.price)}</p>
 
                             <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -110,14 +110,14 @@ function displayCartItems(cartData) {
 
             // 삭제 버튼 이벤트 리스너 추가
             $(`#remove-${item.productId}`).click(function () {
-                removeItemFromCart(item.productId);
+                removeItemFromCartByUser(item.productId);
             });
         });
 
         // 장바구니에 아이템이 있을 때 결제 요약 업데이트
         updateOrderSummary();
     } else {
-        cartItemsContainer.append(`<p class="alert alert-info">장바구니에 아이템이 없습니다.<br>
+        cartItemsContainer.append(`<p class="alert alert-info">장바구니에 상품이 없습니다.<br>
                                     <a href="/product">상품 추가하러 가기</a></p>`); // 장바구니가 비었을 경우
     }
 }
@@ -145,8 +145,8 @@ function updateprice(productId, price) {
     calculateCartTotal();
 }
 
-// 장바구니에서 아이템 제거
-function removeItemFromCart(productId) {
+// 장바구니에서 해당 상품 제거
+function removeItemFromCartByUser(productId) {
     // 장바구니 상품 제거 여부 확인
     const isConfirmed = confirm("해당 상품을 제거 하시겠습니까?");
 
@@ -161,12 +161,12 @@ function removeItemFromCart(productId) {
             method: 'DELETE',
         }).done(function (data) {
             if (data.responseData === true) {
-                alert('아이템이 장바구니에서 제거되었습니다.');
+                alert('상품이 장바구니에서 제거되었습니다.');
                 $(`#remove-${productId}`).closest('.col-sm-6').remove(); // UI에서 제거
                 // 장바구니가 비었는지 확인
                 if ($('#cart-items .card').length === 0) {
                     // 장바구니가 비었을 때 메시지 표시
-                    $('#cart-items').html(`<p>장바구니에 아이템이 없습니다.<br><a href="/product">상품 추가하러 가기</a></p>`);
+                    $('#cart-items').html(`<p class="alert alert-info">장바구니에 상품이 없습니다.<br><a href="/product">상품 추가하러 가기</a></p>`);
                 }
                 // 결제 요약창 업데이트
                 updateOrderSummary();
@@ -337,7 +337,7 @@ function orderRegister() {
             if (data.responseData === true) {
                 alert('주문 신청 성공!');
                 $('#order-regist-modal').modal('hide');
-                deleteCartItems();
+                clearCartAfterOrder();
                 location.href="/order/list";
             } else {
                 alert('주문 신청에 실패했습니다.');
@@ -387,7 +387,7 @@ function loadUserAddress() {
 }
 
 // 장바구니 항목 주문 신청 시 항목 삭제
-function deleteCartItems(){
+function clearCartAfterOrder(){
     const guestId = getGuestId();
     $.ajax({
         url: '/api/cart',
