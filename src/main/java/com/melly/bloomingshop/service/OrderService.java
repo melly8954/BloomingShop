@@ -114,6 +114,10 @@ public class OrderService {
                                     BigDecimal singleItemTotalPrice = product.getPrice()
                                             .multiply(BigDecimal.valueOf(orderItem.getQuantity()))
                                             .setScale(2, RoundingMode.HALF_UP); // 소수점 2자리까지 반올림
+                                    // 로그인/비로그인 유저에 따라 주소 정보 설정
+                                    String userAddress = (order.getAddressId() != null)
+                                            ? order.getAddressId().getPostcode() + " " + order.getAddressId().getAddress() + " " + order.getAddressId().getDetailAddress()
+                                            : null;
                                     // OrderListResponse 객체 생성
                                     return OrderListResponse.builder()
                                             .orderId(order.getOrderId())
@@ -126,6 +130,8 @@ public class OrderService {
                                             .totalOrderPrice(order.getTotalPrice())
                                             .paymentStatus(order.getPaymentStatus())
                                             .deliveryStatus(order.getDeliveryStatus())
+                                            .userAddress(userAddress) // 로그인 유저 주소
+                                            .guestAddress(order.getShippingAddressNonMember()) // 비로그인 유저 주소
                                             .build();
                                 });
                     })

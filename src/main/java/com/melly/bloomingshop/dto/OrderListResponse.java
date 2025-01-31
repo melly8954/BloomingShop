@@ -24,4 +24,6 @@ public class OrderListResponse {
     private BigDecimal totalOrderPrice;
     private String paymentStatus;
     private String deliveryStatus;
+    private String userAddress;  // 로그인 유저의 주소 (address_tbl에서 가져옴)
+    private String guestAddress; // 비로그인 유저의 주소 (order_tbl에서 가져옴)
 }
