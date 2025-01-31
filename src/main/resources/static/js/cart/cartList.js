@@ -117,7 +117,7 @@ function displayCartItems(cartData) {
         // 장바구니에 아이템이 있을 때 결제 요약 업데이트
         updateOrderSummary();
     } else {
-        cartItemsContainer.append(`<p>장바구니에 아이템이 없습니다.<br>
+        cartItemsContainer.append(`<p class="alert alert-info">장바구니에 아이템이 없습니다.<br>
                                     <a href="/product">상품 추가하러 가기</a></p>`); // 장바구니가 비었을 경우
     }
 }
