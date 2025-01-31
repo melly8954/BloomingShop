@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -97,10 +98,10 @@ public class OrderService {
 
             if (userId != null) {
                 // 로그인 유저의 주문 내역 조회
-                orders = orderRepository.findByUserId(userId);
+                orders = orderRepository.findByUserIdAndDeletedFlagFalse(userId);
             } else {
                 // 비로그인 유저의 주문 내역 조회 (guestId로 찾기)
-                orders = orderRepository.findByGuestId(guestId);
+                orders = orderRepository.findByGuestIdAndDeletedFlagFalse(guestId);
             }
 
             // 각 주문에 대한 OrderItem 정보를 처리하여 OrderListResponse 리스트로 변환
@@ -149,6 +150,16 @@ public class OrderService {
         Optional<Order> order = this.orderRepository.findById(orderId);
         order.ifPresent(o ->{
             o.changePaymentStatus("결제 완료");
+            orderRepository.save(o);
+        });
+    }
+
+    // 주문 취소 비즈니스 로직
+    public void cancelOrder(Long orderId) {
+        Optional<Order> order = this.orderRepository.findById(orderId);
+        order.ifPresent(o -> {
+            o.changeDeletedFlag(true);
+            o.changeDeletedDate(LocalDateTime.now());
             orderRepository.save(o);
         });
     }

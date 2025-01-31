@@ -75,4 +75,20 @@ public class OrderRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
         }
     }
+
+    // 주문 취소 API (Soft Deleted)
+    @PatchMapping("{orderId}/cancel")
+    public ResponseEntity<ResponseDto> processCancel(@PathVariable Long orderId) {
+        try{
+            if(orderId == null || orderId <= 0) {
+                log.error("주문 ID 오류");
+                return makeResponseEntity(HttpStatus.BAD_REQUEST,"주문 ID 오류", null);
+            }
+            this.orderService.cancelOrder(orderId);
+            return makeResponseEntity(HttpStatus.OK,"주문 취소 완료!",true);
+        }catch (Exception ex) {
+            log.error(ex.getMessage());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
+        }
+    }
 }

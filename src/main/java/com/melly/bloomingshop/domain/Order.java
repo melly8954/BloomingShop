@@ -66,6 +66,12 @@ public class Order {
     @Column(name = "payment_status_updated")
     private LocalDateTime paymentStatusUpdated;
 
+    @Column(name = "deleted_flag")
+    private boolean deletedFlag;
+
+    @Column(name = "deleted_date")
+    private LocalDateTime deletedDate;
+
     public void changeAddress(Address address) {
         this.addressId = address;
     }
@@ -97,4 +103,13 @@ public class Order {
             this.paymentStatusUpdated = LocalDateTime.now();
         }
     }
+
+    // 주문 취소 (soft deleted)
+    public void changeDeletedFlag(boolean deletedFlag) {
+        this.deletedFlag = deletedFlag;
+    }
+    public void changeDeletedDate(LocalDateTime deletedDate) {
+        this.deletedDate = deletedDate;
+    }
+
 }
