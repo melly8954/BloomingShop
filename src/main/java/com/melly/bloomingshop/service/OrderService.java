@@ -138,7 +138,7 @@ public class OrderService {
         }
     }
 
-    // 결제 상황 업데이트 비즈니스 로직
+    // 결제 상태 업데이트 비즈니스 로직
     public void updatePaymentStatus(Long orderId) {
         Optional<Order> order = this.orderRepository.findById(orderId);
         order.ifPresent(o ->{

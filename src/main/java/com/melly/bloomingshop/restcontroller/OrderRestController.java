@@ -60,7 +60,7 @@ public class OrderRestController implements ResponseController {
         }
     }
 
-    // 결제 상황 업데이트 API
+    // 결제 상태 업데이트 API
     @PatchMapping("/{orderId}/payment-status")
     public ResponseEntity<ResponseDto> processPaymentStatus(@PathVariable Long orderId) {
         try{
