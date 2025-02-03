@@ -4,10 +4,10 @@ $(document).ready(function () {
 });
 
 // 기본값 설정
-let currentPage = 1;  // Make sure currentPage is defined at the top level
+let currentPage = 1;
 const pageSize = 5;
-const sortField = "orderId"; // 필요에 따라 변경
-const sortOrder = "asc";     // 또는 "desc"
+const sortField = "orderId";
+const sortOrder = "asc";
 
 // 주문 목록 로드 함수
 function loadOrders(page, size, sort, order) {
@@ -111,30 +111,32 @@ function renderPagination(data) {
     const totalElements = data.totalElements;
     const rowsPerPage = 5; // 페이지 당 항목 수
     const totalPages = Math.ceil(totalElements / rowsPerPage); // 전체 페이지 수
+    const currentPage = data.currentPage + 1;   // responseData.currentPage가 0부터 시작하므로 1을 더해준다.
     const startPage = getStartPage(currentPage);
     const endPage = getEndPage(startPage, totalPages);
 
+    // 페이지네이션 HTML 초기화
     let paginationHTML = `<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">`;
 
     // Previous 버튼
     let prevPage = currentPage > 1 ? currentPage - 1 : 1;
     paginationHTML += `<li class="page-item">
-            <a class="page-link btn btn-outline-primary" onclick="loadOrders(${prevPage}, ${pageSize}, '${sortField}', '${sortOrder}')">Prev</a>
-        </li>`;
+        <a class="page-link btn btn-outline-primary" onclick="loadOrders(${prevPage}, ${pageSize}, '${sortField}', '${sortOrder}')">Prev</a>
+    </li>`;
 
     // 페이지 버튼들
     for (let i = startPage; i <= endPage; i++) {
         let sClass = i === currentPage ? 'page-item active' : 'page-item';
         paginationHTML += `<li class="${sClass}">
-                <a class="page-link btn btn-outline-primary" onclick="loadOrders(${i}, ${pageSize}, '${sortField}', '${sortOrder}')">${i}</a>
-            </li>`;
+            <a class="page-link btn btn-outline-primary" onclick="loadOrders(${i}, ${pageSize}, '${sortField}', '${sortOrder}')">${i}</a>
+        </li>`;
     }
 
     // Next 버튼
     let nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
     paginationHTML += `<li class="page-item">
-            <a class="page-link btn btn-outline-primary" onclick="loadOrders(${nextPage}, ${pageSize}, '${sortField}', '${sortOrder}')">Next</a>
-        </li>`;
+        <a class="page-link btn btn-outline-primary" onclick="loadOrders(${nextPage}, ${pageSize}, '${sortField}', '${sortOrder}')">Next</a>
+    </li>`;
 
     paginationHTML += `</ul></nav>`;
 
@@ -151,10 +153,3 @@ function getEndPage(startPage, totalPages) {
     return Math.min(startPage + 4, totalPages);
 }
 
-// 페이징 링크 클릭 이벤트 처리
-$(document).on("click", ".page-link", function (e) {
-    e.preventDefault();
-    let selectedPage = $(this).text(); // 수정: .data("page") 대신 .text()를 사용
-    currentPage = parseInt(selectedPage); // 클릭된 페이지 번호 업데이트
-    loadOrders(currentPage, pageSize, sortField, sortOrder); // 페이지 로드
-});
