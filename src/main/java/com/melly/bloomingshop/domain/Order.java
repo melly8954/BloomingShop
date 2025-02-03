@@ -37,8 +37,7 @@ public class Order {
     private BigDecimal totalPrice;
 
     @Column(name = "created_date")
-    private
-    LocalDateTime createdDate;
+    private LocalDateTime createdDate;
 
     // 엔티티가 영속화되기 전에 현재 시간을 자동으로 설정하는 메서드
     @PrePersist
