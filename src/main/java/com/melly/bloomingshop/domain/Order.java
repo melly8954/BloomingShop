@@ -111,4 +111,7 @@ public class Order {
         this.deletedDate = deletedDate;
     }
 
+    public void changeDeliveryStatus(String newStatus){
+        this.deliveryStatus = newStatus;
+    }
 }

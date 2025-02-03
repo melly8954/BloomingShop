@@ -1,6 +1,15 @@
 $(document).ready(function () {
     // 초기 주문 목록 로드
     loadOrders(currentPage, pageSize, sortField, sortOrder);
+
+    // 배달 상태 변경 시 DB 업데이트
+    $(document).on('change', '.delivery-status-select', function() {
+        const orderId = $(this).data('orderid');
+        const newStatus = $(this).val();
+
+        // AJAX 요청으로 상태 업데이트
+        updateDeliveryStatus(orderId, newStatus);
+    });
 });
 
 // 기본값 설정
@@ -159,3 +168,21 @@ function getEndPage(startPage, totalPages) {
     return Math.min(startPage + 4, totalPages);
 }
 
+// 배달 상태 업데이트 함수
+function updateDeliveryStatus(orderId, deliveryStatus) {
+    $.ajax({
+        url: '/api/admin/order/delivery-status',
+        type: 'PATCH',
+        data: JSON.stringify({
+            orderId: orderId,       // 객체를 JSON으로 변환하여 보내기
+            deliveryStatus: deliveryStatus
+        }),
+        dataType: 'json',
+        contentType: 'application/json',
+    }).done(function(response) {
+        alert("배송 상태가 변경되었습니다."); // 성공 메시지 표시
+    }).fail(function(xhr, status, error) {
+        console.error("배달 상태 업데이트 오류:", error);
+        alert("배달 상태 업데이트 중 오류가 발생했습니다.");
+    });
+}

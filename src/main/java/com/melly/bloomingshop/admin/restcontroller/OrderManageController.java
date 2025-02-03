@@ -1,13 +1,11 @@
 package com.melly.bloomingshop.admin.restcontroller;
 
+import com.melly.bloomingshop.admin.dto.DeliveryStatusRequest;
 import com.melly.bloomingshop.admin.service.OrderManageService;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.Order;
-import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.dto.OrderPageResponse;
-import com.melly.bloomingshop.dto.ProductPageResponse;
-import com.melly.bloomingshop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,10 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -59,6 +54,17 @@ public class OrderManageController implements ResponseController {
         } catch (IllegalArgumentException e) {
             log.error("잘못된 요청 파라미터: {}", e.getMessage(), e);
             return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 요청 파라미터입니다.", e.getMessage());
+        } catch (Exception e) {
+            log.error("상품 조회 중 오류 발생: {}", e.getMessage(), e);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "상품 조회 중 알 수 없는 오류가 발생했습니다.", e.getMessage());
+        }
+    }
+
+    @PatchMapping("/delivery-status")
+    public ResponseEntity<?> updateDeliveryStatus(@RequestBody DeliveryStatusRequest deliveryStatusRequest) {
+        try {
+            orderManageService.updateDeliveryStatus(deliveryStatusRequest);
+            return makeResponseEntity(HttpStatus.OK, "배송 상태 변경에 성공했습니다.", true);
         } catch (Exception e) {
             log.error("상품 조회 중 오류 발생: {}", e.getMessage(), e);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "상품 조회 중 알 수 없는 오류가 발생했습니다.", e.getMessage());
