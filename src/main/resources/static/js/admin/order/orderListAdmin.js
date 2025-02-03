@@ -46,14 +46,14 @@ function renderOrders(data) {
     if (orders && orders.length > 0) {
         html += '<div class="row">';
 
-        $.each(orders, function (index, order) {
+        orders.forEach(function (order) {
             let createdDate = order.createdDate ? formatDate(order.createdDate) : "";
-
+            let totalOrderPrice = formatPrice(order.totalPrice);
             // 회원 정보 처리
             let userInfo = order.userId
-                ? `<p class="card-text"><strong>회원 ID:</strong> ${order.userId.id || ""}</p>
-                   <p class="card-text"><strong>회원 이름:</strong> ${order.userId.name || ""}</p>`
-                : `<p class="card-text"><strong>비회원 ID:</strong> ${order.guestId || ""}</p>`;
+                ? `<p class="card-text"><strong>회원 ID :</strong> ${order.userId.id || ""}</p>
+                   <p class="card-text"><strong>회원 이름 :</strong> ${order.userId.name || ""}</p>`
+                : `<p class="card-text"><strong>비회원 ID :</strong> ${order.guestId || ""}</p>`;
 
             // 배송 상태 처리
             let deliveryStatusHtml = "";
@@ -62,27 +62,28 @@ function renderOrders(data) {
                     `<option value="${option}" ${order.deliveryStatus === option ? "selected" : ""}>${option}</option>`
                 ).join("");
                 deliveryStatusHtml = `
-                    <p class="card-text"><strong>배송 상태:</strong> 
+                    <p class="card-text"><strong>배송 상태 :</strong> 
                         <select class="delivery-status-select form-control" data-orderid="${order.orderId}">
                             ${options}
                         </select>
                     </p>
                     `;
             } else if (order.paymentStatus === "결제 진행 중") {
-                deliveryStatusHtml = `<p class="card-text"><strong>배송 상태:</strong> 결제 진행 중</p>`;
+                deliveryStatusHtml = `<p class="card-text"><strong>배송 상태 :</strong> 결제 진행 중</p>`;
             } else {
-                deliveryStatusHtml = `<p class="card-text"><strong>배송 상태:</strong> ${order.deliveryStatus || ""}</p>`;
+                deliveryStatusHtml = `<p class="card-text"><strong>배송 상태 :</strong> ${order.deliveryStatus || ""}</p>`;
             }
 
             html += `
                         <div class="col-md-auto mb-3">
                             <div class="card">
-                                <div class="card-header">주문번호: ${order.orderId || ""}</div>
+                                <div class="card-header">주문번호 : ${order.orderId || ""}</div>
                                 <div class="card-body">
-                                    <p class="card-text"><strong>주문일자:</strong> ${createdDate}</p>
-                                    <p class="card-text"><strong>총 금액:</strong> ${order.totalPrice || ""}</p>
-                                    <p class="card-text"><strong>결제 방식:</strong> ${order.paymentMethod || ""}</p>
                                     ${userInfo}
+                                    <p class="card-text"><strong>주문일자 :</strong> ${createdDate}</p>
+                                    <p class="card-text"><strong>총 금액 :</strong> ${totalOrderPrice || ""}</p>
+                                    <p class="card-text"><strong>결제 방식 :</strong> ${order.paymentMethod || ""}</p>
+                                    <p class="card-text"><strong>결제 상태 :</strong> ${order.paymentStatus || ""}</p>
                                     ${deliveryStatusHtml}
                                 </div>
                             </div>
@@ -104,6 +105,11 @@ function formatDate(dateStr) {
     const month = ("0" + (d.getMonth() + 1)).slice(-2);
     const day = ("0" + d.getDate()).slice(-2);
     return year + "-" + month + "-" + day;
+}
+
+// 가격 포맷팅 함수
+function formatPrice(price) {
+    return '₩' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 // 페이징 UI 렌더링 함수 (makePageUI 스타일로 수정)
