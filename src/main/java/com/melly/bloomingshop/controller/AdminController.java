@@ -30,4 +30,9 @@ public class AdminController {
         model.addAttribute("productId", productId);
         return "admin/product/product_modify_admin";
     }
+
+    @GetMapping("/order/list")
+    public String orderPage() {
+        return "admin/order/order_list_admin";
+    }
 }
