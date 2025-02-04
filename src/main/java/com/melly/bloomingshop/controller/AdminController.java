@@ -35,4 +35,9 @@ public class AdminController {
     public String orderPage() {
         return "admin/order/order_list_admin";
     }
+
+    @GetMapping("/user/all-users")
+    public String userPage() {
+        return "admin/user/all_users";
+    }
 }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>모든 회원 조회 목록</title>
+    <style>
+        #header-container {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            padding: 10px 20px;
+            width: fit-content;
+        }
+    </style>
+</head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/allUsers.js"></script>
+<body>
+{{> common/sidebar }}
+<div class="container mt-5">
+    <div id="header-container" class="text-center">
+        <h1>모든 회원 관리</h1>
+    </div>
+    <div class="select-container mt-5">
+        <label for="findName">검색할 회원의 이름</label><br>
+        <input type="text" id="findName" name="findName"><br>
+        <input type="submit" value="조회" onclick="$.showUser()">
+        <input type="button" value="모든 유저 목록 보기" onclick="$.loadUserList()">
+    </div>
+    <div id="showUsers"></div>
+    <div id="pageDiv"></div>
+    <div id="searchPageDiv"></div> <!-- 검색 결과 페이지네이션 -->
+</div>
+</body>
+</html>
