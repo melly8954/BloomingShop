@@ -1,6 +1,28 @@
+// 기본값 설정
+let currentPage = 1;
+const pageSize = 5;
+let sortField = "";
+let sortOrder = "asc"; // 기본 정렬 방식
+
 $(document).ready(function () {
+    sortField = $("#sort").val();
+
     // 초기 주문 목록 로드
     loadOrders(currentPage, pageSize, sortField, sortOrder);
+
+    // 정렬 기준 변경 시 (올바른 선택자 사용)
+    $("#sort").on("change", function () {
+        sortField = $(this).val(); // 선택된 value 값을 가져옴
+        loadOrders(currentPage, pageSize, sortField, sortOrder);
+    });
+
+    // 정렬 버튼 클릭 시
+    $(".btn-group button").on("click", function () {
+        $(".btn-group button").removeClass("active");
+        $(this).addClass("active");
+        sortOrder = $(this).val(); // 버튼의 value 값을 가져옴
+        loadOrders(currentPage, pageSize, sortField, sortOrder);
+    });
 
     // 배달 상태 변경 시 DB 업데이트
     $(document).on('change', '.delivery-status-select', function() {
@@ -11,12 +33,6 @@ $(document).ready(function () {
         updateDeliveryStatus(orderId, newStatus);
     });
 });
-
-// 기본값 설정
-let currentPage = 1;
-const pageSize = 5;
-const sortField = "orderId";
-const sortOrder = "asc";
 
 // 주문 목록 로드 함수
 function loadOrders(page, size, sort, order) {
