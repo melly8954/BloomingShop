@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -173,5 +172,18 @@ public class UserRestController implements ResponseController {
     }
 
     // 회원의 계정 탈퇴 API
-
+    @PatchMapping("/{id}/delete")
+    public ResponseEntity<ResponseDto> deleteUser(@PathVariable Long id) {
+        try {
+            if(id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST,"회원 ID > 0 을 만족해야 한다.",null);
+            }
+            this.userService.softDeleteUser(id);
+            return makeResponseEntity(HttpStatus.OK,"해당 유저의 계정이 삭제되었습니다.",true);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,"서버 오류: " + e.getMessage(),null);
+        }
+    }
 }
+

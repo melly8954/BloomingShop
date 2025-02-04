@@ -9,10 +9,13 @@ import com.melly.bloomingshop.dto.UserAddress;
 import com.melly.bloomingshop.repository.AddressRepository;
 import com.melly.bloomingshop.repository.RoleRepository;
 import com.melly.bloomingshop.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -122,12 +125,23 @@ public class UserService {
         }
     }
 
-    @Transactional
     // 유저의 주소를 찾는 비즈니스 로직
+    @Transactional
     public UserAddress getUserAddress(String loginId) {
         User user = userRepository.findByLoginId(loginId); // 유저 정보 조회
         Address address = addressRepository.findByUserId(user.getId()); // 유저의 주소 조회
 
         return new UserAddress(address); // 주소 정보를 DTO로 반환
+    }
+
+    // 사용자 or 관리자가 자신의 계정을 탈퇴 (삭제 처리)
+    @Transactional
+    public void softDeleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        // 사용자가 자신을 삭제할 때, 계정을 삭제된 상태로 변경
+        user.changeStatus(StatusType.DELETED); // 상태를 DELETED로 변경
+        user.changeDeletedDate(LocalDateTime.now()); // 삭제 날짜를 현재 시간으로 설정
+        userRepository.save(user); // 변경 사항 저장
     }
 }

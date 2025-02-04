@@ -197,8 +197,8 @@ function updateUserStatus(userId) {
         httpMethod = "PATCH";
         confirmMessage = "계정을 비활성화하시겠습니까?";
     } else if (selectedStatus === "DELETED") {
-        apiUrl = `/api/users/${userId}`;
-        httpMethod = "DELETE";
+        apiUrl = `/api/user/${userId}/delete`;
+        httpMethod = "PATCH";
         confirmMessage = "계정을 삭제하시겠습니까?";
     } else if (selectedStatus === "ACTIVE") {
         apiUrl = `/api/admin/${userId}/undo`;

@@ -40,4 +40,9 @@ public class UserController {
     public String changePasswordPage(){
         return "user/change_password";
     }
+
+    @GetMapping("/mypage")
+    public String myPage(){
+        return "user/mypage";
+    }
 }
