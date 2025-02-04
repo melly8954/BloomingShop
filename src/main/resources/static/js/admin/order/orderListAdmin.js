@@ -113,10 +113,15 @@ function renderOrders(data) {
                 deliveryStatusHtml = `<p class="card-text"><strong>배송 상태</strong> ${order.deliveryStatus || ""}</p>`;
             }
 
+            // 주문번호 옆에 이미지 버튼 추가
+            let deleteButtonHtml = `
+                <img src="/image/delete.png" alt="삭제" class="delete-button" onclick="deleteOrder(${order.orderId})" style="cursor: pointer; width: 20px; height: 20px; margin-left: 10px;" />
+            `;
+
             html += `
                 <div class="col-md-auto mb-3">
                     <div class="card">
-                        <div class="card-header">주문번호 : ${order.orderId || ""}</div>
+                        <div class="card-header">주문번호 : ${order.orderId || ""} ${deleteButtonHtml}</div>
                         <div class="card-body">
                             ${userInfo}
                             <p class="card-text"><strong>주문일자 :</strong> ${createdDate}</p>
@@ -216,4 +221,21 @@ function updateDeliveryStatus(orderId, deliveryStatus) {
         console.error("배달 상태 업데이트 오류:", error);
         alert("배달 상태 업데이트 중 오류가 발생했습니다.");
     });
+}
+
+// 주문 항목 삭제
+function deleteOrder(orderId) {
+    if (!confirm("해당 주문 항목을 삭제 하시겠습니까?")) {
+        return;
+    }
+    $.ajax({
+        url: `/api/order/${orderId}/cancel`,
+        type: 'PATCH',
+    }).done(function (data) {
+        console.log(data);
+        loadOrders(currentPage, pageSize, sortField, sortOrder); // 삭제 후 페이지 새로고침
+        alert("주문 취소가 완료되었습니다.");
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log(errorThrown);
+    })
 }
