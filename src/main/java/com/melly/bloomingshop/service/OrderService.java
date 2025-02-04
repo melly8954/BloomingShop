@@ -122,6 +122,7 @@ public class OrderService {
                                     // OrderListResponse 객체 생성
                                     return OrderListResponse.builder()
                                             .orderId(order.getOrderId())
+                                            .createdDate(order.getCreatedDate())
                                             .productName(product.getName())
                                             .productPrice(product.getPrice())
                                             .productSize(product.getSize())

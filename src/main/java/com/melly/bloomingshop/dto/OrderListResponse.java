@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,6 +17,7 @@ import java.math.BigDecimal;
 @SuperBuilder
 public class OrderListResponse {
     private Long orderId;
+    private LocalDateTime createdDate;
     private String productName;
     private BigDecimal productPrice;
     private String productSize;

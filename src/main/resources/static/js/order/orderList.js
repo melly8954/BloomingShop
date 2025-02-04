@@ -12,6 +12,15 @@ $(document).ready(function() {
     });
 });
 
+// 날짜 형식 변환 함수 (예: "2025-01-31T18:44:47" → "2025-01-31")
+function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    const year = d.getFullYear();
+    const month = ("0" + (d.getMonth() + 1)).slice(-2);
+    const day = ("0" + d.getDate()).slice(-2);
+    return year + "-" + month + "-" + day;
+}
+
 // 가격 포맷팅 함수
 function formatPrice(price) {
     if (price == null || isNaN(price)) {
@@ -70,7 +79,8 @@ function orderList(orderType = 'asc') {
             const orderSummary = `
                 <div>
                     <h5>주문 ID: ${orders[0].orderId} <button id="order-cancel-${orders[0].orderId}" onclick="orderCancel(${orders[0].orderId});">주문 취소</button> </h5>
-                    <div><span>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}</span><br>
+                    <div><span>주문 일시 : ${formatDate(orders[0].createdDate)}</span><br>
+                         <span>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}</span><br>
                          <span>주문 상태 : ${orders[0].paymentStatus}
                          ${orders[0].paymentStatus === '결제 진행 중' ? `<button id="payment-btn-${orders[0].orderId}" onclick="payment(${orders[0].orderId});">결제</button>` : ''}</span><br>
                          <span>배송 주소 : ${orders[0].userAddress ? orders[0].userAddress : orders[0].guestAddress || '주소 정보 없음'}</span><br>             
