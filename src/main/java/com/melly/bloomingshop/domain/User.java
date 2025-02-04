@@ -57,4 +57,16 @@ public class User {
     public void changePassword(String newPassword) {
         this.password = newPassword;
     }
+
+    public void changeStatus(StatusType newStatus) {
+        this.status = newStatus;
+    }
+
+    public void changeDisabledDate(LocalDateTime newDisabledDate) {
+        this.disabledDate = newDisabledDate;
+    }
+
+    public void changeDeletedDate(LocalDateTime newDeletedDate) {
+        this.deletedDate = newDeletedDate;
+    }
 }

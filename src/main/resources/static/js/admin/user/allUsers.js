@@ -10,18 +10,14 @@ $(document).ready(function() {
     });
 });
 
-function moveHome(){
-    window.location.href="/admin";
-}
-
 $.renderUserList = function (data) {
     let html = "";
     data.responseData.users.forEach(function (user) {
         let accountStatusDropdown = `
             <select id="statusDropdown_${user.id}" onchange="updateUserStatus(${user.id})">
-                <option value="ACTIVE" ${user.statusType === 'ACTIVE' ? 'selected' : ''}>활성</option>
-                <option value="INACTIVE" ${user.statusType === 'INACTIVE' ? 'selected' : ''}>비활성</option>
-                <option value="DELETED" ${user.statusType === 'DELETED' ? 'selected' : ''}>탈퇴</option>
+                <option value="ACTIVE" ${user.status === 'ACTIVE' ? 'selected' : ''}>활성</option>
+                <option value="DISABLED" ${user.status === 'DISABLED' ? 'selected' : ''}>비활성</option>
+                <option value="DELETED" ${user.status === 'DELETED' ? 'selected' : ''}>탈퇴</option>
             </select>
         `;
 
@@ -48,6 +44,7 @@ $.loadUserList = function () {
     const page = 1;
 
     $("#searchPageDiv").hide();  // 검색 결과 페이지네이션 숨기기
+    $("#findName").val("");  // 입력 필드 값 삭제
     $("#pageDiv").show();  // 기존 페이지네이션 보이기
 
     $.ajax({
@@ -78,24 +75,33 @@ $.makePageUI = function(paramTotal, paramPage, pageDivId, isSearch) {
     let prev = (paramPage - 1) < 1 ? 1 : paramPage - 1;
     let next = (paramPage + 1) >= totPage ? totPage : paramPage + 1;
 
-    $(pageDivId).html(""); // 페이지네이션 영역을 비웁니다.
-    $(pageDivId).children().remove();
+    // 기존 내용 초기화
+    $(pageDivId).html("");
 
-    $(pageDivId).append(`<a onclick="$.searchBoardList(${prev}, '${pageDivId}', ${isSearch});">Prev</a>`);
+    let paginationHtml = `
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item ${paramPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="$.searchBoardList(${prev}, '${pageDivId}', ${isSearch}); return false;">Prev</a>
+                </li>`;
 
     if (paramTotal > 0) {
         for (let i = startPage; i <= endPage; i++) {
-            if (paramPage === i) {
-                $(pageDivId).append(`<a class="active">${i}</a>`);
-            } else {
-                $(pageDivId).append(`<a onclick="$.searchBoardList(${i}, '${pageDivId}', ${isSearch});">${i}</a>`);
-            }
+            paginationHtml += `
+                <li class="page-item ${paramPage === i ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="$.searchBoardList(${i}, '${pageDivId}', ${isSearch}); return false;">${i}</a>
+                </li>`;
         }
-
-        $(pageDivId).append(`<a onclick="$.searchBoardList(${next}, '${pageDivId}', ${isSearch});">Next</a>`);
-    } else {
-        $(pageDivId).html("");
     }
+
+    paginationHtml += `
+                <li class="page-item ${paramPage === totPage ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="$.searchBoardList(${next}, '${pageDivId}', ${isSearch}); return false;">Next</a>
+                </li>
+            </ul>
+        </nav>`;
+
+    $(pageDivId).html(paginationHtml);
 }
 
 function getStartPage(page) {
@@ -115,7 +121,7 @@ $.searchBoardList = function(page, pageDivId, isSearch) {
     const rowsOnePage = 5;  // 페이지 당 항목 수 고정
     let url = isSearch
         ? `/api/admin/${$("#findName").val()}?page=${page}&size=${rowsOnePage}`  // 검색 시 URL 처리
-        : `/api/admin/users?page=${page}&size=${rowsOnePage}`;  // 기본 페이지 처리
+        : `/api/admin/user/all-list?page=${page}&size=${rowsOnePage}`;  // 기본 페이지 처리
 
     $.ajax({
         url: url,
@@ -186,7 +192,7 @@ function updateUserStatus(userId) {
     let httpMethod = "";
     let confirmMessage = "";
 
-    if (selectedStatus === "INACTIVE") {
+    if (selectedStatus === "DISABLED") {
         apiUrl = `/api/admin/${userId}/disable`;
         httpMethod = "PATCH";
         confirmMessage = "계정을 비활성화하시겠습니까?";

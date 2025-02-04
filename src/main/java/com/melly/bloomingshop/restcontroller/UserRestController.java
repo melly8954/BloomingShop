@@ -159,6 +159,7 @@ public class UserRestController implements ResponseController {
         }
     }
 
+    // 로그인 인증된 유저의 주소를 찾는 API
     @GetMapping("/user-address")
     public ResponseEntity<ResponseDto> getUserAddress(Authentication authentication) {
         try{
@@ -170,4 +171,7 @@ public class UserRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + ex.getMessage(), null);
         }
     }
+
+    // 회원의 계정 탈퇴 API
+
 }
