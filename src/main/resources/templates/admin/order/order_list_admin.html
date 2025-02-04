@@ -4,8 +4,18 @@
     <meta charset="UTF-8">
     <title>주문 관리</title>
     <style>
+        html, body {
+            width: 100%; /* 페이지 전체 폭 차지 */
+            height: 100%; /* 페이지 전체 높이 차지 */
+            margin: 0; /* 기본 margin 제거 */
+            padding: 0; /* 기본 padding 제거 */
+        }
+        .container {
+            margin-left: 50px;
+            flex-grow: 1;
+            overflow-y: auto; /* 내용이 넘치면 스크롤 */
+        }
         #header-container {
-            position: fixed;
             top: 10px;
             left: 50%;
             padding: 10px 20px;
@@ -14,24 +24,13 @@
         #content-container {
             margin-top: 100px; /* 제목과 정렬 버튼의 높이만큼 여백 추가 */
         }
-        #orderPagination {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 10px 20px;
-            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            border-radius: 5px;
-        }
     </style>
 </head>
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script src="/js/admin/order/orderListAdmin.js"></script>
 <body>
 {{> common/sidebar }}
-<div class="container mt-5">
+<div id=container" class="container mt-5">
     <div id="header-container" class="text-center">
         <h1>주문 관리</h1>
     </div>
