@@ -74,11 +74,25 @@ function renderOrders(data) {
         orders.forEach(function (order) {
             let createdDate = order.createdDate ? formatDate(order.createdDate) : "";
             let totalOrderPrice = formatPrice(order.totalPrice);
+
             // 회원 정보 처리
             let userInfo = order.userId
                 ? `<p class="card-text"><strong>회원 ID :</strong> ${order.userId.id || ""}</p>
                    <p class="card-text"><strong>회원 이름 :</strong> ${order.userId.name || ""}</p>`
                 : `<p class="card-text"><strong>비회원 ID :</strong> ${order.guestId || ""}</p>`;
+
+            // 배송지 처리
+            let shippingAddress = "";
+            if (order.userId && order.addressId) {
+                // 회원의 배송지 정보
+                shippingAddress = `
+                    <p class="card-text"><strong>배송지 :</strong> ${order.addressId.address}, ${order.addressId.detailAddress}</p>
+                    <p class="card-text"><strong>우편번호 :</strong> ${order.addressId.postcode}</p>
+                `;
+            } else if (order.guestId) {
+                // 비회원의 배송지 정보
+                shippingAddress = `<p class="card-text"><strong>배송지 :</strong> ${order.shippingAddressNonMember || "없음"}</p>`;
+            }
 
             // 배송 상태 처리
             let deliveryStatusHtml = "";
@@ -92,27 +106,28 @@ function renderOrders(data) {
                             ${options}
                         </select>
                     </p>
-                    `;
+                `;
             } else if (order.paymentStatus === "결제 진행 중") {
-                deliveryStatusHtml = `<p class="card-text delivery-status" style="display: none;">`;
+                deliveryStatusHtml = `<p class="card-text delivery-status" style="display: none;">`; // 결제 진행 중일 때 배송 상태 숨김
             } else {
                 deliveryStatusHtml = `<p class="card-text"><strong>배송 상태</strong> ${order.deliveryStatus || ""}</p>`;
             }
 
             html += `
-                        <div class="col-md-auto mb-3">
-                            <div class="card">
-                                <div class="card-header">주문번호 : ${order.orderId || ""}</div>
-                                <div class="card-body">
-                                    ${userInfo}
-                                    <p class="card-text"><strong>주문일자 :</strong> ${createdDate}</p>
-                                    <p class="card-text"><strong>총 금액 :</strong> ${totalOrderPrice || ""}</p>
-                                    <p class="card-text"><strong>결제 방식 :</strong> ${order.paymentMethod || ""}</p>
-                                    <p class="card-text"><strong>결제 상태 :</strong> ${order.paymentStatus || ""}</p>
-                                    ${deliveryStatusHtml}
-                                </div>
-                            </div>
-                        </div>`;
+                <div class="col-md-auto mb-3">
+                    <div class="card">
+                        <div class="card-header">주문번호 : ${order.orderId || ""}</div>
+                        <div class="card-body">
+                            ${userInfo}
+                            <p class="card-text"><strong>주문일자 :</strong> ${createdDate}</p>
+                            <p class="card-text"><strong>총 금액 :</strong> ${totalOrderPrice || ""}</p>
+                            <p class="card-text"><strong>결제 방식 :</strong> ${order.paymentMethod || ""}</p>
+                            <p class="card-text"><strong>결제 상태 :</strong> ${order.paymentStatus || ""}</p>
+                            ${shippingAddress} <!-- 배송지 추가 -->
+                            ${deliveryStatusHtml}
+                        </div>
+                    </div>
+                </div>`;
         });
 
         html += '</div>'; // row 닫기
