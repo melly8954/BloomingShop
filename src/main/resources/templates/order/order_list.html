@@ -10,6 +10,14 @@
 {{> common/navbar }}
 <div class="container mt-4">
     <h2 class="text-center mb-4">주문 내역</h2>
+    <!-- 정렬 버튼 추가 -->
+    <div class="d-flex align-items-center mb-3">
+        <span class="sort-label me-2" style="font-weight: bold; font-size: 24px">주문번호 정렬</span>
+        <div class="sort-buttons">
+            <button class="btn btn-outline-primary" id="sort-asc">△</button>
+            <button class="btn btn-outline-primary" id="sort-desc">▽</button>
+        </div>
+    </div>
     <!-- Order List -->
     <div id="order-list"></div>
     <div id="order-summary"></div>

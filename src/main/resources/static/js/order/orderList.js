@@ -1,5 +1,15 @@
 $(document).ready(function() {
     orderList();
+
+    // 오름차순 버튼 클릭 시
+    $('#sort-asc').click(function() {
+        orderList('asc');
+    });
+
+    // 내림차순 버튼 클릭 시
+    $('#sort-desc').click(function() {
+        orderList('desc');
+    });
 });
 
 // 가격 포맷팅 함수
@@ -10,11 +20,9 @@ function formatPrice(price) {
     return '₩' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function orderList() {
-    // 비로그인 유저 -> LocalStorage에서 guestId를 가져옴
+// 주문 목록 출력 함수
+function orderList(orderType = 'asc') {
     const guestId = localStorage.getItem('guestId');
-
-    // guestId가 없다면 새로 생성하여 LocalStorage에 저장
     if (!guestId) {
         const newGuestId = "guest-" + java.util.UUID.randomUUID().toString();
         localStorage.setItem('guestId', newGuestId);
@@ -27,15 +35,14 @@ function orderList() {
         headers: {
             'Guest-Id': guestId || newGuestId
         }
-    }).done(function (data) {
+    }).done(function(data) {
         const orderListContainer = $('#order-list');
-        orderListContainer.empty(); // 기존에 있던 주문 목록 초기화
+        orderListContainer.empty(); // 기존 주문 목록 초기화
         console.log(data);
 
-        // 주문이 없으면 안내 메시지 추가
         if (data.responseData.length === 0) {
             orderListContainer.append('<div class="alert alert-info">현재 주문 내역이 없습니다.</div>');
-            return; // 더 이상 실행하지 않음
+            return;
         }
 
         // 주문을 orderId별로 그룹화
@@ -47,46 +54,52 @@ function orderList() {
             return groups;
         }, {});
 
-        // 그룹화된 주문을 순회하여 표시
-        Object.keys(groupedOrders).forEach(function (orderId) {
+        // 그룹화된 주문을 배열로 변환하고 orderId에 따라 정렬
+        const sortedOrderIds = Object.keys(groupedOrders).sort((a, b) => {
+            if (orderType === 'asc') {
+                return a - b; // 오름차순 정렬
+            } else {
+                return b - a; // 내림차순 정렬
+            }
+        });
+
+        // 정렬된 orderId를 순회하여 표시
+        sortedOrderIds.forEach(function(orderId) {
             const orders = groupedOrders[orderId];
-            const orderGroup = $('<div class="order-group mb-5"></div>'); // 각 주문별 그룹
+            const orderGroup = $('<div class="order-group mb-5"></div>');
             const orderSummary = `
-        <div>
-            <h5>주문 ID: ${orders[0].orderId} <button id="order-cancel-${orders[0].orderId}" onclick="orderCancel(${orders[0].orderId});">주문 취소</button> </h5>
-            <div><span>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}</span><br>
-                 <span>주문 상태 : ${orders[0].paymentStatus}
-                 ${orders[0].paymentStatus === '결제 진행 중' ? `<button id="payment-btn-${orders[0].orderId}" onclick="payment(${orders[0].orderId});">결제</button>` : ''}</span><br>
-                 <span>배송 주소 : ${orders[0].userAddress ? orders[0].userAddress : orders[0].guestAddress || '주소 정보 없음'}</span><br>             
-                 <span id="delivery-status-${orders[0].orderId}" ${orders[0].paymentStatus === '결제 완료' ? '' : 'style="display: none;"'}>배송 상태 : ${orders[0].deliveryStatus}</span>        
-            </div>
-        </div>
-        `;
-
-            const orderItemsContainer = $('<div class="row"></div>'); // 주문 아이템 리스트
-
-            // 각 상품 정보 출력
-            orders.forEach(function (order) {
-                const orderItem = `
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="${order.productImageUrl}" class="card-img-top" alt="${order.productName}">
-                    <div class="card-body">
-                        <h5 class="card-title">${order.productName}</h5>
-                        <p class="card-text">
-                            가격 : ${formatPrice(order.productPrice)} <br>
-                            사이즈 : ${order.productSize} <br>
-                            수량 : ${order.quantity} <br>
-                            상품 총액 : ${formatPrice(order.singleItemTotalPrice)}<br> 
-                        </p>
+                <div>
+                    <h5>주문 ID: ${orders[0].orderId} <button id="order-cancel-${orders[0].orderId}" onclick="orderCancel(${orders[0].orderId});">주문 취소</button> </h5>
+                    <div><span>주문 총액 : ${formatPrice(orders[0].totalOrderPrice)}</span><br>
+                         <span>주문 상태 : ${orders[0].paymentStatus}
+                         ${orders[0].paymentStatus === '결제 진행 중' ? `<button id="payment-btn-${orders[0].orderId}" onclick="payment(${orders[0].orderId});">결제</button>` : ''}</span><br>
+                         <span>배송 주소 : ${orders[0].userAddress ? orders[0].userAddress : orders[0].guestAddress || '주소 정보 없음'}</span><br>             
+                         <span id="delivery-status-${orders[0].orderId}" ${orders[0].paymentStatus === '결제 완료' ? '' : 'style="display: none;"'}>배송 상태 : ${orders[0].deliveryStatus}</span>        
                     </div>
                 </div>
-            </div>
             `;
+
+            const orderItemsContainer = $('<div class="row"></div>');
+            orders.forEach(function (order) {
+                const orderItem = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="${order.productImageUrl}" class="card-img-top" alt="${order.productName}">
+                            <div class="card-body">
+                                <h5 class="card-title">${order.productName}</h5>
+                                <p class="card-text">
+                                    가격 : ${formatPrice(order.productPrice)} <br>
+                                    사이즈 : ${order.productSize} <br>
+                                    수량 : ${order.quantity} <br>
+                                    상품 총액 : ${formatPrice(order.singleItemTotalPrice)}<br> 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
                 orderItemsContainer.append(orderItem);
             });
 
-            // 주문별 요약 및 상품 정보 추가
             orderGroup.append(orderSummary);
             orderGroup.append(orderItemsContainer);
             orderListContainer.append(orderGroup);
