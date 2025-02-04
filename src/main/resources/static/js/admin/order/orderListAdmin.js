@@ -35,7 +35,7 @@ function loadOrders(page, size, sort, order) {
         // 응답 객체에서 responseData를 가져옴
         if (response && response.responseData) {
             renderOrders(response.responseData);
-            renderPagination(response.responseData);
+            makePageUI(response.responseData);
         } else {
             $("#orderList").html("<p>주문 데이터가 없습니다.</p>");
             $("#orderPagination").empty();
@@ -71,16 +71,16 @@ function renderOrders(data) {
                     `<option value="${option}" ${order.deliveryStatus === option ? "selected" : ""}>${option}</option>`
                 ).join("");
                 deliveryStatusHtml = `
-                    <p class="card-text"><strong>배송 상태 :</strong> 
+                    <p class="card-text"><strong>배송 상태</strong> 
                         <select class="delivery-status-select form-control" data-orderid="${order.orderId}">
                             ${options}
                         </select>
                     </p>
                     `;
             } else if (order.paymentStatus === "결제 진행 중") {
-                deliveryStatusHtml = `<p class="card-text"><strong>배송 상태 :</strong> 결제 진행 중</p>`;
+                deliveryStatusHtml = `<p class="card-text delivery-status" style="display: none;">`;
             } else {
-                deliveryStatusHtml = `<p class="card-text"><strong>배송 상태 :</strong> ${order.deliveryStatus || ""}</p>`;
+                deliveryStatusHtml = `<p class="card-text"><strong>배송 상태</strong> ${order.deliveryStatus || ""}</p>`;
             }
 
             html += `
@@ -122,7 +122,7 @@ function formatPrice(price) {
 }
 
 // 페이징 UI 렌더링 함수 (makePageUI 스타일로 수정)
-function renderPagination(data) {
+function makePageUI(data) {
     const totalElements = data.totalElements;
     const rowsPerPage = 5; // 페이지 당 항목 수
     const totalPages = Math.ceil(totalElements / rowsPerPage); // 전체 페이지 수
