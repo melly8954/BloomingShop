@@ -27,32 +27,33 @@ public class UserManageService {
         return userRepository.findByName(name, pageable);
     }
 
-    // 관리자가 계정을 비활성화
-    @Transactional
-    public void softDisabledUser(Long id) {
+    // 계정 상태 변경 비즈니스 로직
+    public void updateUserStatus(Long id, StatusType status) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-
-        // 계정을 비활성화 상태로 변경
-        user.changeStatus(StatusType.DISABLED); // 상태를 INACTIVE로 변경
-        user.changeDisabledDate(LocalDateTime.now()); // 비활성화 날짜를 현재 시간으로 설정
-        userRepository.save(user); // 변경 사항 저장
+        if (status == StatusType.DISABLED) { // 비활성화
+            user.changeStatus(StatusType.DISABLED);
+            user.changeDisabledDate(LocalDateTime.now());
+        } else if (status == StatusType.ACTIVE) { // 복구 (DISABLED → ACTIVE, DELETED → ACTIVE)
+            if (user.getStatus() == StatusType.DISABLED || user.getStatus() == StatusType.DELETED) {
+                user.changeStatus(StatusType.ACTIVE);
+                user.changeDeletedDate(null);
+                user.changeDisabledDate(null);
+            } else {
+                throw new IllegalStateException("유저가 이미 활성 상태입니다.");
+            }
+        } else {
+            throw new IllegalArgumentException("잘못된 상태 변경 요청입니다.");
+        }
+        userRepository.save(user);
     }
 
-    // 사용자 계정 복구
-    @Transactional
-    public void undoUser(Long id) {
+    // 계정 탈퇴 처리 비즈니스 로직
+    public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-
-        // 계정이 비활성화(인 inactive) 또는 삭제(deleted) 상태인 경우 복구
-        if (user.getStatus() == StatusType.DISABLED || user.getStatus() == StatusType.DELETED) {
-            user.changeStatus(StatusType.ACTIVE); // 상태를 ACTIVE로 변경
-            user.changeDeletedDate(null); // 비활성화 날짜 및 삭제 날짜 초기화
-            user.changeDisabledDate(null); // 비활성화 날짜 및 삭제 날짜 초기화
-            userRepository.save(user); // 변경 사항 저장
-        } else {
-            throw new IllegalStateException("User is already active and cannot be undone.");
-        }
+        user.changeStatus(StatusType.DELETED);
+        user.changeDeletedDate(LocalDateTime.now());
+        userRepository.save(user);
     }
 }

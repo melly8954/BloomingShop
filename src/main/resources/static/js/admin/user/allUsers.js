@@ -1,8 +1,8 @@
-$(document).ready(function() {
+$(document).ready(function () {
     $.loadUserList(); // 바뀐 함수 이름으로 호출
 
     // 엔터 키로 버튼 클릭 효과 추가
-    $("#findName").keypress(function(event) {
+    $("#findName").keypress(function (event) {
         if (event.which === 13) {  // Enter key code
             event.preventDefault();  // 기본 엔터키 동작 방지
             $.showUser();  // 조회 버튼 클릭과 같은 동작 수행
@@ -67,7 +67,7 @@ $.loadUserList = function () {
     });
 }
 
-$.makePageUI = function(paramTotal, paramPage, pageDivId, isSearch) {
+$.makePageUI = function (paramTotal, paramPage, pageDivId, isSearch) {
     const rowsOnePage = 5;  // 페이지 당 항목 수 고정
     let totPage = Math.ceil(paramTotal / rowsOnePage);  // 전체 페이지 수
     let startPage = getStartPage(paramPage);
@@ -117,7 +117,7 @@ function getEndPage(startPage, paramTotal) {
     return tPage < totPage ? tPage : totPage;
 }
 
-$.searchBoardList = function(page, pageDivId, isSearch) {
+$.searchBoardList = function (page, pageDivId, isSearch) {
     const rowsOnePage = 5;  // 페이지 당 항목 수 고정
     let url = isSearch
         ? `/api/admin/${$("#findName").val()}?page=${page}&size=${rowsOnePage}`  // 검색 시 URL 처리
@@ -126,19 +126,19 @@ $.searchBoardList = function(page, pageDivId, isSearch) {
     $.ajax({
         url: url,
         method: "GET",
-    }).done(function(data,status,xhr) {
+    }).done(function (data, status, xhr) {
         if (status === "success") {
             $.renderUserList(data);  // 사용자 목록 렌더링
             $.makePageUI(data.responseData.totalElements, page, pageDivId, isSearch); // 페이지 UI 갱신
         }
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         console.error("Request failed: " + textStatus + ", " + errorThrown);
         $("#showUsers").html("<p>회원 정보를 불러오는 중 오류가 발생했습니다.</p>");
     });
 }
 
 // 유효성 검사 함수
-$.validateName = function(name) {
+$.validateName = function (name) {
     if (name.trim() === "") {
         alert("이름을 입력해주세요.");
         return false;
@@ -177,10 +177,10 @@ $.showUser = function () {
         console.error("Request failed: " + textStatus + ", " + errorThrown);
         if (jqXHR.status === 404) {
             $("#showUsers").html(`<p>검색하신 ${name} 라는 이름의 회원은 존재하지 않습니다.</p>`);
-            $.makePageUI(0, 1,"#searchPageDiv");
+            $.makePageUI(0, 1, "#searchPageDiv");
         } else {
             $("#showUsers").html("<p>회원 정보를 불러오는 중 오류가 발생했습니다.</p>");
-            $.makePageUI(0, 1,"#searchPageDiv");
+            $.makePageUI(0, 1, "#searchPageDiv");
         }
     });
 }
@@ -188,41 +188,37 @@ $.showUser = function () {
 function updateUserStatus(userId) {
     const selectedStatus = $(`#statusDropdown_${userId}`).val(); // 선택된 상태 값
 
-    let apiUrl = "";
-    let httpMethod = "";
-    let confirmMessage = "";
+    // 상태에 따른 API 매핑 객체
+    const statusApiMap = {
+        "ACTIVE": {url: `/api/admin/users/${userId}/status`, method: "PATCH", message: "계정을 활성화하시겠습니까?"},
+        "DISABLED": {url: `/api/admin/users/${userId}/status`, method: "PATCH", message: "계정을 비활성화하시겠습니까?"},
+        "DELETED": {url: `/api/admin/users/${userId}/status`, method: "DELETE", message: "계정을 삭제하시겠습니까?"}
+    };
 
-    if (selectedStatus === "DISABLED") {
-        apiUrl = `/api/admin/${userId}/disable`;
-        httpMethod = "PATCH";
-        confirmMessage = "계정을 비활성화하시겠습니까?";
-    } else if (selectedStatus === "DELETED") {
-        apiUrl = `/api/user/${userId}/delete`;
-        httpMethod = "PATCH";
-        confirmMessage = "계정을 삭제하시겠습니까?";
-    } else if (selectedStatus === "ACTIVE") {
-        apiUrl = `/api/admin/${userId}/undo`;
-        httpMethod = "PATCH";
-        confirmMessage = "계정을 활성화하시겠습니까?";
+    const apiInfo = statusApiMap[selectedStatus];
+
+    if (!apiInfo) {
+        alert("잘못된 요청입니다.");
+        return;
     }
 
-    if (confirm(confirmMessage)) {
+    if (confirm(apiInfo.message)) {
         $.ajax({
-            url: apiUrl,
-            type: httpMethod,
-        })
-            .done(function () {
-                alert("상태가 성공적으로 변경되었습니다.");
-                // 목록 갱신
-                const pageDivId = $("#searchPageDiv").is(":visible") ? "#searchPageDiv" : "#pageDiv";
-                const currentPage = parseInt($(pageDivId + " .active").text()) || 1;
-                const isSearch = $("#searchPageDiv").is(":visible");
-                $.searchBoardList(currentPage, pageDivId, isSearch);
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                console.error("요청 실패: " + textStatus + ", " + errorThrown);
-                alert("상태 변경에 실패했습니다.");
-            });
+            url: apiInfo.url,
+            type: apiInfo.method,
+            contentType: "application/json",
+            data: JSON.stringify({ status: selectedStatus })
+        }).done(function () {
+            alert("상태가 성공적으로 변경되었습니다.");
+            // 목록 갱신
+            const pageDivId = $("#searchPageDiv").is(":visible") ? "#searchPageDiv" : "#pageDiv";
+            const currentPage = parseInt($(pageDivId + " .active").text()) || 1;
+            const isSearch = $("#searchPageDiv").is(":visible");
+            $.searchBoardList(currentPage, pageDivId, isSearch);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error("요청 실패: " + textStatus + ", " + errorThrown);
+            alert("상태 변경에 실패했습니다.");
+        });
     } else {
         // 변경 취소 시 드롭다운 값을 원래 상태로 복구
         const originalStatus = $(`#statusDropdown_${userId} option[selected]`).val();

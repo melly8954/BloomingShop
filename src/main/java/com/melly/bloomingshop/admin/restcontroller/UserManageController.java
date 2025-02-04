@@ -1,9 +1,11 @@
 package com.melly.bloomingshop.admin.restcontroller;
 
+import com.melly.bloomingshop.admin.dto.StatusUpdateRequest;
 import com.melly.bloomingshop.admin.dto.UserPageResponseDto;
 import com.melly.bloomingshop.admin.service.UserManageService;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
+import com.melly.bloomingshop.domain.StatusType;
 import com.melly.bloomingshop.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,33 +68,48 @@ public class UserManageController implements ResponseController {
         }
     }
 
-    // 관리자 페이지에서 사용자가 비활성화된 계정을 확인하고 비활성화 처리
-    @PatchMapping("/{id}/disable")
-    public ResponseEntity<ResponseDto> disableUser(@PathVariable Long id) {
+    // 계정 상태 변경 API
+    @PatchMapping("/users/{id}/status")
+    public ResponseEntity<ResponseDto> updateUserStatus(@PathVariable Long id, @RequestBody StatusUpdateRequest request) {
         try {
-            if(id == null || id <= 0) {
-                return makeResponseEntity(HttpStatus.BAD_REQUEST,"회원 ID > 0 을 만족해야 한다.",null);
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "회원 ID > 0 을 만족해야 합니다.", null);
             }
-            this.userManageService.softDisabledUser(id);
-            return makeResponseEntity(HttpStatus.OK,"해당 유저의 계정이 비활성화되었습니다.",true);
+
+            // 문자열을 ENUM으로 변환
+            StatusType newStatus;
+            try {
+                newStatus = StatusType.valueOf(request.getStatus().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 상태 값입니다.", null);
+            }
+
+            // 삭제 상태는 DELETE 요청에서 처리하므로 여기선 제외
+            if (newStatus == StatusType.DELETED) {
+                return makeResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, "계정 삭제는 DELETE 요청을 사용하세요.", null);
+            }
+
+            userManageService.updateUserStatus(id, newStatus);
+            return makeResponseEntity(HttpStatus.OK, "유저 상태가 성공적으로 변경되었습니다.", true);
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,"서버 오류: " + e.getMessage(),null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + e.getMessage(), null);
         }
     }
 
-    // 관리자 페이지에서 사용자가 탈퇴된 계정을 복구
-    @PatchMapping("/{id}/undo")
-    public ResponseEntity<ResponseDto> undoUser(@PathVariable Long id) {
+    // 계정 탈퇴 처리 API
+    @DeleteMapping("/users/{id}/status")
+    public ResponseEntity<ResponseDto> deleteUser(@PathVariable Long id) {
         try {
-            if(id == null || id <= 0) {
-                return makeResponseEntity(HttpStatus.BAD_REQUEST,"회원 ID > 0 을 만족해야 한다.",null);
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "회원 ID > 0 을 만족해야 합니다.", null);
             }
-            this.userManageService.undoUser(id);
-            return makeResponseEntity(HttpStatus.OK,"해당 유저의 계정 삭제가 취소되었습니다.",true);
+            userManageService.deleteUser(id);
+            return makeResponseEntity(HttpStatus.OK, "해당 유저의 계정이 삭제되었습니다.", true);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,"서버 오류: " + e.getMessage(),null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류: " + e.getMessage(), null);
         }
     }
 }
