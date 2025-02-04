@@ -246,6 +246,12 @@ function orderRegister() {
     let guestId = getGuestId();
     orderSummaryContainer.empty(); // 내부 콘텐츠 비우기
 
+    // 장바구니에 아이템이 있는지 확인
+    if ($('#cart-items .card').length === 0) {
+        alert('장바구니에 상품이 없습니다. 상품을 추가해주세요.');
+        return; // 장바구니가 비었으면 함수 종료 (주문 신청 진행되지 않음)
+    }
+
     // 장바구니에 있는 모든 아이템 정보를 수집
     $('#cart-items .card').each(function () {
         const productId = $(this).find('.btn-danger').attr('id').split('-')[1];
