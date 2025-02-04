@@ -172,7 +172,7 @@ public class UserRestController implements ResponseController {
     }
 
     // 회원의 계정 탈퇴 API
-    @PatchMapping("/{id}/delete")
+    @PatchMapping("/{id}")
     public ResponseEntity<ResponseDto> deleteUser(@PathVariable Long id) {
         try {
             if(id == null || id <= 0) {

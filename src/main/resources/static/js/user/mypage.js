@@ -25,7 +25,7 @@ function checkLoginStatus() {
 function deleteUser() {
     if (confirm("정말 계정을 탈퇴하시겠습니까?")) {
         $.ajax({
-            url: `/api/user/${userId}/delete`,  // 사용자 탈퇴 요청 URL
+            url: `/api/user/${userId}`,  // 사용자 탈퇴 요청 URL
             type: 'PATCH',
         }).done(function (data, status, xhr){
             if (status === "success") {
