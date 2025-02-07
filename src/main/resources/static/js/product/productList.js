@@ -34,6 +34,13 @@ $(document).ready(function () {
     // 정렬 기준 선택 시 호출
     sortSelect.on('change', function() {
         sortBy = sortSelect.val();  // 선택된 정렬 기준
+        if (sortBy === 'popularity') {
+            // 인기순 선택 시, 내림차순/오름차순 버튼 숨기기
+            $('#ascBtn, #descBtn').hide();
+        } else {
+            // 다른 정렬 기준 선택 시, 내림차순/오름차순 버튼 보이기
+            $('#ascBtn, #descBtn').show();
+        }
         loadProduct(1, searchInput.val(), categorySelect.val(), sortBy, sortOrder);  // 첫 번째 페이지로 로드
     });
 
@@ -62,6 +69,7 @@ function loadProduct(page, name, category, sortBy, sortOrder) {
         url: `/api/product?page=${page}&name=${name}&category=${category}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,
         method: 'GET',
     }).done(function (data) {
+        console.log(data);
         renderProductList(data); // 상품 렌더링
         updateProductCount(data.responseData.totalElements); // 상품 총 갯수 업데이트
         makePageUI(data.responseData.totalElements, page, "#pagination", sortOrder); // 페이지네이션 UI 생성
@@ -270,3 +278,4 @@ function getGuestId() {
 function generateGuestId() {
     return 'guest-' + Math.random().toString(36).substr(2, 9); // 간단한 랜덤 문자열 생성
 }
+

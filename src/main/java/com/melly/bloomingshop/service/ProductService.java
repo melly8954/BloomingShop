@@ -1,13 +1,20 @@
 package com.melly.bloomingshop.service;
 
 import com.melly.bloomingshop.domain.Product;
+import com.melly.bloomingshop.dto.ProductPageResponse;
+import com.melly.bloomingshop.dto.ProductPopularityResponse;
 import com.melly.bloomingshop.repository.CategoryRepository;
 import com.melly.bloomingshop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -43,5 +50,31 @@ public class ProductService {
     public Product findById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+    }
+
+    // 인기순 정렬 비즈니스 로직
+    public ProductPageResponse<Product> getProductsOrderedByPopularity(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        // 인기순 정렬을 포함한 페이지네이션된 결과 가져오기
+        Page<ProductPopularityResponse> results = productRepository.findProductsOrderedByPopularity(pageable);
+
+        // ProductPopularityResponse에서 Product로 변환
+        List<Product> products = results.getContent().stream().map(result -> {
+            return Product.builder()
+                    .id(result.getId())
+                    .name(result.getName())
+                    .price(result.getPrice())
+                    .size(result.getSize())
+                    .imageUrl(result.getImageUrl())
+                    .description(result.getDescription())
+                    .deletedFlag(result.getDeletedFlag())
+                    .createdDate(result.getCreatedDate())
+                    .updatedDate(result.getUpdatedDate())
+                    .deletedDate(result.getDeletedDate())
+                    .build();
+        }).collect(Collectors.toList());
+
+        return new ProductPageResponse<>(products, results.getTotalElements(), results.getTotalPages(), page, size);
     }
 }

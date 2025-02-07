@@ -35,22 +35,27 @@ public class ProductRestController implements ResponseController {
             if (page <= 0) page = 1;
             if (size <= 0) size = 6;
 
-            // 정렬 설정
-            Sort sortBy = Sort.by(Sort.Order.by(sort));
-            sortBy = order.equalsIgnoreCase("desc") ? sortBy.descending() : sortBy.ascending();
-            Pageable pageable = PageRequest.of(page - 1, size, sortBy);
+            ProductPageResponse<Product> productPageResponse;
 
-            // 상품 데이터 가져오기
-            Page<Product> products = productService.getProducts(name, category, pageable);
+            if ("popularity".equals(sort)) {
+                // 인기순 조회
+                productPageResponse = productService.getProductsOrderedByPopularity(page, size);
+            } else {
+                // 일반적인 정렬
+                Sort sortBy = Sort.by(Sort.Order.by(sort));
+                sortBy = order.equalsIgnoreCase("desc") ? sortBy.descending() : sortBy.ascending();
+                Pageable pageable = PageRequest.of(page - 1, size, sortBy);
 
-            // 응답 객체 생성
-            ProductPageResponse<Product> productPageResponse = new ProductPageResponse<>(
-                    products.getContent(),
-                    products.getTotalElements(),
-                    products.getTotalPages(),
-                    products.getNumber(),
-                    products.getSize()
-            );
+                Page<Product> products = productService.getProducts(name, category, pageable);
+                productPageResponse = new ProductPageResponse<>(
+                        products.getContent(),
+                        products.getTotalElements(),
+                        products.getTotalPages(),
+                        products.getNumber(),
+                        products.getSize()
+                );
+            }
+
             return makeResponseEntity(HttpStatus.OK, "상품 목록을 성공적으로 조회했습니다.", productPageResponse);
         } catch (IllegalArgumentException e) {
             log.error("잘못된 요청 파라미터: {}", e.getMessage(), e);
