@@ -26,11 +26,14 @@ public class SupportBoard {
     @Column
     private String content;
 
+    @Column(name="image_url")
+    private String imageUrl;
+
     @Column(name = "view_qty")
     private int viewQty = 0;
 
     @Column(name = "is_secret")
-    private boolean isSecret = false;
+    private Boolean isSecret;
 
     @Column
     private String password;
