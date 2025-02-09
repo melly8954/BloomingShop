@@ -9,4 +9,9 @@ public class SupportBoardController {
     public String support() {
         return "/support/support_list";
     }
+
+    @GetMapping("/support/register")
+    public String register() {
+        return "/support/support_register";
+    }
 }
