@@ -74,13 +74,13 @@
                 {{#login_user}}
                 <div id="user-address-section">
                     <div class="mb-3">
-                        <label for="address">{{name}}님의 기본 배송 주소</label><br>
+                        <label for="user-postcode">{{name}}님의 기본 배송 주소</label><br>
                         <input type="text" id="user-postcode" placeholder="우편번호" disabled>
 
-                        <label for="address"></label><br>
-                        <input type="text" id="user-address" name="address" placeholder="주소" disabled><br>
+                        <label for="user-address"></label><br>
+                        <input type="text" id="user-address"  placeholder="주소" disabled><br>
 
-                        <label for="detail-address"></label>
+                        <label for="user-detail-address"></label>
                         <input type="text" id="user-detail-address" placeholder="상세주소" disabled><br><br><br>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                 {{^login_user}}
                 <div id="shipping-info-section">
                     <div class="mb-3">
-                        <label for="address">배송 주소</label><br>
+                        <label for="postcode">배송 주소</label><br>
                         <input type="text" id="postcode" placeholder="우편번호" disabled>
                         <input type="button" onclick="searchPostcode()" value="우편번호 찾기">
 
