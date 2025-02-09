@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SupportBoardRepository extends JpaRepository<SupportBoard, Long> {
-    @NonNull
-    Page<SupportBoard> findAll(Pageable pageable);
+    Page<SupportBoard> findByDeletedFlagFalse(Pageable pageable);
 
     // 글제목과 deletedFlag 가 false인 경우
     Page<SupportBoard> findByTitleContainingAndDeletedFlagFalse(String title, Pageable pageable);

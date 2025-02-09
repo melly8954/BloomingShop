@@ -20,7 +20,7 @@ public class SupportBoardService {
         if (title != null && !title.isEmpty()) {
             return supportBoardRepository.findByTitleContainingAndDeletedFlagFalse(title, pageable);
         } else {
-            return supportBoardRepository.findAll(pageable);
+            return supportBoardRepository.findByDeletedFlagFalse(pageable);
         }
     }
 }
