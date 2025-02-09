@@ -65,9 +65,10 @@ public class ProductManageService {
                 .name(productManageRequest.getName())
                 .price(productManageRequest.getPrice())
                 .size(productManageRequest.getSize())
-                .imageUrl(fileUploadService.saveImage(image)) // 이미지 저장 로직
+                .imageUrl(fileUploadService.saveProductImage(image)) // 이미지 저장 로직
                 .description(productManageRequest.getDescription())
                 .categories(categories)
+                .deletedFlag(false)
                 .build();
 
         return productRepository.save(product);
@@ -94,7 +95,7 @@ public class ProductManageService {
 
         // 이미지가 새로 업로드된 경우 처리
         if (image != null && !image.isEmpty()) {
-            String imageUrl = fileUploadService.saveImage(image);
+            String imageUrl = fileUploadService.saveProductImage(image);
             existingProduct.modifyImageUrl(imageUrl);
         }
         existingProduct.modifyUpdatedDate(LocalDateTime.now());
