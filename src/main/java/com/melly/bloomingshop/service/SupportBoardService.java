@@ -8,9 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -57,6 +59,21 @@ public class SupportBoardService {
         } catch (Exception e) {
             log.error("게시글 등록 실패", e);
             throw new RuntimeException("게시글 등록 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    public boolean checkBoardPassword(Long boardId, String password) {
+        SupportBoard board = supportBoardRepository.findById(boardId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        if (!board.getIsSecret()) {
+            return true; // 비밀글이 아니면 바로 성공 반환
+        }
+
+        else if (board.getPassword() != null && board.getPassword().equals(password)) {
+            return true; // 비밀번호 일치
+        } else {
+            return false; // 비밀번호 불일치
         }
     }
 }

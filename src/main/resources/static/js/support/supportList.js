@@ -76,11 +76,9 @@ function loadBoardList(page, title, sortBy, sortOrder) {
                 ${board.isSecret ? `
                 <li id="board-secret-${board.id}" class="list-group-item d-none">
                     <div class="alert alert-warning p-2">
-                        <strong>🔒 비밀글입니다. 비밀번호를 입력해주세요.</strong>
-                        <form class="secret-form d-flex mt-2" data-board-id="${board.id}">
-                            <input type="password" class="form-control me-2" name="password" placeholder="비밀번호" required>
-                            <button type="submit" class="btn btn-sm btn-primary">확인</button>
-                        </form>
+                        <strong>🔒 비밀글입니다. 비밀번호를 입력해주세요.</strong>                   
+                        <input type="password" class="form-control me-2" name="password" placeholder="비밀번호" required>
+                        <button class="btn btn-sm btn-primary" onclick="checkPassword(${board.id})">확인</button>
                     </div>
                 </li>
                 ` : ''}
@@ -150,4 +148,31 @@ function getStartPage(page) {
 // 끝 페이지 계산
 function getEndPage(startPage, totalPages) {
     return Math.min(startPage + 4, totalPages);
+}
+
+// 비밀글 확인 폼 제출 이벤트
+function checkPassword(boardId,password){
+    // 필드에 입력된 비밀번호 가져오기
+    const passwordInput = $(`#board-secret-${boardId} input[name='password']`).val(); 
+
+    if (!passwordInput) {
+        alert("비밀번호를 입력해주세요.");
+        return;
+    }
+    
+    $.ajax({
+        url: `/api/support/check-password/${boardId}`, // 비밀번호 확인 API 호출
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ password: passwordInput })
+    }).done(function(data) {
+        if (data.responseData === true) {
+            // 비밀번호가 맞으면 게시글 뷰 페이지로 이동
+            window.location.href = `/support/view/${boardId}`;
+        } else {
+            alert('비밀번호가 틀렸습니다. 다시 확인해주세요.');
+        }
+    }).fail(function() {
+        alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+    });
 }
