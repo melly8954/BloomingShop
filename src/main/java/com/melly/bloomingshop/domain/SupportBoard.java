@@ -47,7 +47,7 @@ public class SupportBoard {
     @Column(name = "deleted_date")
     private LocalDateTime deletedDate;
 
-    @Column(name = "author_id")
+    @Column(name = "author_name")
     private String authorName;
 
     @PrePersist
