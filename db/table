@@ -226,6 +226,7 @@ CREATE TABLE `support_board_tbl` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `content` text COLLATE utf8mb4_general_ci NOT NULL,
+  `image_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `view_qty` int DEFAULT '0',
   `is_secret` tinyint(1) DEFAULT '0',
   `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
