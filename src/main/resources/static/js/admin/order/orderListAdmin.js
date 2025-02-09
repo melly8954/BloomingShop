@@ -1,6 +1,6 @@
 // 기본값 설정
 let currentPage = 1;
-const pageSize = 5;
+const pageSize = 6;
 let sortField = "";
 let sortOrder = "asc"; // 기본 정렬 방식
 
@@ -119,7 +119,7 @@ function renderOrders(data) {
             `;
 
             html += `
-                <div class="col-md-auto mb-3">
+                <div class="col-md-auto mb-5">
                     <div class="card">
                         <div class="card-header">주문번호 : ${order.orderId || ""} ${deleteButtonHtml}</div>
                         <div class="card-body">
@@ -160,7 +160,7 @@ function formatPrice(price) {
 // 페이징 UI 렌더링 함수 (makePageUI 스타일로 수정)
 function makePageUI(data) {
     const totalElements = data.totalElements;
-    const rowsPerPage = 5; // 페이지 당 항목 수
+    const rowsPerPage = 6; // 페이지 당 항목 수
     const totalPages = Math.ceil(totalElements / rowsPerPage); // 전체 페이지 수
     const currentPage = data.currentPage + 1;   // responseData.currentPage가 0부터 시작하므로 1을 더해준다.
     const startPage = getStartPage(currentPage);

@@ -26,13 +26,13 @@ public class OrderManageController implements ResponseController {
     @GetMapping("/list")
     public ResponseEntity<ResponseDto> getProducts(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "orderId") String sort,  // 정렬 기준
             @RequestParam(defaultValue = "asc") String sortOrder) {  // 정렬 방향 (기본값: asc)
         try{
             // 페이지 번호와 크기 설정
             if (page <= 0) page = 1;
-            if (size <= 0) size = 5;
+            if (size <= 0) size = 6;
             // 정렬 설정
             Sort sortBy = Sort.by(Sort.Order.by(sort));
             sortBy = sortOrder.equalsIgnoreCase("desc") ? sortBy.descending() : sortBy.ascending();
