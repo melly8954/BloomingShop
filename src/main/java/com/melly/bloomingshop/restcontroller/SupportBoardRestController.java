@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.SupportBoard;
+import com.melly.bloomingshop.dto.request.SupportBoardRegister;
 import com.melly.bloomingshop.dto.response.PagingSupportBoardResponse;
 import com.melly.bloomingshop.service.SupportBoardService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.DataInput;
 import java.util.List;
 
 @Slf4j
@@ -61,25 +63,12 @@ public class SupportBoardRestController implements ResponseController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerBoard(
-            @RequestPart("boardData") String boardData,  // JSON 데이터
-            @RequestPart(value = "attachments[]", required = false) List<MultipartFile> attachments){   // 파일 리스트
+            @RequestPart("boardData") SupportBoardRegister supportBoardRegister,  // JSON 데이터
+            @RequestPart(value = "attachments[]", required = false) List<MultipartFile> attachments) {  // 파일 리스트
         try {
-            // JSON 데이터를 파싱
-            ObjectMapper objectMapper = new ObjectMapper();
-            SupportBoard board = objectMapper.readValue(boardData, SupportBoard.class);
+            SupportBoard insert = this.supportBoardService.registerBoard(supportBoardRegister, attachments);
 
-            // 파일 처리 (여러 파일을 처리할 수 있음)
-            if (attachments != null && !attachments.isEmpty()) {
-                for (MultipartFile attachment : attachments) {
-                    // 파일 저장 로직 (예: DB에 저장, 파일 시스템에 저장 등)
-                }
-            }
-
-            // 게시판 등록 로직
-            // 예: boardService.save(board);
-
-            return ResponseEntity.ok().body("게시글 등록 성공");
-
+            return makeResponseEntity(HttpStatus.OK, "문의 게시글 등록 완료", insert);
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);

@@ -16,18 +16,13 @@ $(document).ready(function () {
     }
 });
 
-function boardRegist() {
+function boardRegister() {
     // 폼 데이터를 FormData로 수집
-    const formData = new FormData($('#supportRegisterForm')[0]);
+    const formData = new FormData();
 
-    // 비밀글 여부 체크
+    // 비밀글 여부 및 비밀번호 추가
     const isSecret = $('#secret').prop('checked');
-    formData.append('isSecret', isSecret);
-
-    // 비밀글 체크 시 비밀번호 추가
-    if (isSecret && $('#password').val()) {
-        formData.append('password', $('#password').val());
-    }
+    const password = isSecret ? $('#password').val() : null;
 
     // 여러 첨부파일 추가
     const attachments = $('#attachment')[0].files;
@@ -41,7 +36,9 @@ function boardRegist() {
     const boardData = {
         title: $('#title').val(),
         content: $('#content').val(),
-        authorName: $('#authorName').val()
+        authorName: $('#authorName').val(),
+        isSecret: isSecret,
+        password: password
     };
     formData.append('boardData', new Blob([JSON.stringify(boardData)], { type: 'application/json' }));
 
@@ -49,11 +46,13 @@ function boardRegist() {
     $.ajax({
         url: '/api/support/register', // 실제 API URL로 변경
         type: 'POST',
-        data: formData,
-        processData: false,  // FormData를 사용하면 자동으로 처리되지 않으므로 false
-        contentType: false,  // 자동으로 Content-Type을 설정하지 않도록 false
+        datatype: "JSON",   // 전송하는 데이터 방식
+        data: formData,     // 전송하는 실제 데이터 JSON 을 사용했다.
+        contentType: false,
+        processData: false,
     }).done(function (data) {
-        if (data.status === 200) {
+        console.log(data);
+        if (data.responseData) {
             // 성공적인 응답 처리
             alert('게시글이 등록되었습니다!');
             window.location.href = '/support/list'; // 게시판 목록 페이지로 리디렉션
@@ -63,3 +62,4 @@ function boardRegist() {
         alert('게시글 등록에 실패했습니다. 다시 시도해주세요.');
     });
 }
+
