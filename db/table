@@ -217,3 +217,22 @@ CREATE TABLE `guest_cart` (
   `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- bloomingshop.support_board_tbl definition
+
+CREATE TABLE `support_board_tbl` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `content` text COLLATE utf8mb4_general_ci NOT NULL,
+  `viewQty` int DEFAULT '0',
+  `is_secret` tinyint(1) DEFAULT '0',
+  `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_flag` tinyint(1) DEFAULT '0',
+  `deleted_date` timestamp NULL DEFAULT NULL,
+  `author_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
