@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <title>고객센터</title>
 </head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/support/supportList.js"></script>
 <body>
 {{> common/navbar}}
-고객센터다
+<div class="container">
+    <h1 class="text-center mt-4">고객센터</h1>
 
+    <!-- 게시판 목록을 표시할 div -->
+    <div id="board-list" class="board-list"></div>
+
+    <!-- 게시글 작성 버튼 -->
+    <div class="text-center mt-3">
+        <a href="" class="btn btn-primary">새 게시글 작성</a>
+    </div>
+</div>
 </body>
 </html>
