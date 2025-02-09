@@ -93,7 +93,7 @@ function loadBoardList(page, title, sortBy, sortOrder) {
             $(`#board-secret-${boardId}`).toggleClass('d-none');
         });
         // 페이지네이션 UI 생성
-        makePageUI(data.responseData.totalElements, page, "#pagination", "desc");
+        makePageUI(data.responseData.totalElements, page, "#pagination", sortOrder);
     }).fail(function () {
         alert('게시글 목록을 불러오는 데 실패했습니다.');
     });
