@@ -66,7 +66,7 @@ function loadBoardList(page, title, sortBy, sortOrder) {
                     <div>${board.isSecret ?
                         `<span class="text-danger">🔒 비밀글</span>` :
                         `<a href="/support/view/${board.id}" class="text-decoration-none fw-bold">${board.title}</a>` }
-                    <small class="text-muted d-block">작성자: ${board.authorId} | 조회수: ${board.viewQty} | 작성일: ${createdDate}</small>
+                    <small class="text-muted d-block">작성자: ${board.authorName} | 조회수: ${board.viewQty} | 작성일: ${createdDate}</small>
                     </div>
                     ${board.isSecret ? `
                         <button class="btn btn-sm btn-outline-primary secret-btn" data-board-id="${board.id}">비밀번호 입력</button>
