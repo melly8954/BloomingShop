@@ -12,10 +12,24 @@ import java.util.UUID;
 @Service
 public class FileUploadService {
 
-    @Value("${file.upload-dir:C:/bloomingshop}")
-    private String uploadDir;
+    @Value("${file.upload-dir:C:/bloomingshop/product}")
+    private String uploadDir1;
 
-    public String saveImage(MultipartFile image) throws IOException {
+    @Value("${file.upload-dir:C:/bloomingshop/support}")
+    private String uploadDir12;
+
+    // 상품 이미지 저장
+    public String saveProductImage(MultipartFile image) throws IOException {
+        return saveFile(image, uploadDir1);
+    }
+
+    // 고객센터 문의글 관련 이미지 저장
+    public String saveSupportImage(MultipartFile image) throws IOException {
+        return saveFile(image, uploadDir12);
+    }
+
+    // 공통된 파일 저장 로직
+    private String saveFile(MultipartFile image, String uploadDir) throws IOException {
         // 디렉토리가 없으면 생성
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
