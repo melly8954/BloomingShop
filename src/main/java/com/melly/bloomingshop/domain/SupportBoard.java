@@ -20,34 +20,34 @@ public class SupportBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
-    @Column(nullable = false)
+    @Column
     private String content;
 
-    @Column(name = "view_qty", nullable = false)
+    @Column(name = "view_qty")
     private int viewQty = 0;
 
-    @Column(name = "is_secret", nullable = false)
+    @Column(name = "is_secret")
     private boolean isSecret = false;
 
     @Column
     private String password;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
+    @Column(name = "created_date")
     private LocalDateTime createdDate;
 
-    @Column(name = "updated_date", nullable = false)
+    @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
-    @Column(name = "deleted_flag", nullable = false)
+    @Column(name = "deleted_flag")
     private boolean deletedFlag = false;
 
     @Column(name = "deleted_date")
     private LocalDateTime deletedDate;
 
-    @Column(name = "author_id", nullable = false)
+    @Column(name = "author_id")
     private String authorId;
 
     @PrePersist

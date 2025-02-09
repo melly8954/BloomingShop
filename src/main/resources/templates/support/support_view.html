@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>게시글 상세 보기</title>
+</head>
+<body>
+{{> common/navbar}} <!-- 네비게이션바 포함 -->
+
+<div class="container mt-5">
+    <h2 id="board-title" class="mb-3"></h2>
+
+    <div class="card">
+        <div class="card-body">
+            <p><strong>작성자:</strong> <span id="board-author"></span></p>
+            <p><strong>조회수:</strong> <span id="board-viewQty"></span></p>
+            <p><strong>작성일:</strong> <span id="board-createdDate"></span></p>
+
+            <!-- 비밀글일 경우 비밀번호 입력 -->
+            <div id="secret-section" class="alert alert-warning d-none">
+                <strong>🔒 비밀글입니다. 비밀번호를 입력해주세요.</strong>
+                <form id="password-form" class="d-flex mt-2">
+                    <input type="password" id="password-input" class="form-control me-2" placeholder="비밀번호 입력" required>
+                    <button type="submit" class="btn btn-sm btn-primary">확인</button>
+                </form>
+            </div>
+
+            <!-- 게시글 내용 -->
+            <div id="board-content" class="mt-3"></div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="/support" class="btn btn-outline-secondary">목록으로</a>
+    </div>
+</div>
+</body>
+</html>
