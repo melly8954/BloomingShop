@@ -226,7 +226,7 @@ CREATE TABLE `support_board_tbl` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `content` text COLLATE utf8mb4_general_ci NOT NULL,
-  `viewQty` int DEFAULT '0',
+  `view_qty` int DEFAULT '0',
   `is_secret` tinyint(1) DEFAULT '0',
   `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -235,4 +235,4 @@ CREATE TABLE `support_board_tbl` (
   `deleted_date` timestamp NULL DEFAULT NULL,
   `author_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
