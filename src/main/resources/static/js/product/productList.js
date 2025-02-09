@@ -264,18 +264,30 @@ function addToCart(productId, quantity) {
 
 // guestId가 없을 경우 새로 생성하는 함수 (예: UUID로 생성)
 function getGuestId() {
-    let guestId = localStorage.getItem('guestId');
+    let guestData = JSON.parse(localStorage.getItem('guestData'));
 
-    if (!guestId) {
-        guestId = generateGuestId();
-        localStorage.setItem('guestId', guestId);
+    // guestData가 없거나 만료된 경우
+    if (!guestData || isGuestIdExpired(guestData.createdAt)) {
+        guestData = {
+            guestId: generateGuestId(),
+            createdAt: new Date().toISOString() // 현재 시간을 ISO 형식으로 저장
+        };
+        localStorage.setItem('guestData', JSON.stringify(guestData)); // guestData 저장
     }
 
-    return guestId;
+    return guestData.guestId;
 }
 
 // guestId 생성 함수 (UUID 스타일로 생성)
 function generateGuestId() {
     return 'guest-' + Math.random().toString(36).substr(2, 9); // 간단한 랜덤 문자열 생성
+}
+
+// guestId의 만료 여부를 체크하는 함수 (1일=86400000ms)
+function isGuestIdExpired(createdAt) {
+    const currentTime = new Date().getTime();
+    const guestIdCreationTime = new Date(createdAt).getTime();
+    const timeDifference = currentTime - guestIdCreationTime;
+    return timeDifference > 86400000; // 1일 (24시간) 초과하면 만료
 }
 

@@ -10,7 +10,39 @@ $(document).ready(function() {
     $('#sort-desc').click(function() {
         orderList('desc');
     });
+
+    // 주문 내역 보관 메시지 표시
+    checkLoginStatus();
 });
+
+// guestId가 없을 경우 새로 생성하는 함수 (예: UUID로 생성)
+function getGuestId() {
+    let guestData = JSON.parse(localStorage.getItem('guestData'));
+
+    // guestData가 없거나 만료된 경우
+    if (!guestData || isGuestIdExpired(guestData.createdAt)) {
+        guestData = {
+            guestId: generateGuestId(),
+            createdAt: new Date().toISOString() // 현재 시간을 ISO 형식으로 저장
+        };
+        localStorage.setItem('guestData', JSON.stringify(guestData)); // guestData 저장
+    }
+
+    return guestData.guestId;
+}
+
+// guestId 생성 함수 (UUID 스타일로 생성)
+function generateGuestId() {
+    return 'guest-' + Math.random().toString(36).substr(2, 9); // 간단한 랜덤 문자열 생성
+}
+
+// guestId의 만료 여부를 체크하는 함수 (1일=86400000ms)
+function isGuestIdExpired(createdAt) {
+    const currentTime = new Date().getTime();
+    const guestIdCreationTime = new Date(createdAt).getTime();
+    const timeDifference = currentTime - guestIdCreationTime;
+    return timeDifference > 86400000; // 1일 (24시간) 초과하면 만료
+}
 
 // 날짜 형식 변환 함수 (예: "2025-01-31T18:44:47" → "2025-01-31")
 function formatDate(dateStr) {
@@ -29,20 +61,44 @@ function formatPrice(price) {
     return '₩' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+function checkLoginStatus() {
+    $.ajax({
+        url: '/api/user/getUserId',
+        method: 'GET',
+    }).done(function (data) {
+        // 로그인 상태
+        const userId = data.responseData.id;
+        displayLoginNotice(userId);  // 로그인된 사용자에 대한 UI 처리
+    }).fail(function () {
+        // 비로그인 상태
+        displayGuestOrderNotice();  // 비회원 메시지 표시
+        console.log('로그인하지 않은 상태입니다.');
+    });
+}
+
+function displayLoginNotice(userId) {
+    $('#notice').html(''); // 로그인된 경우 메시지 지우기
+    console.log('로그인된 사용자:', userId); // 로그인된 사용자 정보 출력
+}
+
+function displayGuestOrderNotice() {
+    const guestData = JSON.parse(localStorage.getItem('guestData'));
+    if (guestData) {
+        const noticeMessage = '<h4 class="text-center mb-1">* 비회원의 주문내역은 7일동안 보관되며, 이후에는 고객센터에 문의하십시오. *</h4>';
+        $('#notice').html(noticeMessage);
+    }
+}
+
 // 주문 목록 출력 함수
 function orderList(orderType = 'asc') {
-    const guestId = localStorage.getItem('guestId');
-    if (!guestId) {
-        const newGuestId = "guest-" + java.util.UUID.randomUUID().toString();
-        localStorage.setItem('guestId', newGuestId);
-    }
+    const guestId = getGuestId();
 
     $.ajax({
         url: '/api/order/list',
         type: 'GET',
         dataType: 'json',
         headers: {
-            'Guest-Id': guestId || newGuestId
+            'Guest-Id': guestId
         }
     }).done(function(data) {
         const orderListContainer = $('#order-list');
