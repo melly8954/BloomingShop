@@ -1,11 +1,10 @@
 package com.melly.bloomingshop.restcontroller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
-import com.melly.bloomingshop.domain.Product;
 import com.melly.bloomingshop.domain.SupportBoard;
-import com.melly.bloomingshop.dto.ProductPageResponse;
-import com.melly.bloomingshop.dto.response.SupportBoardResponse;
+import com.melly.bloomingshop.dto.response.PagingSupportBoardResponse;
 import com.melly.bloomingshop.service.SupportBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,18 +42,45 @@ public class SupportBoardRestController implements ResponseController {
             sortBy = order.equalsIgnoreCase("desc") ? sortBy.descending() : sortBy.ascending();
             Pageable pageable = PageRequest.of(page - 1, size, sortBy);
 
-            SupportBoardResponse<SupportBoard> supportBoardResponse;
+            PagingSupportBoardResponse<SupportBoard> pagingSupportBoardResponse;
 
             Page<SupportBoard> allBoards = this.supportBoardService.getAllBoards(pageable,title);
-            supportBoardResponse = new SupportBoardResponse<>(
+            pagingSupportBoardResponse = new PagingSupportBoardResponse<>(
                     allBoards.getContent(),
                     allBoards.getTotalElements(),
                     allBoards.getTotalPages(),
                     allBoards.getNumber(),
                     allBoards.getSize()
             );
-            return makeResponseEntity(HttpStatus.OK, "모든 문의 게시글 반환 성공", supportBoardResponse);
+            return makeResponseEntity(HttpStatus.OK, "모든 문의 게시글 반환 성공", pagingSupportBoardResponse);
         }catch (Exception ex){
+            log.error(ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerBoard(
+            @RequestPart("boardData") String boardData,  // JSON 데이터
+            @RequestPart(value = "attachments[]", required = false) List<MultipartFile> attachments){   // 파일 리스트
+        try {
+            // JSON 데이터를 파싱
+            ObjectMapper objectMapper = new ObjectMapper();
+            SupportBoard board = objectMapper.readValue(boardData, SupportBoard.class);
+
+            // 파일 처리 (여러 파일을 처리할 수 있음)
+            if (attachments != null && !attachments.isEmpty()) {
+                for (MultipartFile attachment : attachments) {
+                    // 파일 저장 로직 (예: DB에 저장, 파일 시스템에 저장 등)
+                }
+            }
+
+            // 게시판 등록 로직
+            // 예: boardService.save(board);
+
+            return ResponseEntity.ok().body("게시글 등록 성공");
+
+        } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
         }
