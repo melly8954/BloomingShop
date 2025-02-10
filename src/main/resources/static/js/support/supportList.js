@@ -56,7 +56,7 @@ function loadBoardList(page, title, sortBy, sortOrder) {
         url: `/api/support/list?page=${page}&title=${title}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,  // 게시글 목록을 가져오는 URL
         type: 'GET'
     }).done(function (data) {
-        console.log(data)
+        console.log(data);
         const boardListContainer = $('#board-list');
         boardListContainer.empty();  // 기존 내용을 비우고 새로 추가
         data.responseData.supportBoards.forEach(function(board) {
@@ -64,38 +64,48 @@ function loadBoardList(page, title, sortBy, sortOrder) {
             const boardItem = `
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>${board.isSecret ?
-                        `<span class="text-danger">🔒 비밀글</span>` :
-                        `<a href="/support/view/${board.id}" class="text-decoration-none fw-bold">${board.title}</a>` }
-                    <small class="text-muted d-block">작성자: ${board.authorName} | 조회수: ${board.viewQty} | 작성일: ${createdDate}</small>
+                        `<a class="secret-board cursor-pointer text-decoration-none fw-bold" data-board-id="${board.id}">${board.title}</a> 
+                         <span class="text-danger">🔒 비밀글</span>` :
+                
+                        `<a href="/support/view/${board.id}" class="text-decoration-none fw-bold">${board.title}</a>`
+                        }
+                        <small class="text-muted d-block">작성자: ${board.authorName} | 조회수: ${board.viewQty} | 작성일: ${createdDate}</small>
                     </div>
-                    ${board.isSecret ? `
-                        <button class="btn btn-sm btn-outline-primary secret-btn" data-board-id="${board.id}">비밀번호 입력</button>
-                        ` : ''}
                 </li>
                 
                 ${board.isSecret ? `
                 <li id="board-secret-${board.id}" class="list-group-item d-none">
                     <div class="alert alert-warning p-2">
                         <strong>🔒 비밀글입니다. 비밀번호를 입력해주세요.</strong>                   
-                        <input type="password" class="form-control me-2" name="password" placeholder="비밀번호" required>
-                        <button class="btn btn-sm btn-primary" onclick="checkPassword(${board.id})">확인</button>
+                        <input type="password" class="form-control me-2 password-input" name="password" placeholder="비밀번호" required>
+                        <button class="btn btn-sm btn-primary check-password-btn" data-board-id="${board.id}">확인</button>
                     </div>
                 </li>
-                ` : ''}
+                ` : ''
+                }
             `;
             boardListContainer.append(boardItem);
         });
-        // 비밀글 버튼 클릭 시 입력 폼 표시
-        $('.secret-btn').click(function() {
+
+        // 비밀글 제목 클릭 시 비밀번호 입력 폼 토글
+        $('.secret-board').click(function() {
             const boardId = $(this).data('board-id');
             $(`#board-secret-${boardId}`).toggleClass('d-none');
         });
+
+        // 비밀번호 확인 버튼 클릭 이벤트
+        $('.check-password-btn').click(function() {
+            const boardId = $(this).data('board-id');
+            checkPassword(boardId);
+        });
+
         // 페이지네이션 UI 생성
         makePageUI(data.responseData.totalElements, page, "#pagination", sortOrder);
     }).fail(function () {
         alert('게시글 목록을 불러오는 데 실패했습니다.');
     });
 }
+
 
 // 날짜 형식 변환 함수 (예: "2025-01-31T18:44:47" → "2025-01-31")
 function formatDate(dateStr) {
@@ -166,10 +176,11 @@ function checkPassword(boardId,password){
         contentType: 'application/json',
         data: JSON.stringify({ password: passwordInput })
     }).done(function(data) {
+        console.log(data);
         if (data.responseData === true) {
             // 비밀번호가 맞으면 게시글 뷰 페이지로 이동
             window.location.href = `/support/view/${boardId}`;
-        } else {
+        } else{
             alert('비밀번호가 틀렸습니다. 다시 확인해주세요.');
         }
     }).fail(function() {

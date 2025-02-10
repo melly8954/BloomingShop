@@ -83,7 +83,8 @@ public class SupportBoardRestController implements ResponseController {
             if(isChecked){
                 return makeResponseEntity(HttpStatus.OK, "비밀번호 확인 완료", isChecked);
             }else{
-                return makeResponseEntity(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다.", isChecked);
+                log.error("비밀번호가 틀렸습니다.");
+                return makeResponseEntity(HttpStatus.OK, "비밀번호가 틀렸습니다.", isChecked);
             }
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
