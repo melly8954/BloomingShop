@@ -270,7 +270,7 @@ function getGuestId() {
     if (!guestData || isGuestIdExpired(guestData.createdAt)) {
         guestData = {
             guestId: generateGuestId(),
-            createdAt: new Date().toISOString() // 현재 시간을 ISO 형식으로 저장
+            createdAt: new Date().toLocaleString() // 로컬 시간 형식으로 반환
         };
         localStorage.setItem('guestData', JSON.stringify(guestData)); // guestData 저장
     }
