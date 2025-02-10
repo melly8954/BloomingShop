@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -75,5 +76,13 @@ public class SupportBoardService {
         } else {
             return false; // 비밀번호 불일치
         }
+    }
+
+    public SupportBoard findByBoardId(Long boardId) {
+        Optional<SupportBoard> find = this.supportBoardRepository.findById(boardId);
+        if(find.isPresent()) {
+            return find.get();
+        }
+        return null;
     }
 }

@@ -91,4 +91,18 @@ public class SupportBoardRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
         }
     }
+
+    @GetMapping("/{boardId}/details")
+    public ResponseEntity<ResponseDto> getBoardDetail(@PathVariable Long boardId) {
+        try{
+            if(boardId == null || boardId <= 0){
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "해당 ID의 게시글은 존재하지 않습니다.", null);
+            }
+            SupportBoard detail = this.supportBoardService.findByBoardId(boardId);
+            return makeResponseEntity(HttpStatus.OK, "해당 게시글 조회 완료", detail);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+        }
+    }
 }
