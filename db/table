@@ -237,3 +237,25 @@ CREATE TABLE `support_board_tbl` (
   `author_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- bloomingshop.support_board_comment_tbl definition
+
+CREATE TABLE `support_board_comment_tbl` (
+  `comment_id` bigint NOT NULL AUTO_INCREMENT,
+  `board_id` bigint NOT NULL,
+  `parent_comment_id` bigint DEFAULT NULL,
+  `comment_author_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `is_admin` tinyint(1) DEFAULT '0',
+  `comment_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `comment_created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `comment_updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_date` timestamp NULL DEFAULT NULL,
+  `deleted_flag` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`comment_id`),
+  KEY `board_id` (`board_id`),
+  KEY `parent_comment_id` (`parent_comment_id`),
+  CONSTRAINT `support_board_comment_tbl_ibfk_1` FOREIGN KEY (`board_id`) REFERENCES `support_board_tbl` (`id`),
+  CONSTRAINT `support_board_comment_tbl_ibfk_2` FOREIGN KEY (`parent_comment_id`) REFERENCES `support_board_comment_tbl` (`comment_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
