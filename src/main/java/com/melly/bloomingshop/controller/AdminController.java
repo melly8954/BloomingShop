@@ -40,4 +40,9 @@ public class AdminController {
     public String userPage() {
         return "admin/user/all_users";
     }
+
+    @GetMapping("/board/support/list")
+    public String supportPage() {
+        return "admin/board/support_list";
+    }
 }
