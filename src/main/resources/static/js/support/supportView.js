@@ -25,6 +25,11 @@ $(document).ready(function(){
         `;
         // 해당 div에 게시글 내용을 삽입
         $('#board-detail').html(boardContent);
+        if(data.responseData.isAnswer === false){
+            $("#no-answer").show();
+        }else{
+            $("#answer-content").show();
+        }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert('게시글 정보를 불러오는 데 실패했습니다.');
     });
