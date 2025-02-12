@@ -3,15 +3,13 @@ package com.melly.bloomingshop.service;
 import com.melly.bloomingshop.admin.service.FileUploadService;
 import com.melly.bloomingshop.domain.SupportBoard;
 import com.melly.bloomingshop.domain.SupportBoardComment;
+import com.melly.bloomingshop.dto.request.SupportBoardCommentRegister;
 import com.melly.bloomingshop.dto.request.SupportBoardRegister;
-import com.melly.bloomingshop.dto.response.SupportBoardCommentResponse;
-import com.melly.bloomingshop.dto.response.SupportBoardResponse;
 import com.melly.bloomingshop.repository.SupportBoardCommentRepository;
 import com.melly.bloomingshop.repository.SupportBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -112,5 +109,19 @@ public class SupportBoardService {
 
         // 댓글 저장
         return supportBoardCommentRepository.save(comment);
+    }
+
+    public void registerBoardCommnet(Long boardId, SupportBoardCommentRegister supportBoardCommentRegister) {
+        // 새 댓글 생성
+        SupportBoardComment comment = SupportBoardComment.builder()
+                .boardId(boardId)
+                .commentAuthorName(supportBoardCommentRegister.getCommentAuthorName())
+                .commentContent(supportBoardCommentRegister.getCommentContent())
+                .isAdmin(false)  // 기본값: 관리자는 false
+                .deletedFlag(false)  // 기본값: 삭제되지 않음
+                .build();
+
+        // 댓글 저장
+        this.supportBoardCommentRepository.save(comment);
     }
 }

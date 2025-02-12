@@ -92,22 +92,25 @@ function getEndPage(startPage, totalPages) {
 
 // 댓글 작성
 function commentRegister() {
-    const authorName = $('#author_name').val();
-    const commentContent = $('#comment_content').val();
+    const commentAuthorName = $('#comment-author-name').val();
+    const commentContent = $('#comment-content').val();
 
-    // $.ajax({
-    //     url: `/api/support/board/${boardId}/comments`,
-    //     type: 'POST',
-    //     data: JSON.stringify(
-    //         author_name: authorName,
-    //         comment_content: commentContent
-    //     )
-    // }).done(function (data) {
-    //     console.log(data);
-    //     $('#author_name').val('');  // 입력란 초기화
-    //     $('#comment_content').val(''); // 입력란 초기화
-    //     loadComments(); // 댓글 목록 다시 로드
-    // }).fail(function (xhr, status, error) {
-    //     console.log('댓글 작성 실패', error);
-    // })
+    $.ajax({
+        url: `/api/support/board/${boardId}/comments`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            commentAuthorName: commentAuthorName,
+            commentContent: commentContent
+        })
+    }).done(function (data) {
+        console.log(data);
+        if(data.responseData === true){
+            $('#comment-author-name').val('');  // 입력란 초기화
+            $('#comment-content').val(''); // 입력란 초기화
+            loadComments(currentPage,pageSize); // 댓글 목록 다시 로드
+        }
+    }).fail(function (xhr, status, error) {
+        console.log('댓글 등록 실패', error);
+    })
 }

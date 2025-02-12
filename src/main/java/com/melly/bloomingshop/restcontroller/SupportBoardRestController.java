@@ -4,6 +4,7 @@ import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.SupportBoard;
 import com.melly.bloomingshop.domain.SupportBoardComment;
+import com.melly.bloomingshop.dto.request.SupportBoardCommentRegister;
 import com.melly.bloomingshop.dto.request.SupportBoardPassword;
 import com.melly.bloomingshop.dto.request.SupportBoardRegister;
 import com.melly.bloomingshop.dto.response.SupportBoardResponse;
@@ -121,14 +122,19 @@ public class SupportBoardRestController implements ResponseController {
         }
     }
 
-//    // 댓글 추가
-//    @PostMapping("/board/{boardId}/comment")
-//    public ResponseEntity<ResponseDto> addComment(@RequestParam Long boardId, @RequestParam String authorName, @RequestParam String commentContent) {
-//        try{
-//
-//        } catch (Exception ex) {
-//            log.error(ex.getMessage(), ex);
-//            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
-//        }
-//    }
+    // 댓글 추가
+    @PostMapping("/board/{boardId}/comments")
+    public ResponseEntity<ResponseDto> addComment(@PathVariable Long boardId, @RequestBody SupportBoardCommentRegister supportBoardCommentRegister) {
+        try{
+            if(boardId == null || boardId <= 0){
+                log.error("잘못된 게시판 번호 입니다.");
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 게시판 번호 입니다.", null);
+            }
+            this.supportBoardService.registerBoardCommnet(boardId,supportBoardCommentRegister);
+            return makeResponseEntity(HttpStatus.OK, "댓글 등록 완료", true);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+        }
+    }
 }
