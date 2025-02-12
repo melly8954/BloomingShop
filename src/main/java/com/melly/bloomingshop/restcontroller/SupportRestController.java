@@ -2,11 +2,11 @@ package com.melly.bloomingshop.restcontroller;
 
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
-import com.melly.bloomingshop.domain.SupportBoard;
-import com.melly.bloomingshop.dto.request.SupportBoardPassword;
-import com.melly.bloomingshop.dto.request.SupportBoardRegister;
-import com.melly.bloomingshop.dto.response.SupportBoardResponse;
-import com.melly.bloomingshop.service.SupportBoardService;
+import com.melly.bloomingshop.domain.Support;
+import com.melly.bloomingshop.dto.request.SupportPassword;
+import com.melly.bloomingshop.dto.request.SupportRegister;
+import com.melly.bloomingshop.dto.response.SupportResponse;
+import com.melly.bloomingshop.service.SupportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,8 +24,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/board/support")
-public class SupportBoardRestController implements ResponseController {
-    private final SupportBoardService supportBoardService;
+public class SupportRestController implements ResponseController {
+    private final SupportService supportService;
 
     @GetMapping("/list")
     public ResponseEntity<ResponseDto> getAllSupportBoards(
@@ -43,17 +43,17 @@ public class SupportBoardRestController implements ResponseController {
             sortBy = order.equalsIgnoreCase("desc") ? sortBy.descending() : sortBy.ascending();
             Pageable pageable = PageRequest.of(page - 1, size, sortBy);
 
-            SupportBoardResponse<SupportBoard> supportBoardResponse;
+            SupportResponse<Support> supportResponse;
 
-            Page<SupportBoard> allBoards = this.supportBoardService.getAllBoards(pageable,title);
-            supportBoardResponse = new SupportBoardResponse<>(
+            Page<Support> allBoards = this.supportService.getAllBoards(pageable,title);
+            supportResponse = new SupportResponse<>(
                     allBoards.getContent(),
                     allBoards.getTotalElements(),
                     allBoards.getTotalPages(),
                     allBoards.getNumber(),
                     allBoards.getSize()
             );
-            return makeResponseEntity(HttpStatus.OK, "모든 문의 게시글 반환 성공", supportBoardResponse);
+            return makeResponseEntity(HttpStatus.OK, "모든 문의 게시글 반환 성공", supportResponse);
         }catch (Exception ex){
             log.error(ex.getMessage(), ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
@@ -62,10 +62,10 @@ public class SupportBoardRestController implements ResponseController {
 
     @PostMapping("/register")
     public ResponseEntity<ResponseDto> registerBoard(
-            @RequestPart("boardData") SupportBoardRegister supportBoardRegister,  // JSON 데이터
+            @RequestPart("boardData") SupportRegister supportRegister,  // JSON 데이터
             @RequestPart(value = "attachments[]", required = false) List<MultipartFile> attachments) {  // 파일 리스트
         try {
-            SupportBoard insert = this.supportBoardService.registerBoard(supportBoardRegister, attachments);
+            Support insert = this.supportService.registerBoard(supportRegister, attachments);
 
             return makeResponseEntity(HttpStatus.OK, "문의 게시글 등록 완료", insert);
         } catch (Exception ex) {
@@ -75,9 +75,9 @@ public class SupportBoardRestController implements ResponseController {
     }
 
     @PostMapping("/{boardId}/check-password")
-    public ResponseEntity<ResponseDto> checkPassword(@PathVariable Long boardId, @RequestBody SupportBoardPassword supportBoardPassword){
+    public ResponseEntity<ResponseDto> checkPassword(@PathVariable Long boardId, @RequestBody SupportPassword supportPassword){
         try {
-            boolean isChecked = this.supportBoardService.checkBoardPassword(boardId, supportBoardPassword.getPassword());
+            boolean isChecked = this.supportService.checkBoardPassword(boardId, supportPassword.getPassword());
             if(isChecked){
                 return makeResponseEntity(HttpStatus.OK, "비밀번호 확인 완료", isChecked);
             }else{
@@ -96,7 +96,7 @@ public class SupportBoardRestController implements ResponseController {
             if(boardId == null || boardId <= 0){
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, "해당 ID의 게시글은 존재하지 않습니다.", null);
             }
-            SupportBoard detail = this.supportBoardService.findByBoardId(boardId);
+            Support detail = this.supportService.findByBoardId(boardId);
             return makeResponseEntity(HttpStatus.OK, "해당 게시글 조회 완료", detail);
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);

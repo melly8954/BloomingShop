@@ -1,9 +1,9 @@
 package com.melly.bloomingshop.service;
 
 import com.melly.bloomingshop.admin.service.FileUploadService;
-import com.melly.bloomingshop.domain.SupportBoard;
-import com.melly.bloomingshop.dto.request.SupportBoardRegister;
-import com.melly.bloomingshop.repository.SupportBoardRepository;
+import com.melly.bloomingshop.domain.Support;
+import com.melly.bloomingshop.dto.request.SupportRegister;
+import com.melly.bloomingshop.repository.SupportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,45 +20,45 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SupportBoardService {
-    private final SupportBoardRepository supportBoardRepository;
+public class SupportService {
+    private final SupportRepository supportRepository;
     private final FileUploadService fileUploadService;
 
     // 모든 게시글 목록 가져오기
-    public Page<SupportBoard> getAllBoards(Pageable pageable, String title) {
+    public Page<Support> getAllBoards(Pageable pageable, String title) {
         if (title != null && !title.isEmpty()) {
-            return supportBoardRepository.findByTitleContainingAndDeletedFlagFalse(title, pageable);
+            return supportRepository.findByTitleContainingAndDeletedFlagFalse(title, pageable);
         } else {
-            return supportBoardRepository.findByDeletedFlagFalse(pageable);
+            return supportRepository.findByDeletedFlagFalse(pageable);
         }
     }
 
     @Transactional
     // 게시글 등록
-    public SupportBoard registerBoard(SupportBoardRegister supportBoardRegister, List<MultipartFile> attachments) {
+    public Support registerBoard(SupportRegister supportRegister, List<MultipartFile> attachments) {
         try {
             // 파일 첨부가 있으면 파일 저장
             if (attachments != null && !attachments.isEmpty()) {
                 for (MultipartFile attachment : attachments) {
                     // 파일 저장 처리
                     String filePath = fileUploadService.saveSupportImage(attachment);
-                    supportBoardRegister.setImageUrl(filePath);
+                    supportRegister.setImageUrl(filePath);
                 }
             }
-            SupportBoard supportBoard = SupportBoard.builder()
-                    .title(supportBoardRegister.getTitle())
-                    .content(supportBoardRegister.getContent())
-                    .imageUrl(supportBoardRegister.getImageUrl())
+            Support support = Support.builder()
+                    .title(supportRegister.getTitle())
+                    .content(supportRegister.getContent())
+                    .imageUrl(supportRegister.getImageUrl())
                     .viewQty(0)
-                    .authorName(supportBoardRegister.getAuthorName())
-                    .isSecret(supportBoardRegister.getIsSecret())
-                    .password(supportBoardRegister.getPassword())
+                    .authorName(supportRegister.getAuthorName())
+                    .isSecret(supportRegister.getIsSecret())
+                    .password(supportRegister.getPassword())
                     .isAnswer(false)
                     .answerContent(null)
                     .build();
 
             // 게시글 저장
-            SupportBoard save = supportBoardRepository.save(supportBoard);
+            Support save = supportRepository.save(support);
             return save;
         } catch (Exception e) {
             log.error("게시글 등록 실패", e);
@@ -67,7 +67,7 @@ public class SupportBoardService {
     }
 
     public boolean checkBoardPassword(Long boardId, String password) {
-        SupportBoard board = supportBoardRepository.findById(boardId)
+        Support board = supportRepository.findById(boardId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
 
         if (!board.getIsSecret()) {
@@ -81,8 +81,8 @@ public class SupportBoardService {
         }
     }
 
-    public SupportBoard findByBoardId(Long boardId) {
-        Optional<SupportBoard> find = this.supportBoardRepository.findById(boardId);
+    public Support findByBoardId(Long boardId) {
+        Optional<Support> find = this.supportRepository.findById(boardId);
         if(find.isPresent()) {
             return find.get();
         }

@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class SupportBoardResponse<T> {
+public class SupportResponse<T> {
     private List<T> supportBoards;  // 상품 목록
     private long totalElements;  // 전체 상품 수
     private int totalPages;  // 전체 페이지 수

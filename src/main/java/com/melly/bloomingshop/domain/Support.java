@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "support_board_tbl")
-public class SupportBoard {
-
+public class Support {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

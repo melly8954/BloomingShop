@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SupportBoardPassword {
+public class SupportPassword {
     private String password;
 }

@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class SupportBoardRegister {
+public class SupportRegister {
     private String title;
     private String content;
     private String imageUrl; // 첨부파일이 있을 경우 저장
