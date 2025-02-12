@@ -63,3 +63,6 @@ function boardRegister() {
     });
 }
 
+function cancelRegister(){
+    window.location.href = '/board/support/list';
+}
