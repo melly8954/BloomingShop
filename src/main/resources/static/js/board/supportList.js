@@ -90,6 +90,12 @@ function loadBoardList(page, title, sortBy, sortOrder) {
         // 비밀글 제목 클릭 시 비밀번호 입력 폼 토글
         $('.secret-board').click(function() {
             const boardId = $(this).data('board-id');
+            // 모든 비밀글 비밀번호 입력 폼을 숨김
+            $('.secret-board').not(this).each(function() {
+                const otherBoardId = $(this).data('board-id');
+                $(`#board-secret-${otherBoardId}`).addClass('d-none');  // 기존 비밀번호 폼 숨기기
+            });
+            // 클릭한 비밀글의 비밀번호 입력 폼 토글
             $(`#board-secret-${boardId}`).toggleClass('d-none');
         });
 
