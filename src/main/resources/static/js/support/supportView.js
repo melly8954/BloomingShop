@@ -4,7 +4,7 @@ $(document).ready(function(){
     const boardId = pathSegments[pathSegments.length - 1];
 
     $.ajax({
-        url: `/api/support/${boardId}/details`,
+        url: `/api/board/support/${boardId}/details`,
         type: 'GET'
     }).done(function (data) {
         console.log(data);

@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/support")
+@RequestMapping("/api/board/support")
 public class SupportBoardRestController implements ResponseController {
     private final SupportBoardService supportBoardService;
 
@@ -74,7 +74,7 @@ public class SupportBoardRestController implements ResponseController {
         }
     }
 
-    @PostMapping("/check-password/{boardId}")
+    @PostMapping("/{boardId}/check-password")
     public ResponseEntity<ResponseDto> checkPassword(@PathVariable Long boardId, @RequestBody SupportBoardPassword supportBoardPassword){
         try {
             boolean isChecked = this.supportBoardService.checkBoardPassword(boardId, supportBoardPassword.getPassword());

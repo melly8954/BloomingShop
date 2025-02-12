@@ -53,7 +53,7 @@ function toggleActiveButton(activeBtn, inactiveBtn) {
 // 게시글 목록 로드 함수
 function loadBoardList(page, title, sortBy, sortOrder) {
     $.ajax({
-        url: `/api/support/list?page=${page}&title=${title}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,  // 게시글 목록을 가져오는 URL
+        url: `/api/board/support/list?page=${page}&title=${title}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,  // 게시글 목록을 가져오는 URL
         type: 'GET'
     }).done(function (data) {
         console.log(data);
@@ -171,7 +171,7 @@ function checkPassword(boardId,password){
     }
     
     $.ajax({
-        url: `/api/support/check-password/${boardId}`, // 비밀번호 확인 API 호출
+        url: `/api/board/support/${boardId}/check-password`, // 비밀번호 확인 API 호출
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ password: passwordInput })
@@ -179,7 +179,7 @@ function checkPassword(boardId,password){
         console.log(data);
         if (data.responseData === true) {
             // 비밀번호가 맞으면 게시글 뷰 페이지로 이동
-            window.location.href = `/support/view/${boardId}`;
+            window.location.href = `/board/support/view/${boardId}`;
         } else{
             alert('비밀번호가 틀렸습니다. 다시 확인해주세요.');
         }

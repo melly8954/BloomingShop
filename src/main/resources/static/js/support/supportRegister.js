@@ -44,7 +44,7 @@ function boardRegister() {
 
     // AJAX 요청
     $.ajax({
-        url: '/api/support/register', // 실제 API URL로 변경
+        url: '/api/board/support/register', // 실제 API URL로 변경
         type: 'POST',
         datatype: "JSON",   // 전송하는 데이터 방식
         data: formData,     // 전송하는 실제 데이터 JSON 을 사용했다.
