@@ -3,21 +3,23 @@ package com.melly.bloomingshop.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class SupportBoardController {
+@RequestMapping("/board")
+public class BoardController {
     @GetMapping("/support/list")
     public String support() {
-        return "/support/support_list";
+        return "board/support_list";
     }
 
     @GetMapping("/support/register")
     public String register() {
-        return "/support/support_register";
+        return "board/support_register";
     }
 
     @GetMapping("/support/view/{boardId}")
     public String register(@PathVariable Long boardId) {
-        return "/support/support_view";
+        return "board/support_view";
     }
 }

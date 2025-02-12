@@ -55,7 +55,7 @@ function boardRegister() {
         if (data.responseData) {
             // 성공적인 응답 처리
             alert('게시글이 등록되었습니다!');
-            window.location.href = '/support/list'; // 게시판 목록 페이지로 리디렉션
+            window.location.href = '/board/support/list'; // 게시판 목록 페이지로 리디렉션
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         // 실패한 경우
