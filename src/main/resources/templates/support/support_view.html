@@ -9,7 +9,6 @@
 </head>
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script src="/js/support/supportView.js"></script>
-<script src="/js/support/supportComment.js"></script>
 <body>
 {{> common/navbar}} <!-- 네비게이션바 포함 -->
 <div class="container mt-5">
@@ -19,25 +18,20 @@
     <div class="mt-3">
         <a href="/support/list" class="btn btn-outline-secondary">목록으로</a>
     </div>
+    <!-- 답변 영역 -->
     <div class="mt-5">
-        <h5>댓글</h5>
-        <div id="comments-section">
-            <!-- 댓글 목록 렌더링 -->
-        </div>
-        <div id="pagination">
-            <!-- 댓글 페이징 -->
-        </div>
-        <div class="mt-4">
-            <h6>댓글 작성</h6>
-            <div class="mb-1">
-                <label for="comment-author-name"></label>
-                <input type="text" class="form-control" id="comment-author-name" placeholder="작성자 이름" required>
+        <h3>답변</h3>
+        <div id="answer-section">
+            <!-- 답변이 있을 경우 여기에 답변 내용이 들어갑니다 -->
+            <div id="answer-content" class="border p-3" style="display: none;">
+                <strong>관리자 답변:</strong>
+                <p id="answer-text"></p>
+                <small id="answer-date"></small>
             </div>
-            <div class="mb-1">
-                <label for="comment-content"></label>
-                <textarea class="form-control" id="comment-content" placeholder="댓글을 작성하세요" required></textarea>
+            <!-- 답변이 없는 경우 -->
+            <div id="no-answer" class="alert alert-info" style="display: none;">
+                답변 대기 중입니다.
             </div>
-            <button class="btn btn-primary" onclick="commentRegister()">댓글 작성</button>
         </div>
     </div>
 </div>

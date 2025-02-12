@@ -1,0 +1,329 @@
+-- bloomingshop.support_board_comment_tbl definition
+
+CREATE TABLE `support_board_comment_tbl` (
+  `comment_id` bigint NOT NULL AUTO_INCREMENT,
+  `board_id` bigint NOT NULL,
+  `parent_comment_id` bigint DEFAULT NULL,
+  `comment_author_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `is_admin` tinyint(1) DEFAULT '0',
+  `comment_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_date` timestamp NULL DEFAULT NULL,
+  `deleted_flag` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`comment_id`),
+  KEY `board_id` (`board_id`),
+  KEY `parent_comment_id` (`parent_comment_id`),
+  CONSTRAINT `support_board_comment_tbl_ibfk_1` FOREIGN KEY (`board_id`) REFERENCES `support_board_tbl` (`id`),
+  CONSTRAINT `support_board_comment_tbl_ibfk_2` FOREIGN KEY (`parent_comment_id`) REFERENCES `support_board_comment_tbl` (`comment_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+    <div class="mt-5">
+        <h5>댓글</h5>
+        <div id="comments-section">
+            <!-- 댓글 목록 렌더링 -->
+        </div>
+        <div id="pagination">
+            <!-- 댓글 페이징 -->
+        </div>
+        <div class="mt-4">
+            <h6>댓글 작성</h6>
+            <div class="mb-1">
+                <label for="comment-author-name"></label>
+                <input type="text" class="form-control" id="comment-author-name" placeholder="작성자 이름" required>
+            </div>
+            <div class="mb-1">
+                <label for="comment-content"></label>
+                <textarea class="form-control" id="comment-content" placeholder="댓글을 작성하세요" required></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="commentRegister()">댓글 작성</button>
+        </div>
+    </div>
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+// 현재 URL에서 파라미터를 추출하는 방법
+const pathSegments = window.location.pathname.split('/');
+const boardId = pathSegments[pathSegments.length - 1];
+
+const pageSize = 5;
+let currentPage = 1;
+
+$(document).ready(function () {
+    loadComments(currentPage,pageSize); // 페이지 로드 시 댓글 목록을 가져옴
+})
+
+// 날짜 형식 변환 함수 (예: "2025-01-31T18:44:47" → "2025-01-31")
+function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    const year = d.getFullYear();
+    const month = ("0" + (d.getMonth() + 1)).slice(-2);
+    const day = ("0" + d.getDate()).slice(-2);
+    return year + "-" + month + "-" + day;
+}
+
+// 댓글 목록 로드
+function loadComments(page,size) {
+    $.ajax({
+        url: `/api/support/board/${boardId}/comments?page=${page-1}&size=${size}`,
+        type: 'GET',
+    }).done(function (data) {
+        let commentsHtml = '';
+        data.responseData.content.forEach(comment => {
+            commentsHtml += `
+                        <div class="comment mb-4 p-3 border rounded shadow-sm bg-light">
+                            <div class="d-flex justify-content-between">
+                                <strong class="fw-bold text-primary">작성자 : ${comment.commentAuthorName}</strong>
+                                <small class="text-muted">${formatDate(comment.createdDate)}</small>
+                            </div>
+                            <hr>
+                            <p class="mt-2">${comment.commentContent}</p>
+                        </div>
+                        `;
+        });
+        $('#comments-section').html(commentsHtml);
+        // 페이지네이션 버튼 업데이트
+        currentPage = page;
+        makePageUI(data.responseData);
+    }).fail(function () {
+        console.log('댓글 목록 조회 실패', error);
+    })
+}
+
+function makePageUI(data) {
+    const rowsPerPage = 5; // 페이지 당 항목 수
+    const totalPages = Math.ceil(data.totalElements / rowsPerPage); // 전체 페이지 수
+    const startPage = getStartPage(currentPage);
+    const endPage = getEndPage(startPage, data.totalPages);
+
+    // 페이지네이션 HTML 초기화
+    let paginationHTML = `<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">`;
+
+    // Previous 버튼
+    let prevPage = currentPage > 1 ? currentPage - 1 : 1;
+    paginationHTML += `<li class="page-item">
+        <a class="page-link btn btn-outline-primary" onclick="loadComments(${prevPage}, ${rowsPerPage})">Prev</a>
+    </li>`;
+
+    // 페이지 버튼들
+    for (let i = startPage; i <= endPage; i++) {
+        let sClass = i === currentPage ? 'page-item active' : 'page-item';
+        paginationHTML += `<li class="${sClass}">
+            <a class="page-link btn btn-outline-primary" onclick="loadComments(${i}, ${rowsPerPage})">${i}</a>
+        </li>`;
+    }
+
+    // Next 버튼
+    let nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
+    paginationHTML += `<li class="page-item">
+        <a class="page-link btn btn-outline-primary" onclick="loadComments(${nextPage}, ${rowsPerPage})">Next</a>
+    </li>`;
+
+    paginationHTML += `</ul></nav>`;
+
+    $("#pagination").html(paginationHTML);
+}
+
+// 시작 페이지 계산
+function getStartPage(page) {
+    return Math.floor((page - 1) / 5) * 5 + 1;
+}
+
+// 끝 페이지 계산
+function getEndPage(startPage, totalPages) {
+    return Math.min(startPage + 4, totalPages);
+}
+
+// 댓글 작성
+function commentRegister() {
+    const commentAuthorName = $('#comment-author-name').val();
+    const commentContent = $('#comment-content').val();
+
+    if(commentAuthorName.length === 0){
+        alert("작성자를 입력하세요");
+        $('#comment-author-name').focus();
+        return;
+    }
+
+    if(commentContent.length === 0){
+        alert("내용을 입력하세요");
+        $('#comment-content').focus();
+        return;
+    }
+
+    if (!confirm('댓글을 등록 하시겠습니까?')) {
+        return;
+    }
+
+    $.ajax({
+        url: `/api/support/board/${boardId}/comments`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            commentAuthorName: commentAuthorName,
+            commentContent: commentContent
+        })
+    }).done(function (data) {
+        console.log(data);
+        if(data.responseData === true){
+            $('#comment-author-name').val('');  // 입력란 초기화
+            $('#comment-content').val(''); // 입력란 초기화
+            loadComments(currentPage,pageSize); // 댓글 목록 다시 로드
+        }
+    }).fail(function (xhr, status, error) {
+        console.log('댓글 등록 실패', error);
+    })
+}
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+// 댓글 조회 (게시글 ID로 조회)
+    @GetMapping("/board/{boardId}/comments")
+    public ResponseEntity<ResponseDto> getCommentsByBoardId(@PathVariable Long boardId, Pageable pageable) {
+        try {
+            if(boardId == null || boardId <= 0){
+                log.error("잘못된 게시판 번호 입니다.");
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 게시판 번호 입니다.", null);
+            }
+            Page<SupportBoardComment> comments = this.supportBoardService.getCommentsByBoardId(boardId, pageable);
+            return makeResponseEntity(HttpStatus.OK, "댓글 조회 완료", comments);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+        }
+    }
+
+    // 댓글 추가
+    @PostMapping("/board/{boardId}/comments")
+    public ResponseEntity<ResponseDto> addComment(@PathVariable Long boardId, @RequestBody SupportBoardCommentRegister supportBoardCommentRegister) {
+        try{
+            if(boardId == null || boardId <= 0){
+                log.error("잘못된 게시판 번호 입니다.");
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 게시판 번호 입니다.", null);
+            }
+            this.supportBoardService.registerBoardCommnet(boardId,supportBoardCommentRegister);
+            return makeResponseEntity(HttpStatus.OK, "댓글 등록 완료", true);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+        }
+    }
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+@Getter
+@Setter
+public class SupportBoardCommentRegister {
+    private String commentAuthorName;
+    private String commentContent;
+}
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+
+    // 댓글 조회 (게시글 ID를 기준으로)
+    public Page<SupportBoardComment> getCommentsByBoardId(Long boardId, Pageable pageable) {
+        Page<SupportBoardComment> commentsPage = supportBoardCommentRepository.findByBoardId(boardId, pageable);
+        return commentsPage;
+    }
+
+    // 댓글 추가
+    public void registerBoardCommnet(Long boardId, SupportBoardCommentRegister supportBoardCommentRegister) {
+        // 새 댓글 생성
+        SupportBoardComment comment = SupportBoardComment.builder()
+                .boardId(boardId)
+                .commentAuthorName(supportBoardCommentRegister.getCommentAuthorName())
+                .commentContent(supportBoardCommentRegister.getCommentContent())
+                .isAdmin(false)  // 기본값: 관리자는 false
+                .deletedFlag(false)  // 기본값: 삭제되지 않음
+                .build();
+
+        // 댓글 저장
+        this.supportBoardCommentRepository.save(comment);
+    }
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+    게시판 ID에 해당하는 댓글 목록을 페이징 처리하여 반환
+    Page<SupportBoardComment> findByBoardId(Long boardId, Pageable pageable);
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+@Entity
+@Table(name = "support_board_comment_tbl")
+public class SupportBoardComment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
+    private Long commentId;
+
+
+    @Column(name = "board_id")
+    private Long boardId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id")
+    private SupportBoardComment parentComment;  // 대댓글을 위한 부모 댓글
+
+    @Column(name = "comment_author_name")
+    private String commentAuthorName;  // 댓글 작성자 이름
+
+    @Column(name = "is_admin")
+    private Boolean isAdmin;  // 관리자 여부
+
+    @Column(name = "comment_content")
+    private String commentContent;
+
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
+
+    @Column(name = "deleted_date")
+    private LocalDateTime deletedDate;
+
+    @Column(name = "deleted_flag")
+    private Boolean deletedFlag;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedDate = LocalDateTime.now();
+    }
+}
+
