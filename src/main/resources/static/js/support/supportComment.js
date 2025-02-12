@@ -95,6 +95,22 @@ function commentRegister() {
     const commentAuthorName = $('#comment-author-name').val();
     const commentContent = $('#comment-content').val();
 
+    if(commentAuthorName.length === 0){
+        alert("작성자를 입력하세요");
+        $('#comment-author-name').focus();
+        return;
+    }
+
+    if(commentContent.length === 0){
+        alert("내용을 입력하세요");
+        $('#comment-content').focus();
+        return;
+    }
+
+    if (!confirm('댓글을 등록 하시겠습니까?')) {
+        return;
+    }
+
     $.ajax({
         url: `/api/support/board/${boardId}/comments`,
         type: 'POST',
