@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 보기</title>
+    <style>
+        html, body {
+            width: 100%; /* 페이지 전체 폭 차지 */
+            height: 100%; /* 페이지 전체 높이 차지 */
+            margin: 0; /* 기본 margin 제거 */
+            padding: 0; /* 기본 padding 제거 */
+        }
+        #container {
+            margin-left: 320px; /* 사이드바의 최대 너비만큼 왼쪽 여백 확보 */
+            padding: 20px; /* 내용과 경계를 띄우기 */
+            width: calc(100% - 280px); /* 사이드바 제외한 나머지 화면 차지 */
+        }
+    </style>
+</head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/admin/board/supportViewAdmin.js"></script>
+<body>
+{{> common/sidebar}} <!-- 네비게이션바 포함 -->
+<div id="container" class="container mt-5">
+    <div id="board-detail" class="mt-3">
+        <!-- 게시글 상세정보 렌더링 -->
+    </div>
+    <div class="mt-3">
+        <a href="/admin/board/support/list" class="btn btn-outline-secondary">목록으로</a>
+    </div>
+    <!-- 답변 영역 -->
+    <div class="mt-5">
+        <h3>답변</h3>
+        <div id="answer-section">
+            <!-- 답변이 있을 경우 여기에 답변 내용이 들어갑니다 -->
+            <div id="answer-content" class="border p-3" style="display: none;">
+                <strong>관리자 답변:</strong>
+                <p id="answer-text"></p>
+                <small id="answer-date"></small>
+            </div>
+            <!-- 답변이 없는 경우 -->
+            <div id="no-answer" class="alert alert-info" style="display: none;">
+                답변 대기 중입니다.
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

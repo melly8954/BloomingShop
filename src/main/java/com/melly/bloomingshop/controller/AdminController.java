@@ -43,6 +43,11 @@ public class AdminController {
 
     @GetMapping("/board/support/list")
     public String supportPage() {
-        return "admin/board/support_list";
+        return "admin/board/support_list_admin";
+    }
+
+    @GetMapping("/board/support/view/{id}")
+    public String supportViewPage() {
+        return "admin/board/support_view_admin";
     }
 }
