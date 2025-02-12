@@ -3,8 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>문의 게시판</title>
+    <style>
+        html, body {
+            width: 100%; /* 페이지 전체 폭 차지 */
+            height: 100%; /* 페이지 전체 높이 차지 */
+            margin: 0; /* 기본 margin 제거 */
+            padding: 0; /* 기본 padding 제거 */
+        }
+        #container {
+            margin-left: 320px; /* 사이드바의 최대 너비만큼 왼쪽 여백 확보 */
+            padding: 20px; /* 내용과 경계를 띄우기 */
+            width: calc(100% - 280px); /* 사이드바 제외한 나머지 화면 차지 */
+        }
+        #header-container {
+            top: 10px;
+            left: 50%;
+            padding: 10px 20px;
+            width: 100%;
+        }
+        #content-container {
+            margin-top: 15px; /* 제목과 정렬 버튼의 높이만큼 여백 추가 */
+        }
+    </style>
 </head>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/board/supportList.js"></script>
 <body>
-ㅎㅇㅎㅇ
+{{> common/sidebar }}
+<div id="container" class="container">
+    <div id="header-container">
+        <h2 class="mb-4">고객센터 - 문의게시판</h2>
+        <!-- 검색창 -->
+        <div class="row mb-4">
+            <div class="col-md-9">
+                <label for="search-title" class="form-label">글 제목 검색</label>
+                <input type="text" id="search-title" class="form-control" placeholder="제목 검색">
+                <button id="searchBtn" class="btn btn-primary">검색</button>
+                <button id="resetBtn" class="btn btn-secondary ms-2">초기화</button>
+            </div>
+        </div>
+        <!-- 정렬 버튼들 -->
+        <div class="col-md-6 d-flex justify-content-start mb-4">
+            <label for="sort" class="form-label me-2">정렬 기준</label>
+            <select id="sort" class="form-select w-auto">
+                <option value="id">생성순</option>
+            </select>
+            <div class="btn-group" role="group">
+                <button id="ascBtn" class="btn btn-outline-secondary" data-order="asc">오름차순</button>
+                <button id="descBtn" class="btn btn-outline-secondary" data-order="desc">내림차순</button>
+            </div>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="card">
+            <div class="card-body">
+                <ul id="board-list" class="list-group">
+                    <!-- 동적으로 게시글이 추가될 부분 -->
+                </ul>
+            </div>
+        </div>
+        <!-- 페이지네이션 -->
+        <div id="pagination" class="d-flex justify-content-center my-4">
+        </div>
+    </div>
+</div>
 </body>
 </html>

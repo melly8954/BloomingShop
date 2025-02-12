@@ -10,13 +10,18 @@
             margin: 0; /* 기본 margin 제거 */
             padding: 0; /* 기본 padding 제거 */
         }
+        #container {
+            margin-left: 320px; /* 사이드바의 최대 너비만큼 왼쪽 여백 확보 */
+            padding: 20px; /* 내용과 경계를 띄우기 */
+            width: calc(100% - 280px); /* 사이드바 제외한 나머지 화면 차지 */
+        }
     </style>
 </head>
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script src="/js/admin/product/productModifyAdmin.js"></script>
 <body>
 {{> common/sidebar }}
-<div class="container mt-5">
+<div id="container" class="container mt-5">
     <h1 class="text-center mb-4">상품 수정</h1>
     <!-- 상품 ID -->
     <div class="mb-3">

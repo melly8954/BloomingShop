@@ -11,9 +11,9 @@
             padding: 0; /* 기본 padding 제거 */
         }
         #container {
-            margin-left: 50px;
-            flex-grow: 1;
-            overflow-y: auto; /* 내용이 넘치면 스크롤 */
+            margin-left: 320px; /* 사이드바의 최대 너비만큼 왼쪽 여백 확보 */
+            padding: 20px; /* 내용과 경계를 띄우기 */
+            width: calc(100% - 280px); /* 사이드바 제외한 나머지 화면 차지 */
         }
         #header-container {
             top: 10px;
