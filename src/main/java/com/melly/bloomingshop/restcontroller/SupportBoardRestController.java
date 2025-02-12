@@ -1,12 +1,12 @@
 package com.melly.bloomingshop.restcontroller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.melly.bloomingshop.common.ResponseController;
 import com.melly.bloomingshop.common.ResponseDto;
 import com.melly.bloomingshop.domain.SupportBoard;
+import com.melly.bloomingshop.domain.SupportBoardComment;
 import com.melly.bloomingshop.dto.request.SupportBoardPassword;
 import com.melly.bloomingshop.dto.request.SupportBoardRegister;
-import com.melly.bloomingshop.dto.response.PagingSupportBoardResponse;
+import com.melly.bloomingshop.dto.response.SupportBoardResponse;
 import com.melly.bloomingshop.service.SupportBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.DataInput;
 import java.util.List;
 
 @Slf4j
@@ -45,17 +44,17 @@ public class SupportBoardRestController implements ResponseController {
             sortBy = order.equalsIgnoreCase("desc") ? sortBy.descending() : sortBy.ascending();
             Pageable pageable = PageRequest.of(page - 1, size, sortBy);
 
-            PagingSupportBoardResponse<SupportBoard> pagingSupportBoardResponse;
+            SupportBoardResponse<SupportBoard> supportBoardResponse;
 
             Page<SupportBoard> allBoards = this.supportBoardService.getAllBoards(pageable,title);
-            pagingSupportBoardResponse = new PagingSupportBoardResponse<>(
+            supportBoardResponse = new SupportBoardResponse<>(
                     allBoards.getContent(),
                     allBoards.getTotalElements(),
                     allBoards.getTotalPages(),
                     allBoards.getNumber(),
                     allBoards.getSize()
             );
-            return makeResponseEntity(HttpStatus.OK, "모든 문의 게시글 반환 성공", pagingSupportBoardResponse);
+            return makeResponseEntity(HttpStatus.OK, "모든 문의 게시글 반환 성공", supportBoardResponse);
         }catch (Exception ex){
             log.error(ex.getMessage(), ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
@@ -105,4 +104,31 @@ public class SupportBoardRestController implements ResponseController {
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
         }
     }
+
+    // 댓글 조회 (게시글 ID로 조회)
+    @GetMapping("/board/{boardId}/comments")
+    public ResponseEntity<ResponseDto> getCommentsByBoardId(@PathVariable Long boardId, Pageable pageable) {
+        try {
+            if(boardId == null || boardId <= 0){
+                log.error("잘못된 게시판 번호 입니다.");
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 게시판 번호 입니다.", null);
+            }
+            Page<SupportBoardComment> comments = this.supportBoardService.getCommentsByBoardId(boardId, pageable);
+            return makeResponseEntity(HttpStatus.OK, "댓글 조회 완료", comments);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+        }
+    }
+
+//    // 댓글 추가
+//    @PostMapping("/board/{boardId}/comment")
+//    public ResponseEntity<ResponseDto> addComment(@RequestParam Long boardId, @RequestParam String authorName, @RequestParam String commentContent) {
+//        try{
+//
+//        } catch (Exception ex) {
+//            log.error(ex.getMessage(), ex);
+//            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 : " + ex.getMessage(), null);
+//        }
+//    }
 }
