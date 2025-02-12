@@ -26,8 +26,8 @@ public class SupportService {
     private final SupportRepository supportRepository;
     private final FileUploadService fileUploadService;
 
-    // 모든 게시글 목록 가져오기
-    public Page<Support> getAllBoards(Pageable pageable, String title) {
+    // 삭제되지 않은 게시글 목록 가져오기
+    public Page<Support> findByDeletedFlagFalse(Pageable pageable, String title) {
         if (title != null && !title.isEmpty()) {
             return supportRepository.findByTitleContainingAndDeletedFlagFalse(title, pageable);
         } else {
@@ -89,27 +89,5 @@ public class SupportService {
             return find.get();
         }
         return null;
-    }
-
-    // 문의글 답변 저장 비즈니스 로직
-    public void insertAnswer(Long boardId, SupportAnswer answer) {
-        Optional<Support> board = this.supportRepository.findById(boardId);
-        board.ifPresent(b -> {
-            b.changeIsAnswer(true);
-            b.changeAnswerDate(LocalDateTime.now());
-            b.changeAnswerContent(answer.getAnswer());
-            supportRepository.save(b);
-        });
-
-    }
-
-    // 게시글 논리 삭제
-    public void updateDeleteFlag(Long boardId) {
-        Optional<Support> board = this.supportRepository.findById(boardId);
-        board.ifPresent(b->{
-            b.changeDeletedFlag(true);
-            b.changeDeleted_date(LocalDateTime.now());
-            supportRepository.save(b);
-        });
     }
 }

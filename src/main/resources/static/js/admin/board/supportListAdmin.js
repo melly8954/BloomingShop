@@ -53,7 +53,7 @@ function toggleActiveButton(activeBtn, inactiveBtn) {
 // 게시글 목록 로드 함수
 function loadBoardList(page, title, sortBy, sortOrder) {
     $.ajax({
-        url: `/api/board/support/list?page=${page}&title=${title}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,  // 게시글 목록을 가져오는 URL
+        url: `/api/admin/board/support/list?page=${page-1}&title=${title}&sort=${sortBy}&order=${sortOrder}&size=${pageSize}`,  // 게시글 목록을 가져오는 URL
         type: 'GET'
     }).done(function (data) {
         console.log(data);
@@ -61,14 +61,23 @@ function loadBoardList(page, title, sortBy, sortOrder) {
         boardListContainer.empty();  // 기존 내용을 비우고 새로 추가
         data.responseData.supportBoards.forEach(function(board) {
             const createdDate = formatDate(board.createdDate);
+            // 게시글 제목 처리 (삭제 여부에 따라 다르게)
+            let titleHtml = board.deletedFlag
+                ? `<s style="opacity: 0.5; text-decoration:line-through; color:red;">${board.title}</s>`  // 삭제된 게시글이면 취소선
+                : board.isSecret
+                    ? `<a href="/admin/board/support/view/${board.id}" class="secret-board cursor-pointer text-decoration-none fw-bold">${board.title}</a> 
+                        <span class="text-danger">🔒 비밀글</span>`
+                    : `<a href="/admin/board/support/view/${board.id}" class="text-decoration-none fw-bold">${board.title}</a>`;
+
+            // 삭제된 게시글이면 복구 버튼 추가
+            let restoreButton = board.deletedFlag
+                ? `<button class="btn btn-success btn-sm ms-2" onclick="restoreBoard(${board.id}, ${page}, '${title}', '${sortBy}', '${sortOrder}')">게시글 복구</button>`
+                : '';
+
             const boardItem = `
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>${board.isSecret ?
-                        `<a href="/admin/board/support/view/${board.id}" class="secret-board cursor-pointer text-decoration-none fw-bold">${board.title}</a> 
-                         <span class="text-danger">🔒 비밀글</span>` :
-                
-                        `<a href="/admin/board/support/view/${board.id}" class="text-decoration-none fw-bold">${board.title}</a>`
-                        }
+                    <div>
+                        ${titleHtml} ${restoreButton} 
                         <small class="text-muted d-block">작성자: ${board.authorName} | 조회수: ${board.viewQty} | 작성일: ${createdDate}</small>
                     </div>
                 </li>
@@ -136,30 +145,21 @@ function getEndPage(startPage, totalPages) {
     return Math.min(startPage + 4, totalPages);
 }
 
-// 비밀글 확인 폼 제출 이벤트
-function checkPassword(boardId,password){
-    // 필드에 입력된 비밀번호 가져오기
-    const passwordInput = $(`#board-secret-${boardId} input[name='password']`).val();
-
-    if (!passwordInput) {
-        alert("비밀번호를 입력해주세요.");
+// 삭제된 게시글 복구
+function restoreBoard(boardId, page, title, sortBy, sortOrder){
+    if(!confirm("해당 게시글을 복구 하시겠습니까?")){
         return;
     }
-
     $.ajax({
-        url: `/api/board/support/${boardId}/check-password`, // 비밀번호 확인 API 호출
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ password: passwordInput })
-    }).done(function(data) {
+        url: `/api/admin/board/support/${boardId}/status`,
+        type: 'PATCH',
+    }).done(function (data) {
         console.log(data);
-        if (data.responseData === true) {
-            // 비밀번호가 맞으면 게시글 뷰 페이지로 이동
-            window.location.href = `/admin/board/support/view/${boardId}`;
-        } else{
-            alert('비밀번호가 틀렸습니다. 다시 확인해주세요.');
+        if(data.responseData === true){
+            alert("게시글이 정상적으로 복구되었습니다.");
+            loadBoardList(page, title, sortBy, sortOrder); // 복구 후 목록 새로고침
         }
-    }).fail(function() {
-        alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert('게시글 복구에 실패했습니다.');
     });
 }

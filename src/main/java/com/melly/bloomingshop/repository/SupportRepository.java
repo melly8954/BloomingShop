@@ -8,8 +8,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SupportRepository extends JpaRepository<Support, Long> {
+    // 모든 검색
+    Page<Support> findAll(Pageable pageable);
+
+    // 글제목 검색
+    Page<Support> findByTitleContaining(String title, Pageable pageable);
+
+    // deletedFlag 가 false인 경우
     Page<Support> findByDeletedFlagFalse(Pageable pageable);
 
-    // 글제목과 deletedFlag 가 false인 경우
+    // 글제목 검색과 deletedFlag 가 false인 경우
     Page<Support> findByTitleContainingAndDeletedFlagFalse(String title, Pageable pageable);
 }

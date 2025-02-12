@@ -28,7 +28,7 @@ public class SupportRestController implements ResponseController {
     private final SupportService supportService;
 
     @GetMapping("/list")
-    public ResponseEntity<ResponseDto> getAllSupportBoards(
+    public ResponseEntity<ResponseDto> getSupportBoards(
             @RequestParam(required = false, defaultValue = "") String title,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -45,7 +45,7 @@ public class SupportRestController implements ResponseController {
 
             SupportResponse<Support> supportResponse;
 
-            Page<Support> allBoards = this.supportService.getAllBoards(pageable,title);
+            Page<Support> allBoards = this.supportService.findByDeletedFlagFalse(pageable,title);
             supportResponse = new SupportResponse<>(
                     allBoards.getContent(),
                     allBoards.getTotalElements(),
