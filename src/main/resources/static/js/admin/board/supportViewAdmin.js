@@ -62,3 +62,22 @@ function answerRegister(){
         alert('답변을 등록하는 데 실패했습니다.');
     });
 }
+
+// 게시글 논리 삭제
+function deleteBoard(){
+    if(!confirm("해당 게시글을 삭제 하시겠습니까?")){
+        return;
+    }
+    $.ajax({
+        url: `/api/admin/board/support/${boardId}/status`,
+        type: 'PATCH',
+    }).done(function (data) {
+        console.log(data);
+        if(data.responseData === true){
+            alert("게시글이 정상적으로 삭제되었습니다.");
+            window.location.href="/admin/board/support/list";
+        }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert('논리삭제에 실패했습니다.');
+    });
+}

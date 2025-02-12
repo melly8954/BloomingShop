@@ -83,4 +83,12 @@ public class Support {
     public void changeAnswerDate(LocalDateTime answerCreatedDate) {
         this.answerCreatedDate = answerCreatedDate;
     }
+
+    public void changeDeletedFlag(boolean b) {
+        this.deletedFlag = b;
+    }
+
+    public void changeDeleted_date(LocalDateTime now) {
+        this.deletedDate = now;
+    }
 }

@@ -12,6 +12,4 @@ public interface SupportRepository extends JpaRepository<Support, Long> {
 
     // 글제목과 deletedFlag 가 false인 경우
     Page<Support> findByTitleContainingAndDeletedFlagFalse(String title, Pageable pageable);
-
-    // 게시글 id로 
 }

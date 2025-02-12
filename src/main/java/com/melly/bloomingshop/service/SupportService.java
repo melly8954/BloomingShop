@@ -102,4 +102,14 @@ public class SupportService {
         });
 
     }
+
+    // 게시글 논리 삭제
+    public void updateDeleteFlag(Long boardId) {
+        Optional<Support> board = this.supportRepository.findById(boardId);
+        board.ifPresent(b->{
+            b.changeDeletedFlag(true);
+            b.changeDeleted_date(LocalDateTime.now());
+            supportRepository.save(b);
+        });
+    }
 }
