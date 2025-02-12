@@ -1,8 +1,13 @@
-$(document).ready(function(){
-    // 현재 URL에서 파라미터를 추출하는 방법
-    const pathSegments = window.location.pathname.split('/');
-    const boardId = pathSegments[pathSegments.length - 1];
+// 현재 URL에서 파라미터를 추출하는 방법
+const pathSegments = window.location.pathname.split('/');
+const boardId = pathSegments[pathSegments.length - 1];
 
+$(document).ready(function(){
+    loadBoardView();
+
+});
+
+function loadBoardView(){
     $.ajax({
         url: `/api/board/support/${boardId}/details`,
         type: 'GET'
@@ -28,9 +33,32 @@ $(document).ready(function(){
         if(data.responseData.isAnswer === false){
             $("#no-answer").show();
         }else{
+            const answer = `
+                                 <span style="color:red;"> 관리자 </span> 
+                                 <div> ${boardDetails.answerContent}</div>
+                                 `;
+            $("#answer-content").html(answer);
             $("#answer-content").show();
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert('게시글 정보를 불러오는 데 실패했습니다.');
     });
-});
+}
+
+function answerRegister(){
+    let answer = $("#answer").val();
+    $.ajax({
+        url: `/api/admin/board/support/${boardId}/answers`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ answer: answer })
+    }).done(function (data) {
+        console.log(data);
+        if(data.responseData === true){
+            alert("답변이 정상적으로 등록되었습니다.");
+            loadBoardView();
+        }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert('답변을 등록하는 데 실패했습니다.');
+    });
+}

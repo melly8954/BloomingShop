@@ -71,4 +71,16 @@ public class Support {
     public void preUpdate() {
         this.updatedDate = LocalDateTime.now();
     }
+
+    public void changeIsAnswer(Boolean isAnswer) {
+        this.isAnswer = isAnswer;
+    }
+
+    public void changeAnswerContent(String answerContent) {
+        this.answerContent = answerContent;
+    }
+
+    public void changeAnswerDate(LocalDateTime answerCreatedDate) {
+        this.answerCreatedDate = answerCreatedDate;
+    }
 }

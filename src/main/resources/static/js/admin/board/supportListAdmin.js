@@ -64,7 +64,7 @@ function loadBoardList(page, title, sortBy, sortOrder) {
             const boardItem = `
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>${board.isSecret ?
-                        `<a class="secret-board cursor-pointer text-decoration-none fw-bold" data-board-id="${board.id}">${board.title}</a> 
+                        `<a href="/admin/board/support/view/${board.id}" class="secret-board cursor-pointer text-decoration-none fw-bold">${board.title}</a> 
                          <span class="text-danger">🔒 비밀글</span>` :
                 
                         `<a href="/admin/board/support/view/${board.id}" class="text-decoration-none fw-bold">${board.title}</a>`
@@ -72,39 +72,9 @@ function loadBoardList(page, title, sortBy, sortOrder) {
                         <small class="text-muted d-block">작성자: ${board.authorName} | 조회수: ${board.viewQty} | 작성일: ${createdDate}</small>
                     </div>
                 </li>
-                
-                ${board.isSecret ? `
-                <li id="board-secret-${board.id}" class="list-group-item d-none">
-                    <div class="alert alert-warning p-2">
-                        <strong>🔒 비밀글입니다. 비밀번호를 입력해주세요.</strong>                   
-                        <input type="password" class="form-control me-2 password-input" name="password" placeholder="비밀번호" required>
-                        <button class="btn btn-sm btn-primary check-password-btn" data-board-id="${board.id}">확인</button>
-                    </div>
-                </li>
-                ` : ''
-                }
             `;
             boardListContainer.append(boardItem);
         });
-
-        // 비밀글 제목 클릭 시 비밀번호 입력 폼 토글
-        $('.secret-board').click(function() {
-            const boardId = $(this).data('board-id');
-            // 모든 비밀글 비밀번호 입력 폼을 숨김
-            $('.secret-board').not(this).each(function() {
-                const otherBoardId = $(this).data('board-id');
-                $(`#board-secret-${otherBoardId}`).addClass('d-none');  // 기존 비밀번호 폼 숨기기
-            });
-            // 클릭한 비밀글의 비밀번호 입력 폼 토글
-            $(`#board-secret-${boardId}`).toggleClass('d-none');
-        });
-
-        // 비밀번호 확인 버튼 클릭 이벤트
-        $('.check-password-btn').click(function() {
-            const boardId = $(this).data('board-id');
-            checkPassword(boardId);
-        });
-
         // 페이지네이션 UI 생성
         makePageUI(data.responseData.totalElements, page, "#pagination", sortOrder);
     }).fail(function () {
@@ -169,13 +139,13 @@ function getEndPage(startPage, totalPages) {
 // 비밀글 확인 폼 제출 이벤트
 function checkPassword(boardId,password){
     // 필드에 입력된 비밀번호 가져오기
-    const passwordInput = $(`#board-secret-${boardId} input[name='password']`).val(); 
+    const passwordInput = $(`#board-secret-${boardId} input[name='password']`).val();
 
     if (!passwordInput) {
         alert("비밀번호를 입력해주세요.");
         return;
     }
-    
+
     $.ajax({
         url: `/api/board/support/${boardId}/check-password`, // 비밀번호 확인 API 호출
         type: 'POST',

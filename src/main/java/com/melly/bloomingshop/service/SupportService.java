@@ -2,6 +2,7 @@ package com.melly.bloomingshop.service;
 
 import com.melly.bloomingshop.admin.service.FileUploadService;
 import com.melly.bloomingshop.domain.Support;
+import com.melly.bloomingshop.dto.request.SupportAnswer;
 import com.melly.bloomingshop.dto.request.SupportRegister;
 import com.melly.bloomingshop.repository.SupportRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,5 +89,17 @@ public class SupportService {
             return find.get();
         }
         return null;
+    }
+
+    // 문의글 답변 저장 비즈니스 로직
+    public void insertAnswer(Long boardId, SupportAnswer answer) {
+        Optional<Support> board = this.supportRepository.findById(boardId);
+        board.ifPresent(b -> {
+            b.changeIsAnswer(true);
+            b.changeAnswerDate(LocalDateTime.now());
+            b.changeAnswerContent(answer.getAnswer());
+            supportRepository.save(b);
+        });
+
     }
 }

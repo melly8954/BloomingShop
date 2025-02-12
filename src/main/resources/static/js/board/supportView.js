@@ -28,6 +28,11 @@ $(document).ready(function(){
         if(data.responseData.isAnswer === false){
             $("#no-answer").show();
         }else{
+            const answer = `
+                                 <span style="color:red;"> 관리자 </span> 
+                                 <div> ${boardDetails.answerContent}</div>
+                                 `;
+            $("#answer-content").html(answer);
             $("#answer-content").show();
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
