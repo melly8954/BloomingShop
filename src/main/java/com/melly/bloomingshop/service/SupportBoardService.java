@@ -26,7 +26,6 @@ public class SupportBoardService {
 
     // 모든 게시글 목록 가져오기
     public Page<SupportBoard> getAllBoards(Pageable pageable, String title) {
-        Page<SupportBoard> boards;
         if (title != null && !title.isEmpty()) {
             return supportBoardRepository.findByTitleContainingAndDeletedFlagFalse(title, pageable);
         } else {
@@ -50,9 +49,13 @@ public class SupportBoardService {
                     .title(supportBoardRegister.getTitle())
                     .content(supportBoardRegister.getContent())
                     .imageUrl(supportBoardRegister.getImageUrl())
+                    .viewQty(0)
+                    .authorName(supportBoardRegister.getAuthorName())
                     .isSecret(supportBoardRegister.getIsSecret())
                     .password(supportBoardRegister.getPassword())
-                    .authorName(supportBoardRegister.getAuthorName()).build();
+                    .isAnswer(false)
+                    .answerContent(null)
+                    .build();
 
             // 게시글 저장
             SupportBoard save = supportBoardRepository.save(supportBoard);

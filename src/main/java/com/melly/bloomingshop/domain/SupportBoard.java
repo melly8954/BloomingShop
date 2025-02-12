@@ -32,11 +32,20 @@ public class SupportBoard {
     @Column(name = "view_qty")
     private int viewQty = 0;
 
+    @Column(name = "author_name")
+    private String authorName;
+
     @Column(name = "is_secret")
     private Boolean isSecret;
 
     @Column
     private String password;
+
+    @Column(name = "is_answer")
+    private Boolean isAnswer;
+
+    @Column(name = "answer_content")
+    private String answerContent;
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -45,13 +54,13 @@ public class SupportBoard {
     private LocalDateTime updatedDate;
 
     @Column(name = "deleted_flag")
-    private boolean deletedFlag = false;
+    private boolean deletedFlag;
 
     @Column(name = "deleted_date")
     private LocalDateTime deletedDate;
 
-    @Column(name = "author_name")
-    private String authorName;
+    @Column(name = "answer_created_date")
+    private LocalDateTime answerCreatedDate;
 
     @PrePersist
     public void prePersist() {
