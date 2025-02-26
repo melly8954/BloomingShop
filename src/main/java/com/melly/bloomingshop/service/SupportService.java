@@ -90,4 +90,16 @@ public class SupportService {
         }
         return null;
     }
+
+    public void addViewQty(Long boardId) {
+        Optional<Support> find = this.supportRepository.findById(boardId);
+        if(find.isPresent()) {
+            Support support = find.get();  // 게시글 객체 가져오기
+            support.changeViewQty(support.getViewQty() + 1);  // 조회수 증가
+            this.supportRepository.save(support);  // 변경된 엔티티 저장
+        } else {
+            // 게시글이 존재하지 않으면 예외를 처리하거나 로깅하는 코드 추가
+            throw new RuntimeException("게시글을 찾을 수 없습니다.");
+        }
+    }
 }

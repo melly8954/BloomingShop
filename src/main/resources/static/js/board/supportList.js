@@ -67,7 +67,7 @@ function loadBoardList(page, title, sortBy, sortOrder) {
                         `<a class="secret-board cursor-pointer text-decoration-none fw-bold" data-board-id="${board.id}">${board.title}</a> 
                          <span class="text-danger">🔒 비밀글</span>` :
                 
-                        `<a href="/board/support/view/${board.id}" class="text-decoration-none fw-bold">${board.title}</a>`
+                        `<a href="/board/support/view/${board.id}" class="board-title text-decoration-none fw-bold" data-board-id="${board.id}">${board.title}</a>`
                         }
                         <small class="text-muted d-block">작성자: ${board.authorName} | 조회수: ${board.viewQty} | 작성일: ${createdDate}</small>
                     </div>
@@ -103,6 +103,12 @@ function loadBoardList(page, title, sortBy, sortOrder) {
         $('.check-password-btn').click(function() {
             const boardId = $(this).data('board-id');
             checkPassword(boardId);
+        });
+
+        // 공개(비공개 게시글은 암호확인 후 처리) 게시글 제목 클릭 시 조회수 증가
+        $('.board-title').on('click', function(event) {
+            const boardId = $(this).data('board-id');  // 게시글 ID 가져오기
+            addViewQty(boardId);  // 조회수 증가 함수 호출
         });
 
         // 페이지네이션 UI 생성
@@ -186,10 +192,22 @@ function checkPassword(boardId,password){
         if (data.responseData === true) {
             // 비밀번호가 맞으면 게시글 뷰 페이지로 이동
             window.location.href = `/board/support/view/${boardId}`;
+            addViewQty(boardId);
         } else{
             alert('비밀번호가 틀렸습니다. 다시 확인해주세요.');
         }
     }).fail(function() {
         alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+    });
+}
+
+function addViewQty(boardId){
+    $.ajax({
+        url: `/api/board/support/${boardId}/view-qty`,  // 조회수를 증가시키는 API
+        type: 'PATCH',
+    }).done(function(data) {
+        console.log(data); // 성공적인 응답 시
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('조회수 증가 실패:', errorThrown);
     });
 }

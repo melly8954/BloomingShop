@@ -91,4 +91,8 @@ public class Support {
     public void changeDeleted_date(LocalDateTime now) {
         this.deletedDate = now;
     }
+
+    public void changeViewQty(int viewQty){
+        this.viewQty = viewQty;
+    }
 }
