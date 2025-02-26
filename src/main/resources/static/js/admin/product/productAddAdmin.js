@@ -51,6 +51,11 @@ function registerProduct() {
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         // 서버 오류 시
-        alert('서버 오류: ' + errorThrown);
+        console.log('textStatus:', textStatus);  // 예: "error"
+        console.log('errorThrown:', errorThrown);  // 예: "Internal Server Error"
+        console.log('responseText:', jqXHR.responseText);  // 서버가 반환한 메시지 확인 --> json 문자열 반환
+        // JSON 문자열을 객체로 변환
+        let responseJson = JSON.parse(jqXHR.responseText);
+        alert('서버 오류: ' + responseJson.message);
     });
 }
