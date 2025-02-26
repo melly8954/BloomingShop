@@ -84,7 +84,7 @@ function displayLoginNotice(userId) {
 function displayGuestOrderNotice() {
     const guestData = JSON.parse(localStorage.getItem('guestData'));
     if (guestData) {
-        const noticeMessage = '<h4 class="text-center mb-1">* 비회원의 주문내역은 7일동안 보관되며, 이후에는 고객센터에 문의하십시오. *</h4>';
+        const noticeMessage = '<h4 class="text-center mb-1">* 비회원의 주문내역은 1일동안 보관되며, 이후에는 고객센터에 문의하십시오. *</h4>';
         $('#notice').html(noticeMessage);
     }
 }
