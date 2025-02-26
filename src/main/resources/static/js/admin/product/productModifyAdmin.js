@@ -33,7 +33,7 @@ function loadProduct(productId) {
         // 각 필드에 값 채우기
         $("#name").val(product.name);
         $("#price").val(product.price);
-        $("#size").val(product.size);
+        $('input[name="size"][value="' + product.size + '"]').prop('checked', true);
         $("#description").val(product.description);
 
         // 삭제 여부에 따라 버튼 텍스트 변경
@@ -78,7 +78,7 @@ function modifyProduct() {
     let category = $('#category').val();
     let name = $('#name').val();
     let price = $('#price').val();
-    let size = $('#size').val();
+    let size = $('input[name="size"]:checked').val();
     let imageUrl = $('#imageUrl')[0].files[0]; // 파일 선택
     let description = $('#description').val();
 

@@ -17,7 +17,7 @@ function registerProduct() {
     let category = $('#category').val();
     let name = $('#name').val();
     let price = $('#price').val();
-    let size = $('#size').val();
+    let size = $('input[name="size"]:checked').val();
     let imageUrl = $('#imageUrl')[0].files[0]; // 파일 선택
     let description = $('#description').val();
 
