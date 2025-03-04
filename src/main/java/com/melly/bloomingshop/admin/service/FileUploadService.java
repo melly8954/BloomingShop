@@ -12,10 +12,10 @@ import java.util.UUID;
 @Service
 public class FileUploadService {
 
-    @Value("${file.upload-dir:C:/bloomingshop/product}")
+    @Value("${file.product-dir}")
     private String uploadDir1;
 
-    @Value("${file.upload-dir:C:/bloomingshop/support}")
+    @Value("${file.support-dir}")
     private String uploadDir12;
 
     // 상품 이미지 저장

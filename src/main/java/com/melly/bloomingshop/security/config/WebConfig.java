@@ -12,7 +12,9 @@ public class WebConfig implements WebMvcConfigurer {
         // 외부 디렉토리 매핑
         registry.addResourceHandler("/images/**") // URL 패턴 설정
                 .addResourceLocations("file:///C:/bloomingshop/product") // 외부 디렉토리 경로 매핑
-                .addResourceLocations("file:///C:/bloomingshop/support"); // 외부 디렉토리 경로 매핑
+                .addResourceLocations("file:///C:/bloomingshop/support") // 외부 디렉토리 경로 매핑
+                .addResourceLocations("file:///home/ubuntu/bloomingshop/product/")  // 서버 디렉터리 경로
+                .addResourceLocations("file:///home/ubuntu/bloomingshop/support/");
 
         // 정적 리소스 (static 폴더) 매핑
         registry.addResourceHandler("/static/**") // URL 패턴 설정

@@ -9,6 +9,8 @@ server:
 spring:
   application:
     name: BloomingShop
+  profiles:
+    active: local
   mustache:
     enabled: true
     charset: UTF-8
@@ -58,4 +60,3 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
-      location: C:/bloomingshop   # 자기 PC에 첨부파일 저장할때
