@@ -23,7 +23,7 @@ function getGuestId() {
     if (!guestData || isGuestIdExpired(guestData.createdAt)) {
         guestData = {
             guestId: generateGuestId(),
-            createdAt: new Date().toLocaleString() // 로컬 시간 형식으로 반환
+            createdAt: Date.now() // 숫자로 저장 (밀리초 기준 UTC)
         };
         localStorage.setItem('guestData', JSON.stringify(guestData)); // guestData 저장
     }
@@ -38,10 +38,10 @@ function generateGuestId() {
 
 // guestId의 만료 여부를 체크하는 함수 (1일=86400000ms)
 function isGuestIdExpired(createdAt) {
-    const currentTime = new Date().getTime();
-    const guestIdCreationTime = new Date(createdAt).getTime();
-    const timeDifference = currentTime - guestIdCreationTime;
-    return timeDifference > 86400000; // 1일 (24시간) 초과하면 만료
+    if (!createdAt || isNaN(createdAt)) return true;
+
+    const currentTime = Date.now();
+    return (currentTime - createdAt) > 86400000; // 5분 초과하면 만료
 }
 
 // 날짜 형식 변환 함수 (예: "2025-01-31T18:44:47" → "2025-01-31")
