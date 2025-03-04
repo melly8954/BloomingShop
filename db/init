@@ -18,3 +18,5 @@ nohup java -jar -server /home/ubuntu/bloomingshop/BloomingShop-0.0.1-SNAPSHOT.ja
 
 
 java -jar -server /home/ubuntu/bloomingshop/BloomingShop-0.0.1-SNAPSHOT.jar
+
+java -jar -Dspring.profiles.active=prod /home/ubuntu/bloomingshop/BloomingShop-0.0.1-SNAPSHOT.jar
