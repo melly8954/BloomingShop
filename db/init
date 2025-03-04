@@ -6,3 +6,15 @@ grant all privileges on BloomingShop.* to 'psw'@'%' with grant option;
 flush privileges;
 
 ```
+
+
+
+ps -ef | grep bloomingshop
+java sbsjprj 프로세스 번호를 확인하고
+kill -9 프로세스번호
+
+
+nohup java -jar -server /home/ubuntu/bloomingshop/BloomingShop-0.0.1-SNAPSHOT.jar &
+
+
+java -jar -server /home/ubuntu/bloomingshop/BloomingShop-0.0.1-SNAPSHOT.jar
