@@ -34,6 +34,7 @@ function loadProduct(productId) {
         $("#name").val(product.name);
         $("#price").val(product.price);
         $('input[name="size"][value="' + product.size + '"]').prop('checked', true);
+        $("#imageUrl2").text("기존 이미지 : " + product.imageUrl);
         $("#description").val(product.description);
 
         // 삭제 여부에 따라 버튼 텍스트 변경
