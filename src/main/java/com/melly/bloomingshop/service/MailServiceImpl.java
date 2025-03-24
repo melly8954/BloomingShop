@@ -130,8 +130,6 @@ public class MailServiceImpl implements MailService {
         if (user == null) {
             throw new IllegalArgumentException("User not found for mail: " + mail);
         }
-        user.changePassword(passwordEncoder.encode(tempPassword));
-        userRepository.save(user);
         return tempPassword;
     }
 
@@ -144,6 +142,8 @@ public class MailServiceImpl implements MailService {
         if (user == null) {
             throw new IllegalArgumentException("User not found for mail: " + mail);
         }
+        user.changePassword(passwordEncoder.encode(tempPassword));
+        userRepository.save(user);
         return passwordEncoder.matches(tempPassword, user.getPassword());
     }
 
